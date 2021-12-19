@@ -7,7 +7,7 @@ import packageJson from '../package.json';
 
 const COMMANDS = {
   deploy: 'deploy',
-  derivePem: 'derivePem',
+  derivePem: 'derive-pem',
 };
 
 const args = argv;
@@ -19,7 +19,7 @@ if (command === '--version' || command === '-v') {
   exit();
 }
 
-const availableCommands = Object.keys(COMMANDS);
+const availableCommands = Object.values(COMMANDS);
 const helpMsg = `Available commands: ${[
   ...availableCommands,
   '--version',
@@ -33,7 +33,7 @@ if (command === '--help' || command === '-h') {
   exit(9);
 }
 
-if (!command || !Object.keys(COMMANDS).includes(command)) {
+if (!command || !Object.values(COMMANDS).includes(command)) {
   console.log(`Plaese provide a proper command. ${helpMsg}`);
   exit(9);
 }
@@ -43,5 +43,5 @@ if (command === COMMANDS.derivePem) {
 }
 
 if (command === COMMANDS.deploy) {
-  deploy();
+  deploy(args ? args[3] : undefined);
 }

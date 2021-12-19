@@ -8,6 +8,6 @@ esbuild
     minify: true,
     outdir: 'build',
     platform: 'node',
-    external: ['cosmiconfig', 'prompt', '@elrondnetwork/erdjs'],
+    external: ['cosmiconfig', 'prompt', 'ora', '@elrondnetwork/erdjs'],
   })
   .catch(() => process.exit(1));
