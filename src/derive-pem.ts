@@ -41,7 +41,10 @@ export const derivePem = async () => {
     const header = `-----BEGIN PRIVATE KEY for ${addressFromPubKey}-----`;
     const footer = `-----END PRIVATE KEY for ${addressFromPubKey}-----`;
 
-    const content = `${header}${combinedKeys}${footer}`;
+    const content = `${header}\n${combinedKeys.replace(
+      /([^\n]{1,64})/g,
+      '$1\n'
+    )}${footer}`;
 
     fs.writeFileSync('walletKey.pem', content);
 
