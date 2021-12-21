@@ -3,7 +3,6 @@ import {
   IProvider,
   NetworkConfig,
   SmartContract,
-  Address,
   Account,
   parseUserKey,
   UserSigner,
@@ -11,10 +10,18 @@ import {
   Code,
   GasLimit,
   AbiRegistry,
+  Address,
+  ContractFunction,
+  BytesValue,
 } from '@elrondnetwork/erdjs';
-import { readFileSync, accessSync, constants } from 'fs';
+import { readFileSync, accessSync, constants, writeFileSync } from 'fs';
 import { exit, cwd } from 'process';
-import { proxyGateways, chain } from './config';
+import {
+  proxyGateways,
+  chain,
+  templFileName,
+  issueTokenFnName,
+} from './config';
 
 export const baseDir = cwd();
 
@@ -49,24 +56,16 @@ export const syncProviderConfig = async (provider: IProvider) => {
   return NetworkConfig.getDefault().sync(provider);
 };
 
-export const getSmartContract = (scAddress: string, abi?: AbiRegistry) => {
-  if (!SmartContract) {
-    console.log(
-      'Please provide your Smart Contract address in the configuration file!'
-    );
-    exit();
-  } else {
-    const contract = new SmartContract({
-      address: new Address(scAddress),
-      abi:
-        abi &&
-        new SmartContractAbi(
-          abi,
-          abi.interfaces.map((iface) => iface.name)
-        ),
-    });
-    return contract;
-  }
+export const createSmartContractInstance = (abi?: AbiRegistry) => {
+  const contract = new SmartContract({
+    abi:
+      abi &&
+      new SmartContractAbi(
+        abi,
+        abi.interfaces.map((iface) => iface.name)
+      ),
+  });
+  return contract;
 };
 
 // Prepare main user account from the wallet PEM file
@@ -107,5 +106,37 @@ export const getDeployTransaction = (
     code,
     gasLimit: new GasLimit(gasLimit),
     initArguments: [],
+  });
+};
+
+export const saveSCAddressAfterDeploy = (scAddress: Address) => {
+  const templFilePath = `${baseDir}/${templFileName}`;
+  try {
+    accessSync(templFilePath, constants.R_OK | constants.W_OK);
+    const configFile = readFileSync(templFilePath, { encoding: 'utf8' });
+    const newConfigFile = {
+      ...JSON.parse(configFile),
+      nftMinterScAddress: scAddress.bech32(),
+    };
+    return writeFileSync(templFilePath, JSON.stringify(newConfigFile));
+  } catch {
+    return writeFileSync(
+      templFilePath,
+      JSON.stringify({ nftMinterScAddress: scAddress.bech32() })
+    );
+  }
+};
+
+export const getIssueTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  // TODO: get these values from prompt
+  const tokenName = '';
+  const tokenTicker = '';
+  return contract.call({
+    func: new ContractFunction(issueTokenFnName),
+    args: [BytesValue.fromUTF8(tokenName), BytesValue.fromUTF8(tokenTicker)],
+    gasLimit: new GasLimit(gasLimit),
   });
 };
