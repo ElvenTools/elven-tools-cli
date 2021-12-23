@@ -3,11 +3,13 @@
 import { exit, argv } from 'process';
 import { deploy } from './deploy';
 import { derivePem } from './derive-pem';
+import { nftMinter } from './nft-minter';
 import packageJson from '../package.json';
 
 const COMMANDS = {
   deploy: 'deploy',
   derivePem: 'derive-pem',
+  nftMinter: 'nft-minter',
 };
 
 const args = argv;
@@ -44,4 +46,8 @@ if (command === COMMANDS.derivePem) {
 
 if (command === COMMANDS.deploy) {
   deploy(args ? args[3] : undefined);
+}
+
+if (command === COMMANDS.nftMinter) {
+  nftMinter(args ? args[3] : undefined);
 }

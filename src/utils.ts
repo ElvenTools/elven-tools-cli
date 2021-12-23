@@ -13,35 +13,45 @@ import {
   Address,
   ContractFunction,
   BytesValue,
+  Balance,
 } from '@elrondnetwork/erdjs';
 import { readFileSync, accessSync, constants, writeFileSync } from 'fs';
 import { exit, cwd } from 'process';
 import {
   proxyGateways,
   chain,
-  templFileName,
+  outputFileName,
   issueTokenFnName,
+  getNftTokenIdFnName,
 } from './config';
 
 export const baseDir = cwd();
 
 export const getFileContents = (
   relativeFilePath: string,
-  options = { isJSON: true }
+  options: { isJSON?: boolean; noExitOnError?: boolean }
 ) => {
+  const isJSON = options.isJSON === undefined ? true : options.isJSON;
+  const noExitOnError =
+    options.noExitOnError === undefined ? false : options.noExitOnError;
+
   const filePath = `${baseDir}/${relativeFilePath}`;
 
   try {
     accessSync(filePath, constants.R_OK | constants.W_OK);
   } catch (err) {
-    console.error(`There is no ${relativeFilePath}!`);
-    exit();
+    if (!noExitOnError) {
+      console.error(`There is no ${relativeFilePath}!`);
+      exit(9);
+    } else {
+      return undefined;
+    }
   }
 
   const rawFile = readFileSync(filePath);
   const fileString = rawFile.toString('utf8');
 
-  if (options.isJSON) {
+  if (isJSON) {
     return JSON.parse(fileString);
   }
   return fileString;
@@ -56,8 +66,12 @@ export const syncProviderConfig = async (provider: IProvider) => {
   return NetworkConfig.getDefault().sync(provider);
 };
 
-export const createSmartContractInstance = (abi?: AbiRegistry) => {
+export const createSmartContractInstance = (
+  abi?: AbiRegistry,
+  address?: string
+) => {
   const contract = new SmartContract({
+    address: address ? new Address(address) : undefined,
     abi:
       abi &&
       new SmartContractAbi(
@@ -110,7 +124,7 @@ export const getDeployTransaction = (
 };
 
 export const saveSCAddressAfterDeploy = (scAddress: Address) => {
-  const templFilePath = `${baseDir}/${templFileName}`;
+  const templFilePath = `${baseDir}/${outputFileName}`;
   try {
     accessSync(templFilePath, constants.R_OK | constants.W_OK);
     const configFile = readFileSync(templFilePath, { encoding: 'utf8' });
@@ -129,14 +143,24 @@ export const saveSCAddressAfterDeploy = (scAddress: Address) => {
 
 export const getIssueTransaction = (
   contract: SmartContract,
-  gasLimit: number
+  gasLimit: number,
+  value: number, // mandatory 0.05 EGLD
+  tokenName: string,
+  tokenTicker: string
 ) => {
-  // TODO: get these values from prompt
-  const tokenName = '';
-  const tokenTicker = '';
   return contract.call({
     func: new ContractFunction(issueTokenFnName),
     args: [BytesValue.fromUTF8(tokenName), BytesValue.fromUTF8(tokenTicker)],
+    value: Balance.egld(value),
     gasLimit: new GasLimit(gasLimit),
+  });
+};
+
+export const getIssuedToken = (
+  provider: ProxyProvider,
+  smartContract: SmartContract
+) => {
+  return smartContract.runQuery(provider, {
+    func: new ContractFunction(getNftTokenIdFnName),
   });
 };

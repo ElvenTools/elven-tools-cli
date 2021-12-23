@@ -33,6 +33,10 @@ export const deployNftMinterGasLimit =
 export const issueNftMinterGasLimit =
   customConfig?.config?.deployment?.nftMinterSc?.issueGasLimit || 60000000;
 
+// 1 = 1 EGLD
+export const issueNftMinterValue =
+  customConfig?.config?.deployment?.nftMinterSc?.issueValue || 0.05;
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Other predefined config settings
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
@@ -59,7 +63,9 @@ export const deployNftMinterSCwasmRelativeFilePath =
 export const deployNftMinterSCabiFileUrl = `https://raw.githubusercontent.com/juliancwirko/elven-nft-minter-sc/v${packageJson.version}/output/elven-nft-minter.abi.json`;
 export const deployNftMinterSCwasmFileUrl = `https://raw.githubusercontent.com/juliancwirko/elven-nft-minter-sc/v${packageJson.version}/output/elven-nft-minter.wasm`;
 
-// Used for temporary data like, the smart contract address after deploy
-export const templFileName = 'elventools.tmp';
+// Used for output data like the smart contract address after deploy
+export const outputFileName = 'output.json';
 
 export const issueTokenFnName = 'issueToken';
+
+export const getNftTokenIdFnName = 'getNftTokenId';

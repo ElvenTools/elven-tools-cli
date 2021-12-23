@@ -16,7 +16,7 @@ import {
   prepareUserSigner,
 } from './utils';
 
-export const setup = async () => {
+export const setup = async (smartContractAddress?: string) => {
   // PEM wallet key file
   const walletPemKey = getFileContents(pemKeyFileName, { isJSON: false });
   const abiFile = await getAbi(
@@ -29,7 +29,10 @@ export const setup = async () => {
   );
 
   // Smart contract instance - SC responsible for minting
-  const smartContract = createSmartContractInstance(abiFile);
+  const smartContract = createSmartContractInstance(
+    abiFile,
+    smartContractAddress
+  );
 
   // Provider type based on initial configuration
   const provider = getProvider();

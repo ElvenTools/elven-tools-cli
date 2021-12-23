@@ -1,10 +1,23 @@
 import { exit } from 'process';
+import { unlinkSync } from 'fs';
 import ora from 'ora';
 import { setup } from './setup';
-import { deployNftMinterGasLimit } from './config';
-import { getDeployTransaction, saveSCAddressAfterDeploy } from './utils';
+import { deployNftMinterGasLimit, outputFileName } from './config';
+import {
+  getDeployTransaction,
+  saveSCAddressAfterDeploy,
+  getFileContents,
+  baseDir,
+} from './utils';
 
 const deployNftMinter = async () => {
+  // Check if there is an old output file
+  const outputFile = getFileContents(outputFileName, { noExitOnError: true });
+
+  if (outputFile) {
+    unlinkSync(`${baseDir}/${outputFileName}`);
+  }
+
   try {
     const { scWasmCode, smartContract, userAccount, signer, provider } =
       await setup();
