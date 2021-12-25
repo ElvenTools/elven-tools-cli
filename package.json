@@ -4,7 +4,7 @@
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "types": "build/types",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Interacting with custom NFT related Smart Contracts on the Elrond blockchain",
   "main": "build/index.js",
   "bin": {
@@ -19,16 +19,17 @@
   },
   "author": "Julian Ćwirko <julian.io>",
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/juliancwirko/elven-tools-cli",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/juliancwirko/elven-tools-cli"
   },
   "keywords": [
     "elrond",
     "blockchain",
     "sdk",
-    "javascript"
+    "javascript",
+    "nft"
   ],
   "devDependencies": {
     "@types/node": "^16.11.12",

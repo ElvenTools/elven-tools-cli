@@ -22,7 +22,9 @@ import {
   chain,
   outputFileName,
   issueTokenFnName,
+  setLocalRolesFnName,
   getNftTokenIdFnName,
+  nftMinterScAddress,
 } from './config';
 
 export const baseDir = cwd();
@@ -132,11 +134,29 @@ export const saveSCAddressAfterDeploy = (scAddress: Address) => {
       ...JSON.parse(configFile),
       nftMinterScAddress: scAddress.bech32(),
     };
-    return writeFileSync(templFilePath, JSON.stringify(newConfigFile));
+    return writeFileSync(templFilePath, JSON.stringify(newConfigFile, null, 2));
   } catch {
     return writeFileSync(
       templFilePath,
-      JSON.stringify({ nftMinterScAddress: scAddress.bech32() })
+      JSON.stringify({ nftMinterScAddress: scAddress.bech32() }, null, 2)
+    );
+  }
+};
+
+export const saveCollectionTokenAfterIssuance = (tokenId: string) => {
+  const templFilePath = `${baseDir}/${outputFileName}`;
+  try {
+    accessSync(templFilePath, constants.R_OK | constants.W_OK);
+    const configFile = readFileSync(templFilePath, { encoding: 'utf8' });
+    const newConfigFile = {
+      ...JSON.parse(configFile),
+      nftMinterCollectionToken: tokenId,
+    };
+    return writeFileSync(templFilePath, JSON.stringify(newConfigFile, null, 2));
+  } catch {
+    return writeFileSync(
+      templFilePath,
+      JSON.stringify({ nftMinterCollectionToken: tokenId }, null, 2)
     );
   }
 };
@@ -162,5 +182,28 @@ export const getIssuedToken = (
 ) => {
   return smartContract.runQuery(provider, {
     func: new ContractFunction(getNftTokenIdFnName),
+  });
+};
+
+export const getTheSCAddressFromOutputOrConfig = () => {
+  const output = getFileContents(outputFileName, { noExitOnError: true });
+  const smartContractAddress = output?.nftMinterScAddress || nftMinterScAddress;
+
+  if (!smartContractAddress) {
+    console.log(
+      "Smart Contract address isn't provided. Please deploy it or add the address to the configuration if it is already deployed."
+    );
+    exit(9);
+  }
+  return smartContractAddress;
+};
+
+export const getAssignRolesTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(setLocalRolesFnName),
+    gasLimit: new GasLimit(gasLimit),
   });
 };

@@ -3,7 +3,7 @@
 import { exit, argv } from 'process';
 import { deploy } from './deploy';
 import { derivePem } from './derive-pem';
-import { nftMinter } from './nft-minter';
+import { nftMinter } from './nft-minter-fns';
 import packageJson from '../package.json';
 
 const COMMANDS = {
