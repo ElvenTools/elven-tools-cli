@@ -7,9 +7,14 @@ It is a very early version of elven-tools, a CLI especially designed to be usefu
 ### What it can do now.
 
 The elven-tools CLI will simplify a couple of operations:
-- deploying the custom smart contract
-- issuing collection token
-- adding necessary roles
+#### Deriving the PEM file from mnemonic (seed phrase)
+![](https://www.julian.io/assets/images/posts/elven-tools-derive-pem.gif)
+#### Deploying the custom smart contract
+![](https://www.julian.io/assets/images/posts/elven-tools-deploy.gif)
+#### Issuing collection token
+![](https://www.julian.io/assets/images/posts/elven-tools-issue-token.gif)
+#### Adding necessary roles
+![](https://www.julian.io/assets/images/posts/elven-tools-set-roles.gif)
 - TBA
 
 The smart contract on which it operates is in a very early stage. It isn't suited for proper NFT launches. But this will change, and then elven-tools CLI will get more functionality. For now, you can deploy and prepare this simple, smart contract. Then you can use tools like [nft-art-maker](https://github.com/juliancwirko/nft-art-maker) and [elven-mint](https://github.com/juliancwirko/elven-mint) to play around. Watch the repo to be up to date. What connects all three libraries is that they are prepared to use the smart contract linked above.
