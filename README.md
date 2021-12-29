@@ -4,6 +4,8 @@ It is a very early version of elven-tools, a CLI especially designed to be usefu
 
 **It will change over time because Smart Contract will also change. So be aware of that.**
 
+- [Blog post](https://www.julian.io/articles/elrond-erdjs.html)
+
 ### What it can do now.
 
 The elven-tools CLI will simplify a couple of operations:
