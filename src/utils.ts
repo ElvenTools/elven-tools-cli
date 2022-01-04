@@ -14,7 +14,11 @@ import {
   ContractFunction,
   BytesValue,
   Balance,
+  U32Value,
+  U64Value,
+  BigUIntValue,
 } from '@elrondnetwork/erdjs';
+import BigNumber from 'bignumber.js';
 import { readFileSync, accessSync, constants, writeFileSync } from 'fs';
 import { exit, cwd } from 'process';
 import {
@@ -116,12 +120,31 @@ export const getScWasmCode = (filePath: string, url: string) => {
 export const getDeployTransaction = (
   code: Code,
   contract: SmartContract,
-  gasLimit: number
+  gasLimit: number,
+  imgBaseCid: string,
+  metadataBaseCid: string,
+  numberOfTokens: number,
+  startTimestamp: number,
+  endTimestamp: number,
+  royalties: string,
+  sellingPrice: string,
+  tags: string,
+  provenanceHash: string
 ) => {
   return contract.deploy({
     code,
     gasLimit: new GasLimit(gasLimit),
-    initArguments: [],
+    initArguments: [
+      BytesValue.fromUTF8(imgBaseCid),
+      BytesValue.fromUTF8(metadataBaseCid),
+      new U32Value(numberOfTokens),
+      new U64Value(new BigNumber(startTimestamp)),
+      new U64Value(new BigNumber(endTimestamp)),
+      new BigUIntValue(new BigNumber(royalties)),
+      new BigUIntValue(new BigNumber(sellingPrice)),
+      BytesValue.fromUTF8(tags),
+      BytesValue.fromUTF8(provenanceHash),
+    ],
   });
 };
 

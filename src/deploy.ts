@@ -25,7 +25,17 @@ const deployNftMinter = async () => {
     const deployTransaction = getDeployTransaction(
       scWasmCode,
       smartContract,
-      deployNftMinterGasLimit
+      deployNftMinterGasLimit,
+      // TODO: mocks for now, just for SC testing
+      'imageBaseCidTest',
+      'metadataBaseCidTest',
+      100,
+      1641244846,
+      1656876046,
+      '1000',
+      '1000000000000000000',
+      'test1,test2,test3',
+      'fake_provenance_hash'
     );
 
     deployTransaction.setNonce(userAccount.nonce);
