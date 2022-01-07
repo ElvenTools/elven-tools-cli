@@ -1,11 +1,24 @@
 import { exit } from 'process';
 import { unlinkSync } from 'fs';
 import ora from 'ora';
+import prompt from 'prompt';
 import { setup } from './setup';
-import { deployNftMinterGasLimit, outputFileName } from './config';
+import {
+  deployNftMinterGasLimit,
+  outputFileName,
+  deployNftMinterImgCidLabel,
+  deployNftMinterMetaCidLabel,
+  deployNftMinterAmountOfTokensLabel,
+  deployNftMinterSellingPriceLabel,
+  deployNftMinterRoyaltiesLabel,
+  deployNftMinterMintingStartTimeLabel,
+  deployNftMinterMintingEndTimeLabel,
+  deployNftMinterTagsLabel,
+  deployNftMinterProvenanceHashLabel,
+} from './config';
 import {
   getDeployTransaction,
-  saveSCAddressAfterDeploy,
+  saveOutputAfterDeploy,
   getFileContents,
   baseDir,
 } from './utils';
@@ -18,24 +31,90 @@ const deployNftMinter = async () => {
     unlinkSync(`${baseDir}/${outputFileName}`);
   }
 
+  const promptSchema = {
+    properties: {
+      deployNftMinterImgCid: {
+        description: deployNftMinterImgCidLabel,
+        required: true,
+      },
+      deployNftMinterMetaCid: {
+        description: deployNftMinterMetaCidLabel,
+        required: true,
+      },
+      deployNftMinterAmountOfTokens: {
+        description: deployNftMinterAmountOfTokensLabel,
+        required: true,
+      },
+      deployNftMinterSellingPrice: {
+        description: deployNftMinterSellingPriceLabel,
+        required: true,
+      },
+      deployNftMinterRoyalties: {
+        description: deployNftMinterRoyaltiesLabel,
+        required: true,
+        min: 0,
+        max: 100,
+      },
+      deployNftMinterMintingStartTime: {
+        description: deployNftMinterMintingStartTimeLabel,
+        required: false,
+      },
+      deployNftMinterMintingEndTime: {
+        description: deployNftMinterMintingEndTimeLabel,
+        required: false,
+      },
+      deployNftMinterTags: {
+        description: deployNftMinterTagsLabel,
+        required: false,
+      },
+      deployNftMinterProvenanceHash: {
+        description: deployNftMinterProvenanceHashLabel,
+        required: false,
+      },
+    },
+  };
+
+  prompt.start();
+
   try {
     const { scWasmCode, smartContract, userAccount, signer, provider } =
       await setup();
+
+    const {
+      deployNftMinterImgCid,
+      deployNftMinterMetaCid,
+      deployNftMinterAmountOfTokens,
+      deployNftMinterSellingPrice,
+      deployNftMinterRoyalties,
+      deployNftMinterMintingStartTime,
+      deployNftMinterMintingEndTime,
+      deployNftMinterTags,
+      deployNftMinterProvenanceHash,
+    } = await prompt.get(promptSchema);
+
+    if (
+      !deployNftMinterImgCid ||
+      !deployNftMinterMetaCid ||
+      !deployNftMinterAmountOfTokens ||
+      !deployNftMinterSellingPrice
+    ) {
+      console.log('You have to provide the token name and ticker value!');
+      exit(9);
+    }
 
     const deployTransaction = getDeployTransaction(
       scWasmCode,
       smartContract,
       deployNftMinterGasLimit,
-      // TODO: mocks for now, just for SC testing
-      'imageBaseCidTest',
-      'metadataBaseCidTest',
-      100,
-      1641244846,
-      1656876046,
-      '1000',
-      '1000000000000000000',
-      'test1,test2,test3',
-      'fake_provenance_hash'
+      deployNftMinterImgCid as string,
+      deployNftMinterMetaCid as string,
+      Number(deployNftMinterAmountOfTokens),
+      deployNftMinterSellingPrice as string,
+      deployNftMinterRoyalties as string,
+      Number(deployNftMinterMintingStartTime),
+      Number(deployNftMinterMintingEndTime),
+      deployNftMinterTags as string,
+      deployNftMinterProvenanceHash as string
     );
 
     deployTransaction.setNonce(userAccount.nonce);
@@ -54,7 +133,10 @@ const deployNftMinter = async () => {
     console.log(`Deployment transaction executed: ${txStatus}`);
     const scAddress = smartContract.getAddress();
     console.log(`Smart Contract address: ${scAddress}`);
-    saveSCAddressAfterDeploy(scAddress);
+    saveOutputAfterDeploy({
+      scAddress,
+      sellingPrice: deployNftMinterSellingPrice as string,
+    });
   } catch (e) {
     console.log(e);
   }

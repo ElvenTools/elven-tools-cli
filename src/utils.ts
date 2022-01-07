@@ -124,12 +124,12 @@ export const getDeployTransaction = (
   imgBaseCid: string,
   metadataBaseCid: string,
   numberOfTokens: number,
-  startTimestamp: number,
-  endTimestamp: number,
-  royalties: string,
   sellingPrice: string,
-  tags: string,
-  provenanceHash: string
+  royalties?: string,
+  startTimestamp?: number,
+  endTimestamp?: number,
+  tags?: string,
+  provenanceHash?: string
 ) => {
   return contract.deploy({
     code,
@@ -138,47 +138,70 @@ export const getDeployTransaction = (
       BytesValue.fromUTF8(imgBaseCid),
       BytesValue.fromUTF8(metadataBaseCid),
       new U32Value(numberOfTokens),
-      new U64Value(new BigNumber(startTimestamp)),
-      new U64Value(new BigNumber(endTimestamp)),
-      new BigUIntValue(new BigNumber(royalties)),
-      new BigUIntValue(new BigNumber(sellingPrice)),
-      BytesValue.fromUTF8(tags),
-      BytesValue.fromUTF8(provenanceHash),
+      new U64Value(
+        new BigNumber(startTimestamp || new Date().getTime() / 1000)
+      ),
+      new U64Value(new BigNumber(endTimestamp || 8640000000000000)),
+      new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0)),
+      new BigUIntValue(Balance.egld(sellingPrice).valueOf()),
+      BytesValue.fromUTF8(tags || ''),
+      BytesValue.fromUTF8(provenanceHash || ''),
     ],
   });
 };
 
-export const saveSCAddressAfterDeploy = (scAddress: Address) => {
-  const templFilePath = `${baseDir}/${outputFileName}`;
+export const saveOutputAfterDeploy = ({
+  scAddress,
+  sellingPrice,
+}: {
+  scAddress: Address;
+  sellingPrice: string;
+}) => {
+  const outputFilePath = `${baseDir}/${outputFileName}`;
   try {
-    accessSync(templFilePath, constants.R_OK | constants.W_OK);
-    const configFile = readFileSync(templFilePath, { encoding: 'utf8' });
+    accessSync(outputFilePath, constants.R_OK | constants.W_OK);
+    const configFile = readFileSync(outputFilePath, { encoding: 'utf8' });
     const newConfigFile = {
       ...JSON.parse(configFile),
       nftMinterScAddress: scAddress.bech32(),
+      nftMinterScCollectionSellingPrice: Balance.egld(sellingPrice).toString(),
     };
-    return writeFileSync(templFilePath, JSON.stringify(newConfigFile, null, 2));
+    return writeFileSync(
+      outputFilePath,
+      JSON.stringify(newConfigFile, null, 2)
+    );
   } catch {
     return writeFileSync(
-      templFilePath,
-      JSON.stringify({ nftMinterScAddress: scAddress.bech32() }, null, 2)
+      outputFilePath,
+      JSON.stringify(
+        {
+          nftMinterScAddress: scAddress.bech32(),
+          nftMinterScCollectionSellingPrice:
+            Balance.egld(sellingPrice).toString(),
+        },
+        null,
+        2
+      )
     );
   }
 };
 
 export const saveCollectionTokenAfterIssuance = (tokenId: string) => {
-  const templFilePath = `${baseDir}/${outputFileName}`;
+  const outputFilePath = `${baseDir}/${outputFileName}`;
   try {
-    accessSync(templFilePath, constants.R_OK | constants.W_OK);
-    const configFile = readFileSync(templFilePath, { encoding: 'utf8' });
+    accessSync(outputFilePath, constants.R_OK | constants.W_OK);
+    const configFile = readFileSync(outputFilePath, { encoding: 'utf8' });
     const newConfigFile = {
       ...JSON.parse(configFile),
       nftMinterCollectionToken: tokenId,
     };
-    return writeFileSync(templFilePath, JSON.stringify(newConfigFile, null, 2));
+    return writeFileSync(
+      outputFilePath,
+      JSON.stringify(newConfigFile, null, 2)
+    );
   } catch {
     return writeFileSync(
-      templFilePath,
+      outputFilePath,
       JSON.stringify({ nftMinterCollectionToken: tokenId }, null, 2)
     );
   }
