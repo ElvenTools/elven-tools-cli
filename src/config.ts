@@ -24,7 +24,7 @@ export const nftMinterScAddress =
 
 // Gas limit required for the deployment
 export const deployNftMinterGasLimit =
-  customConfig?.config?.nftMinterSc?.deployGasLimit || 80000000;
+  customConfig?.config?.nftMinterSc?.deployGasLimit || 90000000;
 
 // The tag from the SC's GitHub repository, it can be release tag like v0.1.1 or branch name
 export const deployNftMinterScVersion =
@@ -32,7 +32,7 @@ export const deployNftMinterScVersion =
 
 // Gas limit required for the collection token issuance
 export const issueNftMinterGasLimit =
-  customConfig?.config?.nftMinterSc?.issueCollectionTokenGasLimit || 60000000;
+  customConfig?.config?.nftMinterSc?.issueCollectionTokenGasLimit || 80000000;
 
 // Value required for the collection token issuance  (1 = 1 EGLD)
 export const issueNftMinterValue =
@@ -40,7 +40,7 @@ export const issueNftMinterValue =
 
 // Gas limit required for the collection token roles assignment
 export const assignRolesNftMinterGasLimit =
-  customConfig?.config?.nftMinterSc?.assignRolesGasLimit || 60000000;
+  customConfig?.config?.nftMinterSc?.assignRolesGasLimit || 80000000;
 
 // Issue collection token function name on the SC
 export const issueTokenFnName =
