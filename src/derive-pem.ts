@@ -4,6 +4,8 @@ import prompt from 'prompt';
 import { exit } from 'process';
 import { derivePemSeedQuestion } from './config';
 
+prompt.colors = false;
+
 // Derive PEM file from seed
 export const derivePem = async () => {
   const promptSchema = {

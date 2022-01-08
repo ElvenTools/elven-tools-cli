@@ -66,7 +66,7 @@ export const proxyGateways: { [key: string]: string } = {
   mainnet: 'https://gateway.elrond.com',
 };
 
-export const derivePemSeedQuestion = 'Enter mnemonic (seed phrase)';
+export const derivePemSeedQuestion = 'Enter mnemonic (seed phrase)\n';
 export const collectionTokenNameLabel =
   'Enter the name for the collection token (ex. MyName123). Avoid spaces and special characters\n';
 export const collectionTokenTickerLabel =

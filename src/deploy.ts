@@ -23,6 +23,8 @@ import {
   baseDir,
 } from './utils';
 
+prompt.colors = false;
+
 const deployNftMinter = async () => {
   // Check if there is an old output file
   const outputFile = getFileContents(outputFileName, { noExitOnError: true });

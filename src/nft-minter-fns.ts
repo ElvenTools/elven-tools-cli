@@ -17,6 +17,8 @@ import {
 } from './config';
 import { exit } from 'process';
 
+prompt.colors = false;
+
 // Issue a collection token + add required roles
 export const issueCollectionToken = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
