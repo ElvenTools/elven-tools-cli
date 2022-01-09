@@ -25,7 +25,7 @@ export const nftMinterScAddress =
 // Base gas limit required for the deployment - depnds on how much tokens you would like to mint in a collection
 // Default value should be enough for something around 6000 tokens, 550000000 for around 10k
 export const deployNftMinterGasLimit =
-  customConfig?.config?.nftMinterSc?.deployGasLimit || 350000000;
+  customConfig?.config?.nftMinterSc?.deployGasLimit || 90000000;
 
 // The tag from the SC's GitHub repository, it can be release tag like v0.1.1 or branch name like 'main' or 'development'
 export const deployNftMinterScVersion =
