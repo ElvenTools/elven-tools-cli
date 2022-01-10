@@ -7,6 +7,7 @@ import {
   saveCollectionTokenAfterIssuance,
   getTheSCAddressFromOutputOrConfig,
   getAssignRolesTransaction,
+  getMintTransaction,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -14,10 +15,16 @@ import {
   assignRolesNftMinterGasLimit,
   collectionTokenNameLabel,
   collectionTokenTickerLabel,
+  amountOfTokensLabel,
+  mintTxGasLimit,
+  mintFunctionConfirmLabel,
 } from './config';
 import { exit } from 'process';
 
 prompt.colors = false;
+
+// TODO: better UX overall, catch statuses from smart contract results
+// TODO: add more data checks and console logs
 
 // Issue a collection token + add required roles
 export const issueCollectionToken = async () => {
@@ -132,10 +139,72 @@ export const setLocalRoles = async () => {
   }
 };
 
+const mint = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+
+  const promptSchema = {
+    properties: {
+      tokensAmount: {
+        description: amountOfTokensLabel,
+        required: false,
+      },
+    },
+  };
+
+  const confirmationSchema = {
+    properties: {
+      areYouSureAnswer: {
+        description: mintFunctionConfirmLabel,
+        required: true,
+      },
+    },
+  };
+
+  prompt.start();
+
+  try {
+    const { tokensAmount } = await prompt.get(promptSchema);
+    const { areYouSureAnswer } = await prompt.get(confirmationSchema);
+
+    if (!['yes', 'YES', 'Yes', 'y', 'Y'].includes(areYouSureAnswer as string)) {
+      console.log('Minting aborted!');
+      exit(9);
+    }
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const mintTx = getMintTransaction(
+      smartContract,
+      mintTxGasLimit,
+      Number(tokensAmount)
+    );
+
+    mintTx.setNonce(userAccount.nonce);
+    userAccount.incrementNonce();
+    signer.sign(mintTx);
+
+    const spinner = ora('Processing transaction...');
+    spinner.start();
+
+    await mintTx.send(provider);
+    await mintTx.awaitExecuted(provider);
+    const txHash = mintTx.getHash();
+
+    spinner.stop();
+
+    console.log(`Transaction hash: ${txHash}`);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
     setLocalRoles: 'set-roles',
+    mint: 'mint',
   };
 
   if (!subcommand || !Object.values(COMMANDS).includes(subcommand)) {
@@ -153,5 +222,9 @@ export const nftMinter = async (subcommand?: string) => {
 
   if (subcommand === COMMANDS.setLocalRoles) {
     setLocalRoles();
+  }
+
+  if (subcommand === COMMANDS.mint) {
+    mint();
   }
 };

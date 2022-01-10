@@ -29,6 +29,8 @@ import {
   setLocalRolesFnName,
   getNftTokenIdFnName,
   nftMinterScAddress,
+  nftMinterTokenSellingPrice,
+  mintFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -252,4 +254,29 @@ export const getAssignRolesTransaction = (
     func: new ContractFunction(setLocalRolesFnName),
     gasLimit: new GasLimit(gasLimit),
   });
+};
+
+export const getMintTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  tokensAmount: number
+) => {
+  const tokens = tokensAmount || 1;
+  const output = getFileContents(outputFileName, { noExitOnError: true });
+  const tokenSellingPrice =
+    output?.nftMinterScCollectionSellingPrice || nftMinterTokenSellingPrice;
+
+  if (!tokenSellingPrice) {
+    console.log(
+      "Price per token isn't provided. Please add it to the config file."
+    );
+    exit(9);
+  } else {
+    return contract.call({
+      func: new ContractFunction(mintFunctionName),
+      gasLimit: new GasLimit(gasLimit),
+      args: [new U32Value(tokens)],
+      value: Balance.fromString(tokenSellingPrice).times(tokens),
+    });
+  }
 };
