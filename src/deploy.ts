@@ -15,6 +15,7 @@ import {
   deployNftMinterMintingEndTimeLabel,
   deployNftMinterTagsLabel,
   deployNftMinterProvenanceHashLabel,
+  deployNftMinterTokensLimitPerAddressLabel,
 } from './config';
 import {
   getDeployTransaction,
@@ -45,6 +46,10 @@ const deployNftMinter = async () => {
       },
       deployNftMinterAmountOfTokens: {
         description: deployNftMinterAmountOfTokensLabel,
+        required: true,
+      },
+      deployNftMinterTokensLimitPerAddress: {
+        description: deployNftMinterTokensLimitPerAddressLabel,
         required: true,
       },
       deployNftMinterSellingPrice: {
@@ -86,6 +91,7 @@ const deployNftMinter = async () => {
       deployNftMinterImgCid,
       deployNftMinterMetaCid,
       deployNftMinterAmountOfTokens,
+      deployNftMinterTokensLimitPerAddress,
       deployNftMinterSellingPrice,
       deployNftMinterRoyalties,
       deployNftMinterMintingStartTime,
@@ -111,6 +117,7 @@ const deployNftMinter = async () => {
       deployNftMinterImgCid as string,
       deployNftMinterMetaCid as string,
       Number(deployNftMinterAmountOfTokens),
+      Number(deployNftMinterTokensLimitPerAddress),
       deployNftMinterSellingPrice as string,
       deployNftMinterRoyalties as string,
       Number(deployNftMinterMintingStartTime),
@@ -150,6 +157,11 @@ export const deploy = async (subcommand?: string) => {
   const COMMANDS = {
     nftMinter: 'nft-minter',
   };
+
+  if (subcommand === '-h' || subcommand === '--help') {
+    console.log(`Available commands: ${Object.values(COMMANDS).join(', ')}`);
+    exit(9);
+  }
 
   if (!subcommand || !Object.values(COMMANDS).includes(subcommand)) {
     console.log(

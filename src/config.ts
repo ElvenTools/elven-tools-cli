@@ -97,7 +97,8 @@ export const deployNftMinterTagsLabel =
   'Provide tags (ex. tag1,tag2,tag3) [optional]:\n';
 export const deployNftMinterProvenanceHashLabel =
   'Provide the provenance hash (sha256 hash of all images) [optional]:\n';
-
+export const deployNftMinterTokensLimitPerAddressLabel =
+  'Tokens limit per one address (ex 3 for three) [optional]:\n';
 export const amountOfTokensLabel =
   'Provide how many tokens should be minted. Take into account possible limitations set on the Smart Contract (ex 3 for three tokens):\n';
 export const mintFunctionConfirmLabel =

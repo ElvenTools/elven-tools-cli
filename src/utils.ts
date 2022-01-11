@@ -66,7 +66,7 @@ export const getFileContents = (
 };
 
 export const getProvider = () => {
-  return new ProxyProvider(proxyGateways[chain], { timeout: 5000 });
+  return new ProxyProvider(proxyGateways[chain], { timeout: 10000 });
 };
 
 // Sync proper chain, for example, the devnet
@@ -126,6 +126,7 @@ export const getDeployTransaction = (
   imgBaseCid: string,
   metadataBaseCid: string,
   numberOfTokens: number,
+  tokensLimitPerAddress: number,
   sellingPrice: string,
   royalties?: string,
   startTimestamp?: number,
@@ -140,6 +141,7 @@ export const getDeployTransaction = (
       BytesValue.fromUTF8(imgBaseCid),
       BytesValue.fromUTF8(metadataBaseCid),
       new U32Value(numberOfTokens),
+      new U32Value(tokensLimitPerAddress),
       new U64Value(
         new BigNumber(startTimestamp || new Date().getTime() / 1000)
       ),

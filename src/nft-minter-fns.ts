@@ -207,6 +207,11 @@ export const nftMinter = async (subcommand?: string) => {
     mint: 'mint',
   };
 
+  if (subcommand === '-h' || subcommand === '--help') {
+    console.log(`Available commands: ${Object.values(COMMANDS).join(', ')}`);
+    exit(9);
+  }
+
   if (!subcommand || !Object.values(COMMANDS).includes(subcommand)) {
     console.log(
       `Plaese provide a proper command. Available commands: ${Object.values(
