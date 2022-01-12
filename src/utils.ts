@@ -17,6 +17,7 @@ import {
   U32Value,
   U64Value,
   BigUIntValue,
+  AddressValue,
 } from '@elrondnetwork/erdjs';
 import BigNumber from 'bignumber.js';
 import { readFileSync, accessSync, constants, writeFileSync } from 'fs';
@@ -31,6 +32,7 @@ import {
   nftMinterScAddress,
   nftMinterTokenSellingPrice,
   mintFunctionName,
+  giveawayFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -281,4 +283,18 @@ export const getMintTransaction = (
       value: Balance.fromString(tokenSellingPrice).times(tokens),
     });
   }
+};
+
+export const getGiveawayTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  address: string,
+  tokensAmount: number
+) => {
+  const tokens = tokensAmount || 1;
+  return contract.call({
+    func: new ContractFunction(giveawayFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+    args: [new AddressValue(new Address(address)), new U32Value(tokens)],
+  });
 };

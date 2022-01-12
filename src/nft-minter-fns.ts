@@ -8,6 +8,7 @@ import {
   getTheSCAddressFromOutputOrConfig,
   getAssignRolesTransaction,
   getMintTransaction,
+  getGiveawayTransaction,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -18,6 +19,10 @@ import {
   amountOfTokensLabel,
   mintTxGasLimit,
   mintFunctionConfirmLabel,
+  giveawayAddressLabel,
+  giveawayTokensAmount,
+  giveawayFunctionConfirmLabel,
+  giveawayTxGasLimit,
 } from './config';
 import { exit } from 'process';
 
@@ -200,11 +205,86 @@ const mint = async () => {
   }
 };
 
+const giveaway = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+
+  const promptSchema = {
+    properties: {
+      giveawayAddress: {
+        description: giveawayAddressLabel,
+        required: true,
+      },
+      giveawayTokensAmount: {
+        description: giveawayTokensAmount,
+        required: false,
+      },
+    },
+  };
+
+  const confirmationSchema = {
+    properties: {
+      areYouSureAnswer: {
+        description: giveawayFunctionConfirmLabel,
+        required: true,
+      },
+    },
+  };
+
+  prompt.start();
+
+  try {
+    const { giveawayAddress, giveawayTokensAmount } = await prompt.get(
+      promptSchema
+    );
+
+    if (!giveawayAddress) {
+      console.log('You have to provide the give away address!');
+      exit(9);
+    }
+
+    const { areYouSureAnswer } = await prompt.get(confirmationSchema);
+
+    if (!['yes', 'YES', 'Yes', 'y', 'Y'].includes(areYouSureAnswer as string)) {
+      console.log('Giveaway borted!');
+      exit(9);
+    }
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const giveawayTx = getGiveawayTransaction(
+      smartContract,
+      giveawayTxGasLimit,
+      giveawayAddress as string,
+      Number(giveawayTokensAmount)
+    );
+
+    giveawayTx.setNonce(userAccount.nonce);
+    userAccount.incrementNonce();
+    signer.sign(giveawayTx);
+
+    const spinner = ora('Processing transaction...');
+    spinner.start();
+
+    await giveawayTx.send(provider);
+    await giveawayTx.awaitExecuted(provider);
+    const txHash = giveawayTx.getHash();
+
+    spinner.stop();
+
+    console.log(`Transaction hash: ${txHash}`);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
     setLocalRoles: 'set-roles',
     mint: 'mint',
+    giveaway: 'giveaway',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -231,5 +311,9 @@ export const nftMinter = async (subcommand?: string) => {
 
   if (subcommand === COMMANDS.mint) {
     mint();
+  }
+
+  if (subcommand === COMMANDS.giveaway) {
+    giveaway();
   }
 };
