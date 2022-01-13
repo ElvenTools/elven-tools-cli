@@ -55,7 +55,7 @@ export const getNftTokenIdFnName =
   customConfig?.config?.nftMinterSc?.getNftTokenIdFnName || 'getNftTokenId';
 
 export const mintTxGasLimit =
-  customConfig?.config?.nftMinterSc?.mintGasLimit || 60000000;
+  customConfig?.config?.nftMinterSc?.mintGasLimit || 30000000;
 
 export const nftMinterTokenSellingPrice =
   customConfig?.config?.nftMinterSc?.tokenSelingPrice;
@@ -64,7 +64,7 @@ export const mintFunctionName =
   customConfig?.config?.nftMinterSc?.mintFnName || 'mint';
 
 export const giveawayTxGasLimit =
-  customConfig?.config?.nftMinterSc?.giveawayGasLimit || 60000000;
+  customConfig?.config?.nftMinterSc?.giveawayGasLimit || 30000000;
 
 export const giveawayFunctionName =
   customConfig?.config?.nftMinterSc?.giveawayFnName || 'giveaway';
@@ -86,8 +86,9 @@ export const collectionTokenNameLabel =
 export const collectionTokenTickerLabel =
   'Enter the ticker for the collection token (ex. MYNAME). Avoid spaces and special characters. Keep it short and capitalize.\n';
 
-export const deployNftMinterImgCidLabel = 'Provide image IPFS CID:\n';
-export const deployNftMinterMetaCidLabel = 'Provide metadata IPFS CID:\n';
+export const deployNftMinterImgCidLabel = 'Provide the base IPFS CID:\n';
+export const deployNftMinterMetaCidLabel =
+  'Provide the base metadata files IPFS CID:\n';
 export const deployNftMinterAmountOfTokensLabel =
   'Provide amount of tokens in collection:\n';
 export const deployNftMinterSellingPriceLabel =
@@ -104,6 +105,8 @@ export const deployNftMinterProvenanceHashLabel =
   'Provide the provenance hash (sha256 hash of all images) [optional]:\n';
 export const deployNftMinterTokensLimitPerAddressLabel =
   'Tokens limit per one address (ex 3 for three):\n';
+export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
+
 export const amountOfTokensLabel =
   'Provide how many tokens should be minted. Take into account possible limitations set on the Smart Contract (ex 3 for three tokens):\n';
 export const mintFunctionConfirmLabel =

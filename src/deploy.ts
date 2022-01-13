@@ -16,6 +16,7 @@ import {
   deployNftMinterTagsLabel,
   deployNftMinterProvenanceHashLabel,
   deployNftMinterTokensLimitPerAddressLabel,
+  deployNftMinterImgExtLabel,
 } from './config';
 import {
   getDeployTransaction,
@@ -38,6 +39,18 @@ const deployNftMinter = async () => {
       name: 'deployNftMinterImgCid',
       message: deployNftMinterImgCidLabel,
       validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'select',
+      name: 'deployNftMinterImgExt',
+      message: deployNftMinterImgExtLabel,
+      choices: [
+        { title: '.png', value: '.png' },
+        { title: '.jpg', value: '.jpg' },
+        { title: '.gif', value: '.gif' },
+        { title: '.mp3', value: '.mp3' },
+        { title: '.mp4', value: '.mp4' },
+      ],
     },
     {
       type: 'text',
@@ -104,6 +117,7 @@ const deployNftMinter = async () => {
 
     const {
       deployNftMinterImgCid,
+      deployNftMinterImgExt,
       deployNftMinterMetaCid,
       deployNftMinterAmountOfTokens,
       deployNftMinterTokensLimitPerAddress,
@@ -132,6 +146,7 @@ const deployNftMinter = async () => {
       smartContract,
       deployNftMinterGasLimit,
       deployNftMinterImgCid,
+      deployNftMinterImgExt,
       deployNftMinterMetaCid,
       deployNftMinterAmountOfTokens,
       deployNftMinterTokensLimitPerAddress,

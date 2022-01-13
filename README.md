@@ -4,15 +4,14 @@ For now it is designed to deploy this contract: [elven-nft-minter-sc](https://gi
 
 ### TODO
 
-- argument for file extension when deploying (by default .png)
 - add nft-minter upgrade function
+- possibility to use predefined configuration files or prompts when not provided
 - handle all nft-minter endpoints (like stop minting, resume, provenance hash, price etc.)
 - better UX
 - gas limit calculation for the 'mint' function
 - catch smart contract results
 - better errors handling
 - smart contract metadata management (optional with default set)
-- possibility to use predefined configuration files or prompts when not provided
 - tests
 
 ### Contact
