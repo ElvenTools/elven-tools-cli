@@ -4,11 +4,10 @@ For now it is designed to deploy this contract: [elven-nft-minter-sc](https://gi
 
 ### TODO
 
-- switch to https://www.npmjs.com/package/prompts
+- argument for file extension when deploying (by default .png)
 - add nft-minter upgrade function
 - handle all nft-minter endpoints (like stop minting, resume, provenance hash, price etc.)
 - better UX
-- argument for file extension when deploying
 - gas limit calculation for the 'mint' function
 - catch smart contract results
 - better errors handling

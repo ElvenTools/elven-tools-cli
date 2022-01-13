@@ -10,7 +10,7 @@ esbuild
     platform: 'node',
     external: [
       'cosmiconfig',
-      'prompt',
+      'prompts',
       'ora',
       '@elrondnetwork/erdjs',
       'bignumber.js',

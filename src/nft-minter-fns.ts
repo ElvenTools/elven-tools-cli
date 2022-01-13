@@ -1,6 +1,6 @@
 import { setup } from './setup';
 import ora from 'ora';
-import prompt from 'prompt';
+import prompts, { PromptObject } from 'prompts';
 import {
   getIssueTransaction,
   getIssuedToken,
@@ -26,8 +26,6 @@ import {
 } from './config';
 import { exit } from 'process';
 
-prompt.colors = false;
-
 // TODO: better UX overall, catch statuses from smart contract results
 // TODO: add more data checks and console logs
 
@@ -35,23 +33,23 @@ prompt.colors = false;
 export const issueCollectionToken = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
 
-  const promptSchema = {
-    properties: {
-      tokenName: {
-        description: collectionTokenNameLabel,
-        required: true,
-      },
-      tokenTicker: {
-        description: collectionTokenTickerLabel,
-        required: true,
-      },
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'tokenName',
+      message: collectionTokenNameLabel,
+      validate: (value) => (!value ? 'Required!' : true),
     },
-  };
-
-  prompt.start();
+    {
+      type: 'text',
+      name: 'tokenTicker',
+      message: collectionTokenTickerLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
 
   try {
-    const { tokenName, tokenTicker } = await prompt.get(promptSchema);
+    const { tokenName, tokenTicker } = await prompts(promptQuestions);
 
     if (!tokenName || !tokenTicker) {
       console.log('You have to provide the token name and ticker value!');
@@ -66,8 +64,8 @@ export const issueCollectionToken = async () => {
       smartContract,
       issueNftMinterGasLimit,
       issueNftMinterValue,
-      tokenName as string,
-      tokenTicker as string
+      tokenName,
+      tokenTicker
     );
 
     issueCollectionTokenTx.setNonce(userAccount.nonce);
@@ -147,31 +145,31 @@ export const setLocalRoles = async () => {
 const mint = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
 
-  const promptSchema = {
-    properties: {
-      tokensAmount: {
-        description: amountOfTokensLabel,
-        required: false,
-      },
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'tokensAmount',
+      message: amountOfTokensLabel,
     },
-  };
+  ];
 
-  const confirmationSchema = {
-    properties: {
-      areYouSureAnswer: {
-        description: mintFunctionConfirmLabel,
-        required: true,
-      },
+  const confirmationQuestions: PromptObject[] = [
+    {
+      type: 'select',
+      name: 'areYouSureAnswer',
+      message: mintFunctionConfirmLabel,
+      choices: [
+        { title: 'Yes', value: 'yes' },
+        { title: 'No', value: 'no' },
+      ],
     },
-  };
-
-  prompt.start();
+  ];
 
   try {
-    const { tokensAmount } = await prompt.get(promptSchema);
-    const { areYouSureAnswer } = await prompt.get(confirmationSchema);
+    const { tokensAmount } = await prompts(promptQuestions);
+    const { areYouSureAnswer } = await prompts(confirmationQuestions);
 
-    if (!['yes', 'YES', 'Yes', 'y', 'Y'].includes(areYouSureAnswer as string)) {
+    if (areYouSureAnswer !== 'yes') {
       console.log('Minting aborted!');
       exit(9);
     }
@@ -208,33 +206,35 @@ const mint = async () => {
 const giveaway = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
 
-  const promptSchema = {
-    properties: {
-      giveawayAddress: {
-        description: giveawayAddressLabel,
-        required: true,
-      },
-      giveawayTokensAmount: {
-        description: giveawayTokensAmount,
-        required: false,
-      },
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'giveawayAddress',
+      message: giveawayAddressLabel,
+      validate: (value) => (!value ? 'Required!' : true),
     },
-  };
-
-  const confirmationSchema = {
-    properties: {
-      areYouSureAnswer: {
-        description: giveawayFunctionConfirmLabel,
-        required: true,
-      },
+    {
+      type: 'text',
+      name: 'giveawayTokensAmount',
+      message: giveawayTokensAmount,
     },
-  };
+  ];
 
-  prompt.start();
+  const confirmationQuestions: PromptObject[] = [
+    {
+      type: 'select',
+      name: 'areYouSureAnswer',
+      message: giveawayFunctionConfirmLabel,
+      choices: [
+        { title: 'Yes', value: 'yes' },
+        { title: 'No', value: 'no' },
+      ],
+    },
+  ];
 
   try {
-    const { giveawayAddress, giveawayTokensAmount } = await prompt.get(
-      promptSchema
+    const { giveawayAddress, giveawayTokensAmount } = await prompts(
+      promptQuestions
     );
 
     if (!giveawayAddress) {
@@ -242,9 +242,9 @@ const giveaway = async () => {
       exit(9);
     }
 
-    const { areYouSureAnswer } = await prompt.get(confirmationSchema);
+    const { areYouSureAnswer } = await prompts(confirmationQuestions);
 
-    if (!['yes', 'YES', 'Yes', 'y', 'Y'].includes(areYouSureAnswer as string)) {
+    if (areYouSureAnswer !== 'yes') {
       console.log('Giveaway borted!');
       exit(9);
     }
@@ -256,7 +256,7 @@ const giveaway = async () => {
     const giveawayTx = getGiveawayTransaction(
       smartContract,
       giveawayTxGasLimit,
-      giveawayAddress as string,
+      giveawayAddress,
       Number(giveawayTokensAmount)
     );
 

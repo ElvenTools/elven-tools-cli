@@ -1,7 +1,7 @@
 import { exit } from 'process';
 import { unlinkSync } from 'fs';
 import ora from 'ora';
-import prompt from 'prompt';
+import prompts, { PromptObject } from 'prompts';
 import { setup } from './setup';
 import {
   deployNftMinterGasLimit,
@@ -24,8 +24,6 @@ import {
   baseDir,
 } from './utils';
 
-prompt.colors = false;
-
 const deployNftMinter = async () => {
   // Check if there is an old output file
   const outputFile = getFileContents(outputFileName, { noExitOnError: true });
@@ -34,54 +32,71 @@ const deployNftMinter = async () => {
     unlinkSync(`${baseDir}/${outputFileName}`);
   }
 
-  const promptSchema = {
-    properties: {
-      deployNftMinterImgCid: {
-        description: deployNftMinterImgCidLabel,
-        required: true,
-      },
-      deployNftMinterMetaCid: {
-        description: deployNftMinterMetaCidLabel,
-        required: true,
-      },
-      deployNftMinterAmountOfTokens: {
-        description: deployNftMinterAmountOfTokensLabel,
-        required: true,
-      },
-      deployNftMinterTokensLimitPerAddress: {
-        description: deployNftMinterTokensLimitPerAddressLabel,
-        required: true,
-      },
-      deployNftMinterSellingPrice: {
-        description: deployNftMinterSellingPriceLabel,
-        required: true,
-      },
-      deployNftMinterRoyalties: {
-        description: deployNftMinterRoyaltiesLabel,
-        required: true,
-        min: 0,
-        max: 100,
-      },
-      deployNftMinterMintingStartTime: {
-        description: deployNftMinterMintingStartTimeLabel,
-        required: false,
-      },
-      deployNftMinterMintingEndTime: {
-        description: deployNftMinterMintingEndTimeLabel,
-        required: false,
-      },
-      deployNftMinterTags: {
-        description: deployNftMinterTagsLabel,
-        required: false,
-      },
-      deployNftMinterProvenanceHash: {
-        description: deployNftMinterProvenanceHashLabel,
-        required: false,
-      },
+  const promptsQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'deployNftMinterImgCid',
+      message: deployNftMinterImgCidLabel,
+      validate: (value) => (!value ? 'Required!' : true),
     },
-  };
-
-  prompt.start();
+    {
+      type: 'text',
+      name: 'deployNftMinterMetaCid',
+      message: deployNftMinterMetaCidLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'number',
+      name: 'deployNftMinterAmountOfTokens',
+      message: deployNftMinterAmountOfTokensLabel,
+      min: 1,
+      validate: (value) => (!value || value < 1 ? 'Required and min 1!' : true),
+    },
+    {
+      type: 'text',
+      name: 'deployNftMinterSellingPrice',
+      message: deployNftMinterSellingPriceLabel,
+      validate: (value) =>
+        !Number(value) || Number(value) <= 0 ? 'Required and min 0!' : true,
+    },
+    {
+      type: 'number',
+      name: 'deployNftMinterTokensLimitPerAddress',
+      message: deployNftMinterTokensLimitPerAddressLabel,
+      validate: (value) => (value && value >= 1 ? true : 'Minimum 1!'),
+    },
+    {
+      type: 'number',
+      name: 'deployNftMinterRoyalties',
+      message: deployNftMinterRoyaltiesLabel,
+      min: 0,
+      max: 100,
+      validate: (value) =>
+        (value >= 0 && value <= 100) || !value
+          ? true
+          : 'Should be a number in range 0-100',
+    },
+    {
+      type: 'number',
+      name: 'deployNftMinterMintingStartTime',
+      message: deployNftMinterMintingStartTimeLabel,
+    },
+    {
+      type: 'number',
+      name: 'deployNftMinterMintingEndTime',
+      message: deployNftMinterMintingEndTimeLabel,
+    },
+    {
+      type: 'text',
+      name: 'deployNftMinterTags',
+      message: deployNftMinterTagsLabel,
+    },
+    {
+      type: 'text',
+      name: 'deployNftMinterProvenanceHash',
+      message: deployNftMinterProvenanceHashLabel,
+    },
+  ];
 
   try {
     const { scWasmCode, smartContract, userAccount, signer, provider } =
@@ -98,7 +113,7 @@ const deployNftMinter = async () => {
       deployNftMinterMintingEndTime,
       deployNftMinterTags,
       deployNftMinterProvenanceHash,
-    } = await prompt.get(promptSchema);
+    } = await prompts(promptsQuestions);
 
     if (
       !deployNftMinterImgCid ||
@@ -106,7 +121,9 @@ const deployNftMinter = async () => {
       !deployNftMinterAmountOfTokens ||
       !deployNftMinterSellingPrice
     ) {
-      console.log('You have to provide the token name and ticker value!');
+      console.log(
+        'You have to provide CIDs, amount of tokens and selling price!'
+      );
       exit(9);
     }
 
@@ -114,16 +131,16 @@ const deployNftMinter = async () => {
       scWasmCode,
       smartContract,
       deployNftMinterGasLimit,
-      deployNftMinterImgCid as string,
-      deployNftMinterMetaCid as string,
-      Number(deployNftMinterAmountOfTokens),
-      Number(deployNftMinterTokensLimitPerAddress),
-      deployNftMinterSellingPrice as string,
-      deployNftMinterRoyalties as string,
-      Number(deployNftMinterMintingStartTime),
-      Number(deployNftMinterMintingEndTime),
-      deployNftMinterTags as string,
-      deployNftMinterProvenanceHash as string
+      deployNftMinterImgCid,
+      deployNftMinterMetaCid,
+      deployNftMinterAmountOfTokens,
+      deployNftMinterTokensLimitPerAddress,
+      deployNftMinterSellingPrice,
+      deployNftMinterRoyalties,
+      deployNftMinterMintingStartTime,
+      deployNftMinterMintingEndTime,
+      deployNftMinterTags,
+      deployNftMinterProvenanceHash
     );
 
     deployTransaction.setNonce(userAccount.nonce);
@@ -146,7 +163,7 @@ const deployNftMinter = async () => {
     console.log(`Smart Contract address: ${scAddress}`);
     saveOutputAfterDeploy({
       scAddress,
-      sellingPrice: deployNftMinterSellingPrice as string,
+      sellingPrice: deployNftMinterSellingPrice,
     });
   } catch (e) {
     console.log(e);

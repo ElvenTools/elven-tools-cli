@@ -1,33 +1,29 @@
 import fs from 'fs';
 import { Mnemonic } from '@elrondnetwork/erdjs';
-import prompt from 'prompt';
+import prompts, { PromptObject } from 'prompts';
 import { exit } from 'process';
 import { derivePemSeedQuestion } from './config';
 
-prompt.colors = false;
-
 // Derive PEM file from seed
 export const derivePem = async () => {
-  const promptSchema = {
-    properties: {
-      seed: {
-        description: derivePemSeedQuestion,
-        required: true,
-      },
+  const promptQuestion: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'seed',
+      message: derivePemSeedQuestion,
+      validate: (value) => (!value ? 'Required!' : true),
     },
-  };
-
-  prompt.start();
+  ];
 
   try {
-    const { seed } = await prompt.get([promptSchema]);
+    const { seed } = await prompts(promptQuestion);
 
     if (!seed) {
       console.log('You have to provide the seed phrase value!');
       exit();
     }
 
-    const mnemonic = Mnemonic.fromString(seed as string);
+    const mnemonic = Mnemonic.fromString(seed);
 
     const buff = mnemonic.deriveKey();
 

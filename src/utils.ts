@@ -140,18 +140,28 @@ export const getDeployTransaction = (
     code,
     gasLimit: new GasLimit(gasLimit),
     initArguments: [
-      BytesValue.fromUTF8(imgBaseCid),
-      BytesValue.fromUTF8(metadataBaseCid),
+      BytesValue.fromUTF8(imgBaseCid.trim()),
+      BytesValue.fromUTF8(metadataBaseCid.trim()),
       new U32Value(numberOfTokens),
       new U32Value(tokensLimitPerAddress),
       new U64Value(
-        new BigNumber(startTimestamp || new Date().getTime() / 1000)
+        new BigNumber(
+          startTimestamp
+            ? new Date(startTimestamp).getTime() / 1000
+            : new Date().getTime() / 1000
+        )
       ),
-      new U64Value(new BigNumber(endTimestamp || 8640000000000000)),
+      new U64Value(
+        new BigNumber(
+          endTimestamp
+            ? new Date(endTimestamp).getTime() / 1000
+            : 8640000000000000
+        )
+      ),
       new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0)),
-      new BigUIntValue(Balance.egld(sellingPrice).valueOf()),
-      BytesValue.fromUTF8(tags || ''),
-      BytesValue.fromUTF8(provenanceHash || ''),
+      new BigUIntValue(Balance.egld(sellingPrice.trim()).valueOf()),
+      BytesValue.fromUTF8(tags?.trim() || ''),
+      BytesValue.fromUTF8(provenanceHash?.trim() || ''),
     ],
   });
 };
@@ -222,7 +232,10 @@ export const getIssueTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(issueTokenFnName),
-    args: [BytesValue.fromUTF8(tokenName), BytesValue.fromUTF8(tokenTicker)],
+    args: [
+      BytesValue.fromUTF8(tokenName.trim()),
+      BytesValue.fromUTF8(tokenTicker.trim()),
+    ],
     value: Balance.egld(value),
     gasLimit: new GasLimit(gasLimit),
   });
@@ -295,6 +308,6 @@ export const getGiveawayTransaction = (
   return contract.call({
     func: new ContractFunction(giveawayFunctionName),
     gasLimit: new GasLimit(gasLimit),
-    args: [new AddressValue(new Address(address)), new U32Value(tokens)],
+    args: [new AddressValue(new Address(address.trim())), new U32Value(tokens)],
   });
 };
