@@ -54,8 +54,8 @@ export const setLocalRolesFnName =
 export const getNftTokenIdFnName =
   customConfig?.config?.nftMinterSc?.getNftTokenIdFnName || 'getNftTokenId';
 
-export const mintTxGasLimit =
-  customConfig?.config?.nftMinterSc?.mintGasLimit || 30000000;
+export const mintTxBaseGasLimit =
+  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 10000000;
 
 export const nftMinterTokenSellingPrice =
   customConfig?.config?.nftMinterSc?.tokenSelingPrice;
@@ -63,11 +63,18 @@ export const nftMinterTokenSellingPrice =
 export const mintFunctionName =
   customConfig?.config?.nftMinterSc?.mintFnName || 'mint';
 
-export const giveawayTxGasLimit =
-  customConfig?.config?.nftMinterSc?.giveawayGasLimit || 30000000;
+export const giveawayTxBaseGasLimit =
+  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 10000000;
 
 export const giveawayFunctionName =
   customConfig?.config?.nftMinterSc?.giveawayFnName || 'giveaway';
+
+export const claimScFundsFunctionName =
+  customConfig?.config?.nftMinterSc?.claimScFundsFnName || 'claimScFunds';
+
+export const claimScFundsTxGasLimit =
+  customConfig?.config?.nftMinterSc?.claimScFundsGasLimit || 6000000;
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Other predefined config settings
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
@@ -82,9 +89,9 @@ export const proxyGateways: { [key: string]: string } = {
 
 export const derivePemSeedQuestion = 'Enter mnemonic (seed phrase)\n';
 export const collectionTokenNameLabel =
-  'Enter the name for the collection token (ex. MyName123). Avoid spaces and special characters\n';
+  'Enter the name for the collection token (ex. MyName123). \nAvoid spaces and special characters\n';
 export const collectionTokenTickerLabel =
-  'Enter the ticker for the collection token (ex. MYNAME). Avoid spaces and special characters. Keep it short and capitalize.\n';
+  'Enter the ticker for the collection token (ex. MYNAME). \nAvoid spaces and special characters. Keep it short and capitalize.\n';
 
 export const deployNftMinterImgCidLabel = 'Provide the base IPFS CID:\n';
 export const deployNftMinterMetaCidLabel =
@@ -96,9 +103,9 @@ export const deployNftMinterSellingPriceLabel =
 export const deployNftMinterRoyaltiesLabel =
   'Provide the royalties value (ex. 20 for 20%) [optional]:\n';
 export const deployNftMinterMintingStartTimeLabel =
-  'Provide minting start date (unix epoch timestamp in seconds), by default it will be current time (ex. 1641552723) [optional]:\n';
+  'Provide minting start date (unix epoch timestamp in seconds),\nby default it will be current time (ex. 1641552723) [optional]:\n';
 export const deployNftMinterMintingEndTimeLabel =
-  'Provide minting end date (unix epoch timestamp in seconds), by default it will be Infinity (ex. 1641552723) [optional]:\n';
+  'Provide minting end date (unix epoch timestamp in seconds),\nby default it will be Infinity (ex. 1641552723) [optional]:\n';
 export const deployNftMinterTagsLabel =
   'Provide tags (ex. tag1,tag2,tag3) [optional]:\n';
 export const deployNftMinterProvenanceHashLabel =
@@ -108,13 +115,13 @@ export const deployNftMinterTokensLimitPerAddressLabel =
 export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
 
 export const amountOfTokensLabel =
-  'Provide how many tokens should be minted. Take into account possible limitations set on the Smart Contract (ex 3 for three tokens):\n';
+  'Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract (ex 3 for three tokens):\n';
 export const mintFunctionConfirmLabel =
   'Are you sure that you want to mint and buy the tokens?:\n';
 
 export const giveawayAddressLabel = 'Provide the address for giveaway: \n';
 export const giveawayTokensAmount =
-  'Provide how many tokens you want to give away. Take into account possible limitations set on the Smart Contract (ex 3 for three tokens):\n';
+  'Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract (ex 3 for three tokens):\n';
 export const giveawayFunctionConfirmLabel =
   'Are you sure that you want to give away tokens?:\n';
 

@@ -33,6 +33,7 @@ import {
   nftMinterTokenSellingPrice,
   mintFunctionName,
   giveawayFunctionName,
+  claimScFundsFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -277,7 +278,7 @@ export const getAssignRolesTransaction = (
 
 export const getMintTransaction = (
   contract: SmartContract,
-  gasLimit: number,
+  baseGasLimit: number,
   tokensAmount: number
 ) => {
   const tokens = tokensAmount || 1;
@@ -293,7 +294,9 @@ export const getMintTransaction = (
   } else {
     return contract.call({
       func: new ContractFunction(mintFunctionName),
-      gasLimit: new GasLimit(gasLimit),
+      gasLimit: new GasLimit(
+        baseGasLimit + (baseGasLimit / 1.6) * tokensAmount
+      ),
       args: [new U32Value(tokens)],
       value: Balance.fromString(tokenSellingPrice).times(tokens),
     });
@@ -302,14 +305,24 @@ export const getMintTransaction = (
 
 export const getGiveawayTransaction = (
   contract: SmartContract,
-  gasLimit: number,
+  baseGasLimit: number,
   address: string,
   tokensAmount: number
 ) => {
   const tokens = tokensAmount || 1;
   return contract.call({
     func: new ContractFunction(giveawayFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: new GasLimit(baseGasLimit + (baseGasLimit / 1.6) * tokensAmount),
     args: [new AddressValue(new Address(address.trim())), new U32Value(tokens)],
+  });
+};
+
+export const getClaimScDFundsTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(claimScFundsFunctionName),
+    gasLimit: new GasLimit(gasLimit),
   });
 };

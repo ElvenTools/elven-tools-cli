@@ -9,6 +9,7 @@ import {
   getAssignRolesTransaction,
   getMintTransaction,
   getGiveawayTransaction,
+  getClaimScDFundsTransaction,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -17,20 +18,22 @@ import {
   collectionTokenNameLabel,
   collectionTokenTickerLabel,
   amountOfTokensLabel,
-  mintTxGasLimit,
+  mintTxBaseGasLimit,
   mintFunctionConfirmLabel,
   giveawayAddressLabel,
   giveawayTokensAmount,
   giveawayFunctionConfirmLabel,
-  giveawayTxGasLimit,
+  giveawayTxBaseGasLimit,
+  claimScFundsTxGasLimit,
 } from './config';
 import { exit } from 'process';
 
 // TODO: better UX overall, catch statuses from smart contract results
 // TODO: add more data checks and console logs
+// TODO: refactor/reuse code
 
 // Issue a collection token + add required roles
-export const issueCollectionToken = async () => {
+const issueCollectionToken = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
 
   const promptQuestions: PromptObject[] = [
@@ -111,7 +114,7 @@ export const issueCollectionToken = async () => {
 };
 
 // For now only nft create role, it will be improvement after SC improvements
-export const setLocalRoles = async () => {
+const setLocalRoles = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
   try {
     const { smartContract, userAccount, signer, provider } = await setup(
@@ -180,7 +183,7 @@ const mint = async () => {
 
     const mintTx = getMintTransaction(
       smartContract,
-      mintTxGasLimit,
+      mintTxBaseGasLimit,
       Number(tokensAmount)
     );
 
@@ -255,7 +258,7 @@ const giveaway = async () => {
 
     const giveawayTx = getGiveawayTransaction(
       smartContract,
-      giveawayTxGasLimit,
+      giveawayTxBaseGasLimit,
       giveawayAddress,
       Number(giveawayTokensAmount)
     );
@@ -279,12 +282,44 @@ const giveaway = async () => {
   }
 };
 
+const claimScFunds = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const claimScFundsTx = getClaimScDFundsTransaction(
+      smartContract,
+      claimScFundsTxGasLimit
+    );
+
+    claimScFundsTx.setNonce(userAccount.nonce);
+    userAccount.incrementNonce();
+    signer.sign(claimScFundsTx);
+
+    const spinner = ora('Processing transaction...');
+    spinner.start();
+
+    await claimScFundsTx.send(provider);
+    await claimScFundsTx.awaitExecuted(provider);
+    const txHash = claimScFundsTx.getHash();
+
+    spinner.stop();
+
+    console.log(`Transaction hash: ${txHash}`);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
     setLocalRoles: 'set-roles',
     mint: 'mint',
     giveaway: 'giveaway',
+    claimScFunds: 'claim-sc-funds',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -315,5 +350,9 @@ export const nftMinter = async (subcommand?: string) => {
 
   if (subcommand === COMMANDS.giveaway) {
     giveaway();
+  }
+
+  if (subcommand === COMMANDS.claimScFunds) {
+    claimScFunds();
   }
 };
