@@ -81,10 +81,15 @@ export const claimScFundsTxGasLimit =
 
 // Default will be devnet, based on chain value, if the local is chosen you can change the proxy host
 export const proxyGateways: { [key: string]: string } = {
-  local: customConfig?.config?.localProxyGateway || 'http://localhost:7950',
-  testnet: 'https://testnet-gateway.elrond.com',
-  devnet: 'https://devnet-gateway.elrond.com',
-  mainnet: 'https://gateway.elrond.com',
+  local: customConfig?.config?.customProxyGateway || 'http://localhost:7950',
+  testnet:
+    customConfig?.config?.customProxyGateway ||
+    'https://testnet-gateway.elrond.com',
+  devnet:
+    customConfig?.config?.customProxyGateway ||
+    'https://devnet-gateway.elrond.com',
+  mainnet:
+    customConfig?.config?.customProxyGateway || 'https://gateway.elrond.com',
 };
 
 export const derivePemSeedQuestion = 'Enter mnemonic (seed phrase)\n';
