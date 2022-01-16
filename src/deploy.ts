@@ -11,8 +11,6 @@ import {
   deployNftMinterAmountOfTokensLabel,
   deployNftMinterSellingPriceLabel,
   deployNftMinterRoyaltiesLabel,
-  deployNftMinterMintingStartTimeLabel,
-  deployNftMinterMintingEndTimeLabel,
   deployNftMinterTagsLabel,
   deployNftMinterProvenanceHashLabel,
   deployNftMinterTokensLimitPerAddressLabel,
@@ -41,6 +39,12 @@ const deployNftMinter = async () => {
       validate: (value) => (!value ? 'Required!' : true),
     },
     {
+      type: 'text',
+      name: 'deployNftMinterMetaCid',
+      message: deployNftMinterMetaCidLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
       type: 'select',
       name: 'deployNftMinterImgExt',
       message: deployNftMinterImgExtLabel,
@@ -51,12 +55,6 @@ const deployNftMinter = async () => {
         { title: '.mp3', value: '.mp3' },
         { title: '.mp4', value: '.mp4' },
       ],
-    },
-    {
-      type: 'text',
-      name: 'deployNftMinterMetaCid',
-      message: deployNftMinterMetaCidLabel,
-      validate: (value) => (!value ? 'Required!' : true),
     },
     {
       type: 'number',
@@ -90,16 +88,6 @@ const deployNftMinter = async () => {
           : 'Should be a number in range 0-100',
     },
     {
-      type: 'number',
-      name: 'deployNftMinterMintingStartTime',
-      message: deployNftMinterMintingStartTimeLabel,
-    },
-    {
-      type: 'number',
-      name: 'deployNftMinterMintingEndTime',
-      message: deployNftMinterMintingEndTimeLabel,
-    },
-    {
       type: 'text',
       name: 'deployNftMinterTags',
       message: deployNftMinterTagsLabel,
@@ -123,8 +111,6 @@ const deployNftMinter = async () => {
       deployNftMinterTokensLimitPerAddress,
       deployNftMinterSellingPrice,
       deployNftMinterRoyalties,
-      deployNftMinterMintingStartTime,
-      deployNftMinterMintingEndTime,
       deployNftMinterTags,
       deployNftMinterProvenanceHash,
     } = await prompts(promptsQuestions);
@@ -152,8 +138,6 @@ const deployNftMinter = async () => {
       deployNftMinterTokensLimitPerAddress,
       deployNftMinterSellingPrice,
       deployNftMinterRoyalties,
-      deployNftMinterMintingStartTime,
-      deployNftMinterMintingEndTime,
       deployNftMinterTags,
       deployNftMinterProvenanceHash
     );

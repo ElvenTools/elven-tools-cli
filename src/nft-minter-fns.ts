@@ -9,7 +9,11 @@ import {
   getAssignRolesTransaction,
   getMintTransaction,
   getGiveawayTransaction,
-  getClaimScDFundsTransaction,
+  getSetDropTransaction,
+  getClaimScFundsTransaction,
+  getUnsetDropTransaction,
+  getPauseMintingTransaction,
+  getUnpauseMintingTransaction,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -25,6 +29,9 @@ import {
   giveawayFunctionConfirmLabel,
   giveawayTxBaseGasLimit,
   claimScFundsTxGasLimit,
+  dropTokensAmountLabel,
+  setUnsetDropTxGasLimit,
+  pauseUnpauseTxGasLimit,
 } from './config';
 import { exit } from 'process';
 
@@ -289,7 +296,7 @@ const claimScFunds = async () => {
       smartContractAddress
     );
 
-    const claimScFundsTx = getClaimScDFundsTransaction(
+    const claimScFundsTx = getClaimScFundsTransaction(
       smartContract,
       claimScFundsTxGasLimit
     );
@@ -313,6 +320,142 @@ const claimScFunds = async () => {
   }
 };
 
+const setDrop = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'number',
+      name: 'dropTokensAmount',
+      message: dropTokensAmountLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
+
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { dropTokensAmount } = await prompts(promptQuestions);
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const setDropTx = getSetDropTransaction(
+      smartContract,
+      setUnsetDropTxGasLimit,
+      dropTokensAmount
+    );
+
+    setDropTx.setNonce(userAccount.nonce);
+    userAccount.incrementNonce();
+    signer.sign(setDropTx);
+
+    const spinner = ora('Processing transaction...');
+    spinner.start();
+
+    await setDropTx.send(provider);
+    await setDropTx.awaitExecuted(provider);
+    const txHash = setDropTx.getHash();
+
+    spinner.stop();
+
+    console.log(`Transaction hash: ${txHash}`);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const unsetDrop = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const unsetDropTx = getUnsetDropTransaction(
+      smartContract,
+      setUnsetDropTxGasLimit
+    );
+
+    unsetDropTx.setNonce(userAccount.nonce);
+    userAccount.incrementNonce();
+    signer.sign(unsetDropTx);
+
+    const spinner = ora('Processing transaction...');
+    spinner.start();
+
+    await unsetDropTx.send(provider);
+    await unsetDropTx.awaitExecuted(provider);
+    const txHash = unsetDropTx.getHash();
+
+    spinner.stop();
+
+    console.log(`Transaction hash: ${txHash}`);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const pauseMinting = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const pauseMintingTx = getPauseMintingTransaction(
+      smartContract,
+      pauseUnpauseTxGasLimit
+    );
+
+    pauseMintingTx.setNonce(userAccount.nonce);
+    userAccount.incrementNonce();
+    signer.sign(pauseMintingTx);
+
+    const spinner = ora('Processing transaction...');
+    spinner.start();
+
+    await pauseMintingTx.send(provider);
+    await pauseMintingTx.awaitExecuted(provider);
+    const txHash = pauseMintingTx.getHash();
+
+    spinner.stop();
+
+    console.log(`Transaction hash: ${txHash}`);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const startMinting = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const pauseMintingTx = getUnpauseMintingTransaction(
+      smartContract,
+      pauseUnpauseTxGasLimit
+    );
+
+    pauseMintingTx.setNonce(userAccount.nonce);
+    userAccount.incrementNonce();
+    signer.sign(pauseMintingTx);
+
+    const spinner = ora('Processing transaction...');
+    spinner.start();
+
+    await pauseMintingTx.send(provider);
+    await pauseMintingTx.awaitExecuted(provider);
+    const txHash = pauseMintingTx.getHash();
+
+    spinner.stop();
+
+    console.log(`Transaction hash: ${txHash}`);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
@@ -320,6 +463,10 @@ export const nftMinter = async (subcommand?: string) => {
     mint: 'mint',
     giveaway: 'giveaway',
     claimScFunds: 'claim-sc-funds',
+    setDrop: 'set-drop',
+    unsetDrop: 'unset-drop',
+    pauseMinting: 'pause-minting',
+    startMinting: 'start-minting',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -339,20 +486,28 @@ export const nftMinter = async (subcommand?: string) => {
   if (subcommand === COMMANDS.issueCollectionToken) {
     issueCollectionToken();
   }
-
   if (subcommand === COMMANDS.setLocalRoles) {
     setLocalRoles();
   }
-
   if (subcommand === COMMANDS.mint) {
     mint();
   }
-
   if (subcommand === COMMANDS.giveaway) {
     giveaway();
   }
-
   if (subcommand === COMMANDS.claimScFunds) {
     claimScFunds();
+  }
+  if (subcommand === COMMANDS.setDrop) {
+    setDrop();
+  }
+  if (subcommand === COMMANDS.unsetDrop) {
+    unsetDrop();
+  }
+  if (subcommand === COMMANDS.pauseMinting) {
+    pauseMinting();
+  }
+  if (subcommand === COMMANDS.startMinting) {
+    startMinting();
   }
 };

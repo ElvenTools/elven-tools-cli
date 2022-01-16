@@ -15,7 +15,6 @@ import {
   BytesValue,
   Balance,
   U32Value,
-  U64Value,
   BigUIntValue,
   AddressValue,
 } from '@elrondnetwork/erdjs';
@@ -34,6 +33,10 @@ import {
   mintFunctionName,
   giveawayFunctionName,
   claimScFundsFunctionName,
+  setDropFunctionName,
+  unsetDropFunctionName,
+  pauseMintingFunctionName,
+  unpauseMintingFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -133,8 +136,6 @@ export const getDeployTransaction = (
   tokensLimitPerAddress: number,
   sellingPrice: string,
   royalties?: string,
-  startTimestamp?: number,
-  endTimestamp?: number,
   tags?: string,
   provenanceHash?: string
 ) => {
@@ -146,20 +147,6 @@ export const getDeployTransaction = (
       BytesValue.fromUTF8(metadataBaseCid.trim()),
       new U32Value(numberOfTokens),
       new U32Value(tokensLimitPerAddress),
-      new U64Value(
-        new BigNumber(
-          startTimestamp
-            ? new Date(startTimestamp).getTime() / 1000
-            : new Date().getTime() / 1000
-        )
-      ),
-      new U64Value(
-        new BigNumber(
-          endTimestamp
-            ? new Date(endTimestamp).getTime() / 1000
-            : 8640000000000000
-        )
-      ),
       new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0)),
       new BigUIntValue(Balance.egld(sellingPrice.trim()).valueOf()),
       BytesValue.fromUTF8(fileExtension.trim()),
@@ -317,12 +304,54 @@ export const getGiveawayTransaction = (
   });
 };
 
-export const getClaimScDFundsTransaction = (
+export const getClaimScFundsTransaction = (
   contract: SmartContract,
   gasLimit: number
 ) => {
   return contract.call({
     func: new ContractFunction(claimScFundsFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+  });
+};
+
+export const getSetDropTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  tokensAmount: number
+) => {
+  return contract.call({
+    func: new ContractFunction(setDropFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+    args: [new U32Value(tokensAmount)],
+  });
+};
+
+export const getUnsetDropTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(unsetDropFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+  });
+};
+
+export const getPauseMintingTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(pauseMintingFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+  });
+};
+
+export const getUnpauseMintingTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(unpauseMintingFunctionName),
     gasLimit: new GasLimit(gasLimit),
   });
 };
