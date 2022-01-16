@@ -79,7 +79,7 @@ export const setDropFunctionName =
   customConfig?.config?.nftMinterSc?.setDropFnName || 'setDrop';
 
 export const setUnsetDropTxGasLimit =
-  customConfig?.config?.nftMinterSc?.setUnsetDropGasLimit || 5000000;
+  customConfig?.config?.nftMinterSc?.setUnsetDropGasLimit || 6000000;
 
 export const unsetDropFunctionName =
   customConfig?.config?.nftMinterSc?.unsetDropFnName || 'unsetDrop';
