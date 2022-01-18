@@ -4,7 +4,7 @@ import prompts, { PromptObject } from 'prompts';
 import {
   getIssueTransaction,
   getIssuedToken,
-  saveCollectionTokenAfterIssuance,
+  updateOutputFile,
   getTheSCAddressFromOutputOrConfig,
   getAssignRolesTransaction,
   getMintTransaction,
@@ -14,6 +14,9 @@ import {
   getUnsetDropTransaction,
   getPauseMintingTransaction,
   getUnpauseMintingTransaction,
+  commonTxOperations,
+  getSetNewPriceTransaction,
+  areYouSureAnswer,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -23,21 +26,20 @@ import {
   collectionTokenTickerLabel,
   amountOfTokensLabel,
   mintTxBaseGasLimit,
-  mintFunctionConfirmLabel,
   giveawayAddressLabel,
   giveawayTokensAmount,
-  giveawayFunctionConfirmLabel,
   giveawayTxBaseGasLimit,
   claimScFundsTxGasLimit,
   dropTokensAmountLabel,
   setUnsetDropTxGasLimit,
   pauseUnpauseTxGasLimit,
+  setNewPriceGasLimit,
+  deployNftMinterSellingPriceLabel,
 } from './config';
 import { exit } from 'process';
 
 // TODO: better UX overall, catch statuses from smart contract results
 // TODO: add more data checks and console logs
-// TODO: refactor/reuse code
 
 // Issue a collection token + add required roles
 const issueCollectionToken = async () => {
@@ -114,7 +116,7 @@ const issueCollectionToken = async () => {
     console.log('Your collection token id: ', tokenId);
     console.log('Also saved in the output.json file.');
 
-    saveCollectionTokenAfterIssuance(tokenId);
+    updateOutputFile({ tokenId });
   } catch (e) {
     console.log(e);
   }
@@ -133,20 +135,7 @@ const setLocalRoles = async () => {
       assignRolesNftMinterGasLimit
     );
 
-    assignRolesTx.setNonce(userAccount.nonce);
-    userAccount.incrementNonce();
-    signer.sign(assignRolesTx);
-
-    const spinner = ora('Processing transaction...');
-    spinner.start();
-
-    await assignRolesTx.send(provider);
-    await assignRolesTx.awaitExecuted(provider);
-    const txHash = assignRolesTx.getHash();
-
-    spinner.stop();
-
-    console.log(`Transaction hash: ${txHash}`);
+    await commonTxOperations(assignRolesTx, userAccount, signer, provider);
   } catch (e) {
     console.log(e);
   }
@@ -163,26 +152,10 @@ const mint = async () => {
     },
   ];
 
-  const confirmationQuestions: PromptObject[] = [
-    {
-      type: 'select',
-      name: 'areYouSureAnswer',
-      message: mintFunctionConfirmLabel,
-      choices: [
-        { title: 'Yes', value: 'yes' },
-        { title: 'No', value: 'no' },
-      ],
-    },
-  ];
-
   try {
     const { tokensAmount } = await prompts(promptQuestions);
-    const { areYouSureAnswer } = await prompts(confirmationQuestions);
 
-    if (areYouSureAnswer !== 'yes') {
-      console.log('Minting aborted!');
-      exit(9);
-    }
+    await areYouSureAnswer();
 
     const { smartContract, userAccount, signer, provider } = await setup(
       smartContractAddress
@@ -194,20 +167,7 @@ const mint = async () => {
       Number(tokensAmount)
     );
 
-    mintTx.setNonce(userAccount.nonce);
-    userAccount.incrementNonce();
-    signer.sign(mintTx);
-
-    const spinner = ora('Processing transaction...');
-    spinner.start();
-
-    await mintTx.send(provider);
-    await mintTx.awaitExecuted(provider);
-    const txHash = mintTx.getHash();
-
-    spinner.stop();
-
-    console.log(`Transaction hash: ${txHash}`);
+    await commonTxOperations(mintTx, userAccount, signer, provider);
   } catch (e) {
     console.log(e);
   }
@@ -230,18 +190,6 @@ const giveaway = async () => {
     },
   ];
 
-  const confirmationQuestions: PromptObject[] = [
-    {
-      type: 'select',
-      name: 'areYouSureAnswer',
-      message: giveawayFunctionConfirmLabel,
-      choices: [
-        { title: 'Yes', value: 'yes' },
-        { title: 'No', value: 'no' },
-      ],
-    },
-  ];
-
   try {
     const { giveawayAddress, giveawayTokensAmount } = await prompts(
       promptQuestions
@@ -252,12 +200,7 @@ const giveaway = async () => {
       exit(9);
     }
 
-    const { areYouSureAnswer } = await prompts(confirmationQuestions);
-
-    if (areYouSureAnswer !== 'yes') {
-      console.log('Giveaway borted!');
-      exit(9);
-    }
+    await areYouSureAnswer();
 
     const { smartContract, userAccount, signer, provider } = await setup(
       smartContractAddress
@@ -270,20 +213,7 @@ const giveaway = async () => {
       Number(giveawayTokensAmount)
     );
 
-    giveawayTx.setNonce(userAccount.nonce);
-    userAccount.incrementNonce();
-    signer.sign(giveawayTx);
-
-    const spinner = ora('Processing transaction...');
-    spinner.start();
-
-    await giveawayTx.send(provider);
-    await giveawayTx.awaitExecuted(provider);
-    const txHash = giveawayTx.getHash();
-
-    spinner.stop();
-
-    console.log(`Transaction hash: ${txHash}`);
+    await commonTxOperations(giveawayTx, userAccount, signer, provider);
   } catch (e) {
     console.log(e);
   }
@@ -301,20 +231,7 @@ const claimScFunds = async () => {
       claimScFundsTxGasLimit
     );
 
-    claimScFundsTx.setNonce(userAccount.nonce);
-    userAccount.incrementNonce();
-    signer.sign(claimScFundsTx);
-
-    const spinner = ora('Processing transaction...');
-    spinner.start();
-
-    await claimScFundsTx.send(provider);
-    await claimScFundsTx.awaitExecuted(provider);
-    const txHash = claimScFundsTx.getHash();
-
-    spinner.stop();
-
-    console.log(`Transaction hash: ${txHash}`);
+    await commonTxOperations(claimScFundsTx, userAccount, signer, provider);
   } catch (e) {
     console.log(e);
   }
@@ -344,20 +261,7 @@ const setDrop = async () => {
       dropTokensAmount
     );
 
-    setDropTx.setNonce(userAccount.nonce);
-    userAccount.incrementNonce();
-    signer.sign(setDropTx);
-
-    const spinner = ora('Processing transaction...');
-    spinner.start();
-
-    await setDropTx.send(provider);
-    await setDropTx.awaitExecuted(provider);
-    const txHash = setDropTx.getHash();
-
-    spinner.stop();
-
-    console.log(`Transaction hash: ${txHash}`);
+    await commonTxOperations(setDropTx, userAccount, signer, provider);
   } catch (e) {
     console.log(e);
   }
@@ -375,20 +279,7 @@ const unsetDrop = async () => {
       setUnsetDropTxGasLimit
     );
 
-    unsetDropTx.setNonce(userAccount.nonce);
-    userAccount.incrementNonce();
-    signer.sign(unsetDropTx);
-
-    const spinner = ora('Processing transaction...');
-    spinner.start();
-
-    await unsetDropTx.send(provider);
-    await unsetDropTx.awaitExecuted(provider);
-    const txHash = unsetDropTx.getHash();
-
-    spinner.stop();
-
-    console.log(`Transaction hash: ${txHash}`);
+    await commonTxOperations(unsetDropTx, userAccount, signer, provider);
   } catch (e) {
     console.log(e);
   }
@@ -397,6 +288,8 @@ const unsetDrop = async () => {
 const pauseMinting = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
   try {
+    await areYouSureAnswer();
+
     const { smartContract, userAccount, signer, provider } = await setup(
       smartContractAddress
     );
@@ -406,20 +299,7 @@ const pauseMinting = async () => {
       pauseUnpauseTxGasLimit
     );
 
-    pauseMintingTx.setNonce(userAccount.nonce);
-    userAccount.incrementNonce();
-    signer.sign(pauseMintingTx);
-
-    const spinner = ora('Processing transaction...');
-    spinner.start();
-
-    await pauseMintingTx.send(provider);
-    await pauseMintingTx.awaitExecuted(provider);
-    const txHash = pauseMintingTx.getHash();
-
-    spinner.stop();
-
-    console.log(`Transaction hash: ${txHash}`);
+    await commonTxOperations(pauseMintingTx, userAccount, signer, provider);
   } catch (e) {
     console.log(e);
   }
@@ -428,29 +308,53 @@ const pauseMinting = async () => {
 const startMinting = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
   try {
+    await areYouSureAnswer();
+
     const { smartContract, userAccount, signer, provider } = await setup(
       smartContractAddress
     );
 
-    const pauseMintingTx = getUnpauseMintingTransaction(
+    const startMintingTx = getUnpauseMintingTransaction(
       smartContract,
       pauseUnpauseTxGasLimit
     );
 
-    pauseMintingTx.setNonce(userAccount.nonce);
-    userAccount.incrementNonce();
-    signer.sign(pauseMintingTx);
+    await commonTxOperations(startMintingTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log(e);
+  }
+};
 
-    const spinner = ora('Processing transaction...');
-    spinner.start();
+const setNewPrice = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'newPrice',
+      message: deployNftMinterSellingPriceLabel,
+      validate: (value) =>
+        !Number(value) || Number(value) <= 0 ? 'Required and min 0!' : true,
+    },
+  ];
 
-    await pauseMintingTx.send(provider);
-    await pauseMintingTx.awaitExecuted(provider);
-    const txHash = pauseMintingTx.getHash();
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { newPrice } = await prompts(promptQuestions);
 
-    spinner.stop();
+    await areYouSureAnswer();
 
-    console.log(`Transaction hash: ${txHash}`);
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const changePriceTx = getSetNewPriceTransaction(
+      smartContract,
+      setNewPriceGasLimit,
+      newPrice
+    );
+
+    await commonTxOperations(changePriceTx, userAccount, signer, provider);
+
+    updateOutputFile({ sellingPrice: newPrice });
   } catch (e) {
     console.log(e);
   }
@@ -467,18 +371,19 @@ export const nftMinter = async (subcommand?: string) => {
     unsetDrop: 'unset-drop',
     pauseMinting: 'pause-minting',
     startMinting: 'start-minting',
+    setNewPrice: 'set-new-price',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
-    console.log(`Available commands: ${Object.values(COMMANDS).join(', ')}`);
+    console.log(`Available commands:\n${Object.values(COMMANDS).join('\n')}`);
     exit(9);
   }
 
   if (!subcommand || !Object.values(COMMANDS).includes(subcommand)) {
     console.log(
-      `Plaese provide a proper command. Available commands: ${Object.values(
+      `Plaese provide a proper command. Available commands:\n${Object.values(
         COMMANDS
-      ).join(', ')}`
+      ).join('\n')}`
     );
     exit(9);
   }
@@ -509,5 +414,8 @@ export const nftMinter = async (subcommand?: string) => {
   }
   if (subcommand === COMMANDS.startMinting) {
     startMinting();
+  }
+  if (subcommand === COMMANDS.setNewPrice) {
+    setNewPrice();
   }
 };

@@ -3,7 +3,6 @@
 For now it is designed to deploy this contract: [elven-nft-minter-sc](https://github.com/juliancwirko/elven-nft-minter-sc).
 
 ### TODO
-
 - claim developer rewards ([ClaimDeveloperRewards](https://docs.elrond.com/developers/built-in-functions/#claimdeveloperrewards))
 - add nft-minter upgrade function
 - possibility to use predefined configuration files or prompts when not provided

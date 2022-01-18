@@ -17,8 +17,11 @@ import {
   U32Value,
   BigUIntValue,
   AddressValue,
+  Transaction,
 } from '@elrondnetwork/erdjs';
+import prompts, { PromptObject } from 'prompts';
 import BigNumber from 'bignumber.js';
+import ora from 'ora';
 import { readFileSync, accessSync, constants, writeFileSync } from 'fs';
 import { exit, cwd } from 'process';
 import {
@@ -37,6 +40,8 @@ import {
   unsetDropFunctionName,
   pauseMintingFunctionName,
   unpauseMintingFunctionName,
+  commonConfirmLabel,
+  setNewPriceFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -156,12 +161,14 @@ export const getDeployTransaction = (
   });
 };
 
-export const saveOutputAfterDeploy = ({
+export const updateOutputFile = ({
   scAddress,
   sellingPrice,
+  tokenId,
 }: {
-  scAddress: Address;
-  sellingPrice: string;
+  scAddress?: Address;
+  sellingPrice?: string;
+  tokenId?: string;
 }) => {
   const outputFilePath = `${baseDir}/${outputFileName}`;
   try {
@@ -169,8 +176,14 @@ export const saveOutputAfterDeploy = ({
     const configFile = readFileSync(outputFilePath, { encoding: 'utf8' });
     const newConfigFile = {
       ...JSON.parse(configFile),
-      nftMinterScAddress: scAddress.bech32(),
-      nftMinterScCollectionSellingPrice: Balance.egld(sellingPrice).toString(),
+      ...(scAddress ? { nftMinterScAddress: scAddress.bech32() } : {}),
+      ...(sellingPrice
+        ? {
+            nftMinterScCollectionSellingPrice:
+              Balance.egld(sellingPrice).toString(),
+          }
+        : {}),
+      ...(tokenId ? { nftMinterCollectionToken: tokenId } : {}),
     };
     return writeFileSync(
       outputFilePath,
@@ -181,34 +194,18 @@ export const saveOutputAfterDeploy = ({
       outputFilePath,
       JSON.stringify(
         {
-          nftMinterScAddress: scAddress.bech32(),
-          nftMinterScCollectionSellingPrice:
-            Balance.egld(sellingPrice).toString(),
+          ...(scAddress ? { nftMinterScAddress: scAddress.bech32() } : {}),
+          ...(sellingPrice
+            ? {
+                nftMinterScCollectionSellingPrice:
+                  Balance.egld(sellingPrice).toString(),
+              }
+            : {}),
+          ...(tokenId ? { nftMinterCollectionToken: tokenId } : {}),
         },
         null,
         2
       )
-    );
-  }
-};
-
-export const saveCollectionTokenAfterIssuance = (tokenId: string) => {
-  const outputFilePath = `${baseDir}/${outputFileName}`;
-  try {
-    accessSync(outputFilePath, constants.R_OK | constants.W_OK);
-    const configFile = readFileSync(outputFilePath, { encoding: 'utf8' });
-    const newConfigFile = {
-      ...JSON.parse(configFile),
-      nftMinterCollectionToken: tokenId,
-    };
-    return writeFileSync(
-      outputFilePath,
-      JSON.stringify(newConfigFile, null, 2)
-    );
-  } catch {
-    return writeFileSync(
-      outputFilePath,
-      JSON.stringify({ nftMinterCollectionToken: tokenId }, null, 2)
     );
   }
 };
@@ -354,4 +351,59 @@ export const getUnpauseMintingTransaction = (
     func: new ContractFunction(unpauseMintingFunctionName),
     gasLimit: new GasLimit(gasLimit),
   });
+};
+
+export const commonTxOperations = async (
+  tx: Transaction,
+  account: Account,
+  signer: UserSigner,
+  provider: ProxyProvider
+) => {
+  tx.setNonce(account.nonce);
+  account.incrementNonce();
+  signer.sign(tx);
+
+  const spinner = ora('Processing transaction...');
+  spinner.start();
+
+  await tx.send(provider);
+  await tx.awaitExecuted(provider);
+  const txHash = tx.getHash();
+
+  spinner.stop();
+
+  console.log(`Transaction hash: ${txHash}`);
+};
+
+export const getSetNewPriceTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  newPrice: string
+) => {
+  return contract.call({
+    func: new ContractFunction(setNewPriceFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+    args: [new BigUIntValue(Balance.egld(newPrice.trim()).valueOf())],
+  });
+};
+
+export const commonConfirmationPrompt: PromptObject[] = [
+  {
+    type: 'select',
+    name: 'areYouSureAnswer',
+    message: commonConfirmLabel,
+    choices: [
+      { title: 'Yes', value: 'yes' },
+      { title: 'No', value: 'no' },
+    ],
+  },
+];
+
+export const areYouSureAnswer = async () => {
+  const { areYouSureAnswer } = await prompts(commonConfirmationPrompt);
+
+  if (areYouSureAnswer !== 'yes') {
+    console.log('Aborted!');
+    exit(9);
+  }
 };

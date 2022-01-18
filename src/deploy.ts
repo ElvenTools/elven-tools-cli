@@ -18,7 +18,7 @@ import {
 } from './config';
 import {
   getDeployTransaction,
-  saveOutputAfterDeploy,
+  updateOutputFile,
   getFileContents,
   baseDir,
 } from './utils';
@@ -160,7 +160,7 @@ const deployNftMinter = async () => {
     console.log(`Transaction hash: ${txhash}`);
     const scAddress = smartContract.getAddress();
     console.log(`Smart Contract address: ${scAddress}`);
-    saveOutputAfterDeploy({
+    updateOutputFile({
       scAddress,
       sellingPrice: deployNftMinterSellingPrice,
     });
@@ -175,15 +175,15 @@ export const deploy = async (subcommand?: string) => {
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
-    console.log(`Available commands: ${Object.values(COMMANDS).join(', ')}`);
+    console.log(`Available commands:\n${Object.values(COMMANDS).join('\n')}`);
     exit(9);
   }
 
   if (!subcommand || !Object.values(COMMANDS).includes(subcommand)) {
     console.log(
-      `Plaese provide a proper deploy command. Available commands: ${Object.values(
+      `Plaese provide a proper deploy command. Available commands:\n${Object.values(
         COMMANDS
-      ).join(', ')}`
+      ).join('\n')}`
     );
     exit(9);
   }
