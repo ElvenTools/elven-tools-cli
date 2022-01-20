@@ -17,6 +17,7 @@ import {
   commonTxOperations,
   getSetNewPriceTransaction,
   areYouSureAnswer,
+  getClaimDevRewardsTransaction,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -360,6 +361,24 @@ const setNewPrice = async () => {
   }
 };
 
+const claimDevRewards = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const claimDevRewardsTx = getClaimDevRewardsTransaction(
+      smartContract,
+      userAccount
+    );
+
+    await commonTxOperations(claimDevRewardsTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
@@ -372,6 +391,7 @@ export const nftMinter = async (subcommand?: string) => {
     pauseMinting: 'pause-minting',
     startMinting: 'start-minting',
     setNewPrice: 'set-new-price',
+    claimDevRewards: 'claim-dev-rewards',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -417,5 +437,8 @@ export const nftMinter = async (subcommand?: string) => {
   }
   if (subcommand === COMMANDS.setNewPrice) {
     setNewPrice();
+  }
+  if (subcommand === COMMANDS.claimDevRewards) {
+    claimDevRewards();
   }
 };

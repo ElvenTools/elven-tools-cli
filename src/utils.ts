@@ -18,6 +18,7 @@ import {
   BigUIntValue,
   AddressValue,
   Transaction,
+  TransactionPayload,
 } from '@elrondnetwork/erdjs';
 import prompts, { PromptObject } from 'prompts';
 import BigNumber from 'bignumber.js';
@@ -406,4 +407,18 @@ export const areYouSureAnswer = async () => {
     console.log('Aborted!');
     exit(9);
   }
+};
+
+// Built-in into the protocol
+export const getClaimDevRewardsTransaction = (
+  contract: SmartContract,
+  userAccount: Account
+) => {
+  return new Transaction({
+    data: new TransactionPayload('ClaimDeveloperRewards'),
+    gasLimit: new GasLimit(6000000),
+    sender: userAccount.address,
+    receiver: contract.getAddress(),
+    value: Balance.egld(0),
+  });
 };

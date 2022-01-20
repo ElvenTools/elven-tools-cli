@@ -3,14 +3,11 @@
 For now it is designed to deploy this contract: [elven-nft-minter-sc](https://github.com/juliancwirko/elven-nft-minter-sc).
 
 ### TODO
-- claim developer rewards ([ClaimDeveloperRewards](https://docs.elrond.com/developers/built-in-functions/#claimdeveloperrewards))
-- add nft-minter upgrade function
-- possibility to use predefined configuration files or prompts when not provided
 - handle all nft-minter endpoints (like stop minting, resume, provenance hash, price etc.)
-- better UX
-- catch smart contract results
-- better errors handling
+- add nft-minter upgrade function (test init function setup)
+- catch smart contract results and better errors handling, better UX (!!!)
 - smart contract metadata management (optional with default set)
+- possibility to use predefined configuration files or prompts when not provided
 - tests
 
 ### Contact
