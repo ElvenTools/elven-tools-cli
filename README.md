@@ -1,6 +1,6 @@
 ### Elven Tools CLI (v1.0.0) WIP
 
-For now it is designed to deploy this contract: [elven-nft-minter-sc](https://github.com/juliancwirko/elven-nft-minter-sc).
+For now it is designed to deploy this contract: [elven-nft-minter-sc](https://github.com/juliancwirko/elven-nft-minter-sc/tree/development).
 
 ### TODO
 - amount of tokens left per user address
