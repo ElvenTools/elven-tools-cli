@@ -49,6 +49,7 @@ import {
   shuffleFunctionName,
   deployNftMinterSCabiRelativeFilePath,
   deployNftMinterSCabiFileUrl,
+  getTokensMintedPerAddressFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -472,10 +473,12 @@ export const commonScQuery = async ({
   functionName,
   resultLabel,
   resultType,
+  args,
 }: {
   functionName: string;
   resultLabel: string;
   resultType: 'number' | 'string';
+  args?: TypedValue[];
 }) => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
   try {
@@ -495,7 +498,7 @@ export const commonScQuery = async ({
     const spinner = ora('Processing query...');
     spinner.start();
 
-    const response = await scQuery(functionName, smartContract, provider);
+    const response = await scQuery(functionName, smartContract, provider, args);
 
     spinner.stop();
 
@@ -512,4 +515,13 @@ export const commonScQuery = async ({
   } catch (e) {
     console.log(e);
   }
+};
+
+export const getTokensMintedPerAddressQuery = (address: string) => {
+  commonScQuery({
+    functionName: getTokensMintedPerAddressFunctionName,
+    resultLabel: 'Tokens already minted per address',
+    resultType: 'number',
+    args: [new AddressValue(new Address(address))],
+  });
 };

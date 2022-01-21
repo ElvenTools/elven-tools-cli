@@ -126,6 +126,14 @@ export const getNftTokenIdFunctionName =
 export const getNftTokenNameFunctionName =
   customConfig?.config?.nftMinterSc?.getNftTokenNameFnName || 'getNftTokenName';
 
+export const getTokensLimitPerAddressFunctionName =
+  customConfig?.config?.nftMinterSc?.getTokensLimitPerAddressFnName ||
+  'getTokensLimitPerAddress';
+
+export const getTokensMintedPerAddressFunctionName =
+  customConfig?.config?.nftMinterSc?.getTokensMintedPerAddressFnName ||
+  'getTokensMintedPerAddress';
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Other predefined config settings
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡

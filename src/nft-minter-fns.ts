@@ -20,6 +20,7 @@ import {
   getClaimDevRewardsTransaction,
   getShuffleTransaction,
   commonScQuery,
+  getTokensMintedPerAddressQuery,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -45,6 +46,7 @@ import {
   getNftPriceFunctionName,
   getNftTokenIdFunctionName,
   getNftTokenNameFunctionName,
+  getTokensLimitPerAddressFunctionName,
 } from './config';
 import { exit } from 'process';
 
@@ -403,6 +405,24 @@ const shuffle = async () => {
   }
 };
 
+const getTokensMintedPerAddress = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'address',
+      message: 'Provide the address:\n',
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
+
+  try {
+    const { address } = await prompts(promptQuestions);
+    getTokensMintedPerAddressQuery(address);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
@@ -423,6 +443,8 @@ export const nftMinter = async (subcommand?: string) => {
     getNftPrice: 'get-nft-price',
     getNftTokenId: 'get-nft-token-id',
     getNftTokenName: 'get-nft-token-name',
+    getTokensLimitPerAddress: 'get-tokens-limit-per-address',
+    getTokensMintedPerAddress: 'get-tokens-minted-per-address',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -521,6 +543,16 @@ export const nftMinter = async (subcommand?: string) => {
         resultLabel: 'NFT token name',
         resultType: 'string',
       });
+      break;
+    case COMMANDS.getTokensLimitPerAddress:
+      commonScQuery({
+        functionName: getTokensLimitPerAddressFunctionName,
+        resultLabel: 'Tokens limit per address',
+        resultType: 'number',
+      });
+      break;
+    case COMMANDS.getTokensMintedPerAddress:
+      getTokensMintedPerAddress();
       break;
   }
 };
