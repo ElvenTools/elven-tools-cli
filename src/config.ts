@@ -98,6 +98,34 @@ export const setNewPriceGasLimit =
 
 export const setNewPriceFunctionName =
   customConfig?.config?.nftMinterSc?.setNewPriceFnName || 'setNewPrice';
+
+export const shuffleFunctionName =
+  customConfig?.config?.nftMinterSc?.shuffleFnName || 'shuffle';
+
+export const shuffleGasLimit =
+  customConfig?.config?.nftMinterSc?.shuffleGasLimit || 5000000;
+
+export const getTotalTokensLeftFunctionName =
+  customConfig?.config?.nftMinterSc?.getTotalTokensLeftFnName ||
+  'getTotalTokensLeft';
+
+export const getProvenanceHashFunctionName =
+  customConfig?.config?.nftMinterSc?.getProvenanceHashFnName ||
+  'getProvenanceHash';
+
+export const getDropTokensLeftFunctionName =
+  customConfig?.config?.nftMinterSc?.getDropTokensLeftFnName ||
+  'getDropTokensLeft';
+
+export const getNftPriceFunctionName =
+  customConfig?.config?.nftMinterSc?.getNftPriceFnName || 'getNftPrice';
+
+export const getNftTokenIdFunctionName =
+  customConfig?.config?.nftMinterSc?.getNftTokenIdFnName || 'getNftTokenId';
+
+export const getNftTokenNameFunctionName =
+  customConfig?.config?.nftMinterSc?.getNftTokenNameFnName || 'getNftTokenName';
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Other predefined config settings
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡

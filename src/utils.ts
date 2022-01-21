@@ -19,12 +19,15 @@ import {
   AddressValue,
   Transaction,
   TransactionPayload,
+  QueryResponse,
+  TypedValue,
 } from '@elrondnetwork/erdjs';
 import prompts, { PromptObject } from 'prompts';
 import BigNumber from 'bignumber.js';
 import ora from 'ora';
 import { readFileSync, accessSync, constants, writeFileSync } from 'fs';
 import { exit, cwd } from 'process';
+import { Buffer } from 'buffer';
 import {
   proxyGateways,
   chain,
@@ -43,6 +46,9 @@ import {
   unpauseMintingFunctionName,
   commonConfirmLabel,
   setNewPriceFunctionName,
+  shuffleFunctionName,
+  deployNftMinterSCabiRelativeFilePath,
+  deployNftMinterSCabiFileUrl,
 } from './config';
 
 export const baseDir = cwd();
@@ -421,4 +427,89 @@ export const getClaimDevRewardsTransaction = (
     receiver: contract.getAddress(),
     value: Balance.egld(0),
   });
+};
+
+export const getShuffleTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(shuffleFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+    args: [],
+  });
+};
+
+export const scQuery = (
+  functionName: string,
+  contract: SmartContract,
+  provider: IProvider,
+  args: TypedValue[] = []
+) => {
+  return contract.runQuery(provider, {
+    func: new ContractFunction(functionName),
+    args,
+  });
+};
+
+export const parseQueryResultInt = (queryResponse: QueryResponse) => {
+  const resultBuff = Buffer.from(
+    queryResponse?.returnData?.[0],
+    'base64'
+  ).toString('hex');
+  return new BigNumber(resultBuff, 16).toString(10);
+};
+
+export const parseQueryResultString = (queryResponse: QueryResponse) => {
+  const resultBuff = Buffer.from(
+    queryResponse?.returnData?.[0],
+    'base64'
+  ).toString('utf8');
+  return resultBuff;
+};
+
+export const commonScQuery = async ({
+  functionName,
+  resultLabel,
+  resultType,
+}: {
+  functionName: string;
+  resultLabel: string;
+  resultType: 'number' | 'string';
+}) => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const provider = getProvider();
+    await syncProviderConfig(provider);
+
+    const abiFile = await getAbi(
+      deployNftMinterSCabiRelativeFilePath,
+      deployNftMinterSCabiFileUrl
+    );
+
+    const smartContract = createSmartContractInstance(
+      abiFile,
+      smartContractAddress
+    );
+
+    const spinner = ora('Processing query...');
+    spinner.start();
+
+    const response = await scQuery(functionName, smartContract, provider);
+
+    spinner.stop();
+
+    let result;
+
+    if (resultType === 'string') {
+      result = parseQueryResultString(response);
+    } else {
+      result = parseQueryResultInt(response);
+    }
+
+    console.log('Query results:');
+    console.log(`${resultLabel}: `, result.trim());
+  } catch (e) {
+    console.log(e);
+  }
 };

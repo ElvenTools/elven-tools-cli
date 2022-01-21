@@ -22,13 +22,12 @@ if (command === '--version' || command === '-v') {
 }
 
 const availableCommands = Object.values(COMMANDS);
-const helpMsg = `Available commands: ${[
-  ...availableCommands,
-  '--version',
-  '-v',
-  '--help',
-  '-h',
-].join(', ')}`;
+
+const commandsArray = [...availableCommands, '--version', '-v', '--help', '-h'];
+
+const helpMsg = `========================\nAvailable commands:\n========================\n${commandsArray.join(
+  '\n'
+)}`;
 
 if (command === '--help' || command === '-h') {
   console.log(helpMsg);
@@ -36,7 +35,11 @@ if (command === '--help' || command === '-h') {
 }
 
 if (!command || !Object.values(COMMANDS).includes(command)) {
-  console.log(`Plaese provide a proper command. ${helpMsg}`);
+  console.log(
+    `====================================================\nPlaese provide a proper command. Available commands:\n====================================================\n${commandsArray.join(
+      '\n'
+    )}`
+  );
   exit(9);
 }
 

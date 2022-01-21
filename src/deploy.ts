@@ -175,13 +175,17 @@ export const deploy = async (subcommand?: string) => {
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
-    console.log(`Available commands:\n${Object.values(COMMANDS).join('\n')}`);
+    console.log(
+      `========================\nAvailable commands:\n========================\n${Object.values(
+        COMMANDS
+      ).join('\n')}`
+    );
     exit(9);
   }
 
   if (!subcommand || !Object.values(COMMANDS).includes(subcommand)) {
     console.log(
-      `Plaese provide a proper deploy command. Available commands:\n${Object.values(
+      `===========================================================\nPlaese provide a proper deploy command. Available commands:\n===========================================================\n${Object.values(
         COMMANDS
       ).join('\n')}`
     );

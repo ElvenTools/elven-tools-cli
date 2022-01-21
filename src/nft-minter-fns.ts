@@ -18,6 +18,8 @@ import {
   getSetNewPriceTransaction,
   areYouSureAnswer,
   getClaimDevRewardsTransaction,
+  getShuffleTransaction,
+  commonScQuery,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -36,6 +38,13 @@ import {
   pauseUnpauseTxGasLimit,
   setNewPriceGasLimit,
   deployNftMinterSellingPriceLabel,
+  shuffleGasLimit,
+  getTotalTokensLeftFunctionName,
+  getProvenanceHashFunctionName,
+  getDropTokensLeftFunctionName,
+  getNftPriceFunctionName,
+  getNftTokenIdFunctionName,
+  getNftTokenNameFunctionName,
 } from './config';
 import { exit } from 'process';
 
@@ -379,6 +388,21 @@ const claimDevRewards = async () => {
   }
 };
 
+const shuffle = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const shuffleTx = getShuffleTransaction(smartContract, shuffleGasLimit);
+
+    await commonTxOperations(shuffleTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
@@ -392,53 +416,111 @@ export const nftMinter = async (subcommand?: string) => {
     startMinting: 'start-minting',
     setNewPrice: 'set-new-price',
     claimDevRewards: 'claim-dev-rewards',
+    shuffle: 'shuffle',
+    getTotalTokensLeft: 'get-total-tokens-left',
+    getProvenanceHash: 'get-provenance-hash',
+    getDropTokensLeft: 'get-drop-tokens-left',
+    getNftPrice: 'get-nft-price',
+    getNftTokenId: 'get-nft-token-id',
+    getNftTokenName: 'get-nft-token-name',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
-    console.log(`Available commands:\n${Object.values(COMMANDS).join('\n')}`);
-    exit(9);
-  }
-
-  if (!subcommand || !Object.values(COMMANDS).includes(subcommand)) {
     console.log(
-      `Plaese provide a proper command. Available commands:\n${Object.values(
+      `========================\nAvailable commands:\n========================\n${Object.values(
         COMMANDS
       ).join('\n')}`
     );
     exit(9);
   }
 
-  if (subcommand === COMMANDS.issueCollectionToken) {
-    issueCollectionToken();
+  if (!subcommand || !Object.values(COMMANDS).includes(subcommand)) {
+    console.log(
+      `====================================================\nPlaese provide a proper command. Available commands:\n====================================================\n${Object.values(
+        COMMANDS
+      ).join('\n')}`
+    );
+    exit(9);
   }
-  if (subcommand === COMMANDS.setLocalRoles) {
-    setLocalRoles();
-  }
-  if (subcommand === COMMANDS.mint) {
-    mint();
-  }
-  if (subcommand === COMMANDS.giveaway) {
-    giveaway();
-  }
-  if (subcommand === COMMANDS.claimScFunds) {
-    claimScFunds();
-  }
-  if (subcommand === COMMANDS.setDrop) {
-    setDrop();
-  }
-  if (subcommand === COMMANDS.unsetDrop) {
-    unsetDrop();
-  }
-  if (subcommand === COMMANDS.pauseMinting) {
-    pauseMinting();
-  }
-  if (subcommand === COMMANDS.startMinting) {
-    startMinting();
-  }
-  if (subcommand === COMMANDS.setNewPrice) {
-    setNewPrice();
-  }
-  if (subcommand === COMMANDS.claimDevRewards) {
-    claimDevRewards();
+
+  switch (subcommand) {
+    case COMMANDS.issueCollectionToken:
+      issueCollectionToken();
+      break;
+    case COMMANDS.setLocalRoles:
+      setLocalRoles();
+      break;
+    case COMMANDS.mint:
+      mint();
+      break;
+    case COMMANDS.giveaway:
+      giveaway();
+      break;
+    case COMMANDS.claimScFunds:
+      claimScFunds();
+      break;
+    case COMMANDS.setDrop:
+      setDrop();
+      break;
+    case COMMANDS.unsetDrop:
+      unsetDrop();
+      break;
+    case COMMANDS.pauseMinting:
+      pauseMinting();
+      break;
+    case COMMANDS.startMinting:
+      startMinting();
+      break;
+    case COMMANDS.setNewPrice:
+      setNewPrice();
+      break;
+    case COMMANDS.claimDevRewards:
+      claimDevRewards();
+      break;
+    case COMMANDS.shuffle:
+      shuffle();
+      break;
+    case COMMANDS.getTotalTokensLeft:
+      commonScQuery({
+        functionName: getTotalTokensLeftFunctionName,
+        resultLabel: 'Total tokens left',
+        resultType: 'number',
+      });
+      break;
+    case COMMANDS.getProvenanceHash:
+      commonScQuery({
+        functionName: getProvenanceHashFunctionName,
+        resultLabel: 'Provenance hash of the collection',
+        resultType: 'string',
+      });
+      break;
+    case COMMANDS.getDropTokensLeft:
+      commonScQuery({
+        functionName: getDropTokensLeftFunctionName,
+        resultLabel: 'Tokens left for the current drop',
+        resultType: 'number',
+      });
+      break;
+    case COMMANDS.getNftPrice:
+      commonScQuery({
+        functionName: getNftPriceFunctionName,
+        resultLabel: 'Current NFT price is',
+        resultType: 'number',
+      });
+      break;
+    case COMMANDS.getNftTokenId:
+      commonScQuery({
+        functionName: getNftTokenIdFunctionName,
+        resultLabel: 'NFT token id',
+        resultType: 'string',
+      });
+      break;
+    case COMMANDS.getNftTokenName:
+      commonScQuery({
+        functionName: getNftTokenNameFunctionName,
+        resultLabel: 'NFT token name',
+        resultType: 'string',
+      });
+      break;
   }
 };
