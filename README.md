@@ -6,14 +6,15 @@ For now it is designed to deploy this contract: [elven-nft-minter-sc](https://gi
 
 ### TODO
 - add functions for new endpoints
+  - addPresaleAllowlistAddresses
+  - setPresale
+  - unsetPresale
+  - presaleClaim
+  - reservePresaleSlot
   - checkPresaleEligibility
   - getAmountOfTokensPerPresale
   - getPresalePricePerToken
   - getPresaleSlotsLeft
-  - presaleClaim
-  - reservePresaleSlot
-  - setPresale
-  - unsetPresale
   - changeBaseCids
   - setNewTokensLimitPerAddress
 - readme + docs
