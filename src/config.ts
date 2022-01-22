@@ -24,7 +24,7 @@ export const nftMinterScAddress =
 
 // Base gas limit required for the deployment
 export const deployNftMinterGasLimit =
-  customConfig?.config?.nftMinterSc?.deployGasLimit || 100000000;
+  customConfig?.config?.nftMinterSc?.deployGasLimit || 120000000;
 
 // The tag from the SC's GitHub repository, it can be release tag like v0.2.0 or branch name like 'main' or 'development'
 export const deployNftMinterScVersion =
