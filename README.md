@@ -5,9 +5,7 @@
 For now it is designed to deploy this contract: [elven-nft-minter-sc](https://github.com/juliancwirko/elven-nft-minter-sc/tree/development).
 
 ### TODO
-- add functions for new endpoints
-  - changeBaseCids
-  - setNewTokensLimitPerAddress
+- review all new changes and reimplement functions !!!!
 - readme + docs
 - catch smart contract results and better errors handling, better UX (!!!)
 - add nft-minter upgrade function (test init function setup)

@@ -9,11 +9,9 @@ import {
   deployNftMinterImgCidLabel,
   deployNftMinterMetaCidLabel,
   deployNftMinterAmountOfTokensLabel,
-  deployNftMinterSellingPriceLabel,
   deployNftMinterRoyaltiesLabel,
   deployNftMinterTagsLabel,
   deployNftMinterProvenanceHashLabel,
-  deployNftMinterTokensLimitPerAddressLabel,
   deployNftMinterImgExtLabel,
 } from './config';
 import {
@@ -64,19 +62,6 @@ const deployNftMinter = async () => {
       validate: (value) => (!value || value < 1 ? 'Required and min 1!' : true),
     },
     {
-      type: 'text',
-      name: 'deployNftMinterSellingPrice',
-      message: deployNftMinterSellingPriceLabel,
-      validate: (value) =>
-        !Number(value) || Number(value) <= 0 ? 'Required and min 0!' : true,
-    },
-    {
-      type: 'number',
-      name: 'deployNftMinterTokensLimitPerAddress',
-      message: deployNftMinterTokensLimitPerAddressLabel,
-      validate: (value) => (value && value >= 1 ? true : 'Minimum 1!'),
-    },
-    {
       type: 'number',
       name: 'deployNftMinterRoyalties',
       message: deployNftMinterRoyaltiesLabel,
@@ -108,8 +93,6 @@ const deployNftMinter = async () => {
       deployNftMinterImgExt,
       deployNftMinterMetaCid,
       deployNftMinterAmountOfTokens,
-      deployNftMinterTokensLimitPerAddress,
-      deployNftMinterSellingPrice,
       deployNftMinterRoyalties,
       deployNftMinterTags,
       deployNftMinterProvenanceHash,
@@ -118,12 +101,9 @@ const deployNftMinter = async () => {
     if (
       !deployNftMinterImgCid ||
       !deployNftMinterMetaCid ||
-      !deployNftMinterAmountOfTokens ||
-      !deployNftMinterSellingPrice
+      !deployNftMinterAmountOfTokens
     ) {
-      console.log(
-        'You have to provide CIDs, amount of tokens and selling price!'
-      );
+      console.log('You have to provide CIDs and amount of tokens!');
       exit(9);
     }
 
@@ -135,8 +115,6 @@ const deployNftMinter = async () => {
       deployNftMinterImgExt,
       deployNftMinterMetaCid,
       deployNftMinterAmountOfTokens,
-      deployNftMinterTokensLimitPerAddress,
-      deployNftMinterSellingPrice,
       deployNftMinterRoyalties,
       deployNftMinterTags,
       deployNftMinterProvenanceHash
@@ -162,7 +140,6 @@ const deployNftMinter = async () => {
     console.log(`Smart Contract address: ${scAddress}`);
     updateOutputFile({
       scAddress,
-      sellingPrice: deployNftMinterSellingPrice,
     });
   } catch (e) {
     console.log(e);

@@ -146,8 +146,6 @@ export const getDeployTransaction = (
   fileExtension: string,
   metadataBaseCid: string,
   numberOfTokens: number,
-  tokensLimitPerAddress: number,
-  sellingPrice: string,
   royalties?: string,
   tags?: string,
   provenanceHash?: string
@@ -159,9 +157,7 @@ export const getDeployTransaction = (
       BytesValue.fromUTF8(imgBaseCid.trim()),
       BytesValue.fromUTF8(metadataBaseCid.trim()),
       new U32Value(numberOfTokens),
-      new U32Value(tokensLimitPerAddress),
       new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0)),
-      new BigUIntValue(Balance.egld(sellingPrice.trim()).valueOf()),
       BytesValue.fromUTF8(fileExtension.trim()),
       BytesValue.fromUTF8(tags?.trim() || ''),
       BytesValue.fromUTF8(provenanceHash?.trim() || ''),
