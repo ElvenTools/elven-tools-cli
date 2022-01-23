@@ -50,10 +50,6 @@ export const issueTokenFnName =
 export const setLocalRolesFnName =
   customConfig?.config?.nftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
 
-// Get NFT collection token query function name on SC
-export const getNftTokenIdFnName =
-  customConfig?.config?.nftMinterSc?.getNftTokenIdFnName || 'getNftTokenId';
-
 export const mintTxBaseGasLimit =
   customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 10000000;
 
@@ -134,6 +130,20 @@ export const getTokensMintedPerAddressFunctionName =
   customConfig?.config?.nftMinterSc?.getTokensMintedPerAddressFnName ||
   'getTokensMintedPerAddress';
 
+export const changeBaseCidsFunctionName =
+  customConfig?.config?.nftMinterSc?.changeBaseCidsFnName || 'changeBaseCids';
+
+export const changeBaseCidsGasLimit =
+  customConfig?.config?.nftMinterSc?.changeBaseCidsGasLimit || 5000000;
+
+export const setNewTokensLimitPerAddressFunctionName =
+  customConfig?.config?.nftMinterSc?.setNewTokensLimitPerAddressFnName ||
+  'setNewTokensLimitPerAddress';
+
+export const setNewTokensLimitPerAddressGasLimit =
+  customConfig?.config?.nftMinterSc?.setNewTokensLimitPerAddressGasLimit ||
+  5000000;
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Other predefined config settings
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
@@ -149,6 +159,12 @@ export const proxyGateways: { [key: string]: string } = {
     'https://devnet-gateway.elrond.com',
   mainnet:
     customConfig?.config?.customProxyGateway || 'https://gateway.elrond.com',
+};
+
+export const elrondExplorer: { [key: string]: string } = {
+  devnet: 'https://devnet-explorer.elrond.com',
+  testnet: 'https://testnet-explorer.elrond.com',
+  mainnet: 'https://explorer.elrond.com',
 };
 
 export const derivePemSeedQuestion = 'Enter mnemonic (seed phrase)\n';

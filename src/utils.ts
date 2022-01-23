@@ -34,7 +34,6 @@ import {
   outputFileName,
   issueTokenFnName,
   setLocalRolesFnName,
-  getNftTokenIdFnName,
   nftMinterScAddress,
   nftMinterTokenSellingPrice,
   mintFunctionName,
@@ -50,6 +49,9 @@ import {
   deployNftMinterSCabiRelativeFilePath,
   deployNftMinterSCabiFileUrl,
   getTokensMintedPerAddressFunctionName,
+  elrondExplorer,
+  changeBaseCidsFunctionName,
+  setNewTokensLimitPerAddressFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -236,15 +238,6 @@ export const getIssueTransaction = (
   });
 };
 
-export const getIssuedToken = (
-  provider: ProxyProvider,
-  smartContract: SmartContract
-) => {
-  return smartContract.runQuery(provider, {
-    func: new ContractFunction(getNftTokenIdFnName),
-  });
-};
-
 export const getTheSCAddressFromOutputOrConfig = () => {
   const output = getFileContents(outputFileName, { noExitOnError: true });
   const smartContractAddress = output?.nftMinterScAddress || nftMinterScAddress;
@@ -380,7 +373,7 @@ export const commonTxOperations = async (
 
   spinner.stop();
 
-  console.log(`Transaction hash: ${txHash}`);
+  console.log(`Transaction: ${elrondExplorer[chain]}/transactions/${txHash}`);
 };
 
 export const getSetNewPriceTransaction = (
@@ -523,5 +516,33 @@ export const getTokensMintedPerAddressQuery = (address: string) => {
     resultLabel: 'Tokens already minted per address',
     resultType: 'number',
     args: [new AddressValue(new Address(address))],
+  });
+};
+
+export const getChangeBaseCidsTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  imgBaseCid: string,
+  metadataBaseCid: string
+) => {
+  return contract.call({
+    func: new ContractFunction(changeBaseCidsFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+    args: [
+      BytesValue.fromUTF8(imgBaseCid.trim()),
+      BytesValue.fromUTF8(metadataBaseCid.trim()),
+    ],
+  });
+};
+
+export const getSetNewTokensLimitPerAddressTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  tokensLimitPerAddress: number
+) => {
+  return contract.call({
+    func: new ContractFunction(setNewTokensLimitPerAddressFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+    args: [new U32Value(tokensLimitPerAddress)],
   });
 };

@@ -3,7 +3,6 @@ import ora from 'ora';
 import prompts, { PromptObject } from 'prompts';
 import {
   getIssueTransaction,
-  getIssuedToken,
   updateOutputFile,
   getTheSCAddressFromOutputOrConfig,
   getAssignRolesTransaction,
@@ -21,6 +20,8 @@ import {
   getShuffleTransaction,
   commonScQuery,
   getTokensMintedPerAddressQuery,
+  getChangeBaseCidsTransaction,
+  getSetNewTokensLimitPerAddressTransaction,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -47,11 +48,17 @@ import {
   getNftTokenIdFunctionName,
   getNftTokenNameFunctionName,
   getTokensLimitPerAddressFunctionName,
+  chain,
+  elrondExplorer,
+  deployNftMinterImgCidLabel,
+  deployNftMinterMetaCidLabel,
+  changeBaseCidsGasLimit,
+  deployNftMinterTokensLimitPerAddressLabel,
+  setNewTokensLimitPerAddressGasLimit,
 } from './config';
 import { exit } from 'process';
 
 // TODO: better UX overall, catch statuses from smart contract results
-// TODO: add more data checks and console logs
 
 // Issue a collection token + add required roles
 const issueCollectionToken = async () => {
@@ -100,35 +107,31 @@ const issueCollectionToken = async () => {
     spinner.start();
 
     await issueCollectionTokenTx.send(provider);
-    await issueCollectionTokenTx.awaitNotarized(provider);
+    await issueCollectionTokenTx.awaitExecuted(provider);
     const txHash = issueCollectionTokenTx.getHash();
 
-    // TODO: catch sc errors when erdjs bug is resolved
-    // const scResults = (
-    //   await issueCollectionTokenTx.getAsOnNetwork(provider)
-    // ).getSmartContractResults();
+    const scResults = (await issueCollectionTokenTx.getAsOnNetwork(provider))
+      .getSmartContractResults()
+      .getResultingCalls()
+      .filter((item) => item.callType === 2)?.[0]?.data;
+
+    const tokenSection = scResults.split('@')?.[2];
+    const tokenId = tokenSection
+      ? Buffer.from(tokenSection, 'hex').toString('utf8')
+      : '';
 
     spinner.stop();
 
-    console.log(`Transaction hash: ${txHash}`);
-
-    spinner.start();
-
-    console.log('Acquiring the token info...');
-
-    const queryResponse = await getIssuedToken(provider, smartContract);
-
-    spinner.stop();
-
-    const tokenId = Buffer.from(
-      queryResponse?.returnData?.[0],
-      'base64'
-    ).toString();
-
-    console.log('Your collection token id: ', tokenId);
-    console.log('Also saved in the output.json file.');
-
-    updateOutputFile({ tokenId });
+    console.log(`Transaction: ${elrondExplorer[chain]}/transactions/${txHash}`);
+    if (tokenId) {
+      console.log('Your collection token id: ', tokenId);
+      console.log('Also saved in the output.json file.');
+      updateOutputFile({ tokenId });
+    } else {
+      console.log(
+        'Something went wrong on the Smart Contract. Check the explorer!'
+      );
+    }
   } catch (e) {
     console.log(e);
   }
@@ -405,6 +408,85 @@ const shuffle = async () => {
   }
 };
 
+const changeBaseCids = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'nftMinterImgCid',
+      message: deployNftMinterImgCidLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'text',
+      name: 'nftMinterMetaCid',
+      message: deployNftMinterMetaCidLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
+
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { nftMinterImgCid, nftMinterMetaCid } = await prompts(
+      promptQuestions
+    );
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const changeBaseCidsTx = getChangeBaseCidsTransaction(
+      smartContract,
+      changeBaseCidsGasLimit,
+      nftMinterImgCid,
+      nftMinterMetaCid
+    );
+
+    await commonTxOperations(changeBaseCidsTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const setNewTokensLimitPerAddress = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'number',
+      name: 'nftMinterTokensLimitPerAddress',
+      message: deployNftMinterTokensLimitPerAddressLabel,
+      validate: (value) => (value && value >= 1 ? true : 'Minimum 1!'),
+    },
+  ];
+
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { nftMinterTokensLimitPerAddress } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const setNewTokensLimitPerAddressTx =
+      getSetNewTokensLimitPerAddressTransaction(
+        smartContract,
+        setNewTokensLimitPerAddressGasLimit,
+        nftMinterTokensLimitPerAddress
+      );
+
+    await commonTxOperations(
+      setNewTokensLimitPerAddressTx,
+      userAccount,
+      signer,
+      provider
+    );
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const getTokensMintedPerAddress = async () => {
   const promptQuestions: PromptObject[] = [
     {
@@ -437,6 +519,8 @@ export const nftMinter = async (subcommand?: string) => {
     setNewPrice: 'set-new-price',
     claimDevRewards: 'claim-dev-rewards',
     shuffle: 'shuffle',
+    changeBaseCids: 'change-base-cids',
+    setNewTokensLimitPerAddress: 'set-new-tokens-limit-per-address',
     getTotalTokensLeft: 'get-total-tokens-left',
     getProvenanceHash: 'get-provenance-hash',
     getDropTokensLeft: 'get-drop-tokens-left',
@@ -501,6 +585,12 @@ export const nftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.shuffle:
       shuffle();
+      break;
+    case COMMANDS.changeBaseCids:
+      changeBaseCids();
+      break;
+    case COMMANDS.setNewTokensLimitPerAddress:
+      setNewTokensLimitPerAddress();
       break;
     case COMMANDS.getTotalTokensLeft:
       commonScQuery({
