@@ -109,7 +109,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
 }
 ```
 
-**Whole config with default values: ** [config.ts](https://github.com/juliancwirko/elven-tools-cli/blob/main/src/config.ts)
+**Whole config with default values:** [config.ts](https://github.com/juliancwirko/elven-tools-cli/blob/main/src/config.ts)
 
 ### Limitations and caveats
 
