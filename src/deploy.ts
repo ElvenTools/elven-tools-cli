@@ -17,6 +17,9 @@ import {
   deployNftMinterImgExtLabel,
   elrondExplorer,
   chain,
+  nftSCupgradableLabel,
+  nftSCreadableLabel,
+  nftSCpayableLabel,
 } from './config';
 import {
   getDeployTransaction,
@@ -34,6 +37,33 @@ const deployNftMinter = async () => {
   }
 
   const promptsQuestions: PromptObject[] = [
+    {
+      type: 'select',
+      name: 'nftSCupgradable',
+      message: nftSCupgradableLabel,
+      choices: [
+        { title: 'Yes', value: true },
+        { title: 'No', value: false },
+      ],
+    },
+    {
+      type: 'select',
+      name: 'nftSCreadable',
+      message: nftSCreadableLabel,
+      choices: [
+        { title: 'No', value: false },
+        { title: 'Yes', value: true },
+      ],
+    },
+    {
+      type: 'select',
+      name: 'nftSCpayable',
+      message: nftSCpayableLabel,
+      choices: [
+        { title: 'Yes', value: true },
+        { title: 'No', value: false },
+      ],
+    },
     {
       type: 'text',
       name: 'deployNftMinterImgCid',
@@ -115,6 +145,9 @@ const deployNftMinter = async () => {
       deployNftMinterRoyalties,
       deployNftMinterTags,
       deployNftMinterProvenanceHash,
+      nftSCupgradable,
+      nftSCreadable,
+      nftSCpayable,
     } = await prompts(promptsQuestions);
 
     if (
@@ -141,7 +174,10 @@ const deployNftMinter = async () => {
       deployNftMinterSellingPrice,
       deployNftMinterRoyalties,
       deployNftMinterTags,
-      deployNftMinterProvenanceHash
+      deployNftMinterProvenanceHash,
+      nftSCupgradable,
+      nftSCreadable,
+      nftSCpayable
     );
 
     deployTransaction.setNonce(userAccount.nonce);

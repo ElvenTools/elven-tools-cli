@@ -21,6 +21,7 @@ import {
   TransactionPayload,
   QueryResponse,
   TypedValue,
+  CodeMetadata,
 } from '@elrondnetwork/erdjs';
 import prompts, { PromptObject } from 'prompts';
 import BigNumber from 'bignumber.js';
@@ -51,6 +52,7 @@ import {
   elrondExplorer,
   changeBaseCidsFunctionName,
   setNewTokensLimitPerAddressFunctionName,
+  claimScFundsFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -151,10 +153,14 @@ export const getDeployTransaction = (
   sellingPrice: string,
   royalties?: string,
   tags?: string,
-  provenanceHash?: string
+  provenanceHash?: string,
+  upgradable = true,
+  readable = false,
+  payable = false
 ) => {
   return contract.deploy({
     code,
+    codeMetadata: new CodeMetadata(upgradable, readable, payable),
     gasLimit: new GasLimit(gasLimit),
     initArguments: [
       BytesValue.fromUTF8(imgBaseCid.trim()),
@@ -533,5 +539,15 @@ export const getSetNewTokensLimitPerAddressTransaction = (
     func: new ContractFunction(setNewTokensLimitPerAddressFunctionName),
     gasLimit: new GasLimit(gasLimit),
     args: [new U32Value(tokensLimitPerAddress)],
+  });
+};
+
+export const getClaimScFundsTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(claimScFundsFunctionName),
+    gasLimit: new GasLimit(gasLimit),
   });
 };

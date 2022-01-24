@@ -21,6 +21,7 @@ import {
   getTokensMintedPerAddressQuery,
   getChangeBaseCidsTransaction,
   getSetNewTokensLimitPerAddressTransaction,
+  getClaimScFundsTransaction,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -53,6 +54,7 @@ import {
   changeBaseCidsGasLimit,
   deployNftMinterTokensLimitPerAddressLabel,
   setNewTokensLimitPerAddressGasLimit,
+  claimScFundsTxGasLimit,
 } from './config';
 import { exit } from 'process';
 
@@ -485,6 +487,24 @@ const getTokensMintedPerAddress = async () => {
   }
 };
 
+const claimScFunds = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const claimScFundsTx = getClaimScFundsTransaction(
+      smartContract,
+      claimScFundsTxGasLimit
+    );
+
+    await commonTxOperations(claimScFundsTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
@@ -568,6 +588,9 @@ export const nftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.setNewTokensLimitPerAddress:
       setNewTokensLimitPerAddress();
+      break;
+    case COMMANDS.claimScFunds:
+      claimScFunds();
       break;
     case COMMANDS.getTotalTokensLeft:
       commonScQuery({

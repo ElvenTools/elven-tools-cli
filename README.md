@@ -1,4 +1,4 @@
-### Elven Tools CLI (v1.0.0)
+### Elven Tools CLI
 
 🚨 Not enough tests! As for the mainnet, use it at your own risk! 🚨
 
@@ -51,6 +51,7 @@ First steps:
 - `elven-tools nft-minter claim-dev-rewards` [only owner] - as an owner of the Smart Contract, you can always claim the developer rewards. Read more about them in the Elrond docs.
 - `elven-tools nft-minter change-base-cids` [only owner] - you can change base IPFS CIDs only before any NFT was minted. Otherwise, it doesn't make sense to do that.
 - `elven-tools nft-minter set-new-tokens-limit-per-address` [only owner] - it is possible to change the limits per address which are configured when deploying the Smart Contract
+- `elven-tools nft-minter claim-sc-funds` [only owner] - this is treated as a fallback for royalties, there is no way for now to implement other solution, the Smart Contract will receive the royalties as the creator, so there has to be a way to get them back. Generally, it shouldn't be required otherwise. Proper solutions will be with the `esdt_nft_create_as_caller`, which doesn't work yet.
 - `elven-tools nft-minter shuffle` - as a user, you can take part and ensure that the minting is random. This transaction will reshuffle the next index to mint. Everyone can run it.
 - `elven-tools nft-minter mint` - the main mint function, you can mint NFTs using any `walletKey.pem` file
 - `elven-tools nft-minter get-total-tokens-left` - the Smart Contract query, returns amount of tokens left
@@ -105,6 +106,8 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "changeBaseCidsGasLimit": 5000000,
     "setNewTokensLimitPerAddressFnName": "setNewTokensLimitPerAddress",
     "setNewTokensLimitPerAddressGasLimit": 5000000,
+    "claimScFundsFnName": "claimScFunds",
+    "claimScFundsGasLimit": 6000000
   }
 }
 ```
