@@ -15,6 +15,8 @@ import {
   deployNftMinterProvenanceHashLabel,
   deployNftMinterTokensLimitPerAddressLabel,
   deployNftMinterImgExtLabel,
+  elrondExplorer,
+  chain,
 } from './config';
 import {
   getDeployTransaction,
@@ -152,12 +154,12 @@ const deployNftMinter = async () => {
     await deployTransaction.send(provider);
     await deployTransaction.awaitExecuted(provider);
     const txStatus = deployTransaction.getStatus();
-    const txhash = deployTransaction.getHash();
+    const txHash = deployTransaction.getHash();
 
     spinner.stop();
 
     console.log(`Deployment transaction executed: ${txStatus}`);
-    console.log(`Transaction hash: ${txhash}`);
+    console.log(`Transaction: ${elrondExplorer[chain]}/transactions/${txHash}`);
     const scAddress = smartContract.getAddress();
     console.log(`Smart Contract address: ${scAddress}`);
     updateOutputFile({
