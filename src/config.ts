@@ -65,12 +65,6 @@ export const giveawayTxBaseGasLimit =
 export const giveawayFunctionName =
   customConfig?.config?.nftMinterSc?.giveawayFnName || 'giveaway';
 
-export const claimScFundsFunctionName =
-  customConfig?.config?.nftMinterSc?.claimScFundsFnName || 'claimScFunds';
-
-export const claimScFundsTxGasLimit =
-  customConfig?.config?.nftMinterSc?.claimScFundsGasLimit || 6000000;
-
 export const setDropFunctionName =
   customConfig?.config?.nftMinterSc?.setDropFnName || 'setDrop';
 

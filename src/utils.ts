@@ -38,7 +38,6 @@ import {
   nftMinterTokenSellingPrice,
   mintFunctionName,
   giveawayFunctionName,
-  claimScFundsFunctionName,
   setDropFunctionName,
   unsetDropFunctionName,
   pauseMintingFunctionName,
@@ -299,16 +298,6 @@ export const getGiveawayTransaction = (
     func: new ContractFunction(giveawayFunctionName),
     gasLimit: new GasLimit(baseGasLimit + (baseGasLimit / 1.6) * tokensAmount),
     args: [new AddressValue(new Address(address.trim())), new U32Value(tokens)],
-  });
-};
-
-export const getClaimScFundsTransaction = (
-  contract: SmartContract,
-  gasLimit: number
-) => {
-  return contract.call({
-    func: new ContractFunction(claimScFundsFunctionName),
-    gasLimit: new GasLimit(gasLimit),
   });
 };
 

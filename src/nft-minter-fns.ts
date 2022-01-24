@@ -9,7 +9,6 @@ import {
   getMintTransaction,
   getGiveawayTransaction,
   getSetDropTransaction,
-  getClaimScFundsTransaction,
   getUnsetDropTransaction,
   getPauseMintingTransaction,
   getUnpauseMintingTransaction,
@@ -34,7 +33,6 @@ import {
   giveawayAddressLabel,
   giveawayTokensAmount,
   giveawayTxBaseGasLimit,
-  claimScFundsTxGasLimit,
   dropTokensAmountLabel,
   setUnsetDropTxGasLimit,
   pauseUnpauseTxGasLimit,
@@ -229,24 +227,6 @@ const giveaway = async () => {
     );
 
     await commonTxOperations(giveawayTx, userAccount, signer, provider);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-const claimScFunds = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
-  try {
-    const { smartContract, userAccount, signer, provider } = await setup(
-      smartContractAddress
-    );
-
-    const claimScFundsTx = getClaimScFundsTransaction(
-      smartContract,
-      claimScFundsTxGasLimit
-    );
-
-    await commonTxOperations(claimScFundsTx, userAccount, signer, provider);
   } catch (e) {
     console.log(e);
   }
@@ -561,9 +541,6 @@ export const nftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.giveaway:
       giveaway();
-      break;
-    case COMMANDS.claimScFunds:
-      claimScFunds();
       break;
     case COMMANDS.setDrop:
       setDrop();
