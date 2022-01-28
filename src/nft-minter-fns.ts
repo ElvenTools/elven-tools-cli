@@ -18,10 +18,11 @@ import {
   getClaimDevRewardsTransaction,
   getShuffleTransaction,
   commonScQuery,
-  getTokensMintedPerAddressQuery,
+  getMintedPerAddressQuery,
   getChangeBaseCidsTransaction,
   getSetNewTokensLimitPerAddressTransaction,
   getClaimScFundsTransaction,
+  getMintedPerAddressPerDropQuery,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -46,7 +47,7 @@ import {
   getNftPriceFunctionName,
   getNftTokenIdFunctionName,
   getNftTokenNameFunctionName,
-  getTokensLimitPerAddressFunctionName,
+  getTokensLimitPerAddressTotalFunctionName,
   chain,
   elrondExplorer,
   deployNftMinterImgCidLabel,
@@ -55,6 +56,8 @@ import {
   deployNftMinterTokensLimitPerAddressLabel,
   setNewTokensLimitPerAddressGasLimit,
   claimScFundsTxGasLimit,
+  dropTokensLimitPerAddressPerDropLabel,
+  getTokensLimitPerAddressPerDropFunctionName,
 } from './config';
 import { exit } from 'process';
 
@@ -161,9 +164,11 @@ const mint = async () => {
 
   const promptQuestions: PromptObject[] = [
     {
-      type: 'text',
+      type: 'number',
       name: 'tokensAmount',
       message: amountOfTokensLabel,
+      validate: (value) =>
+        value && value > 0 ? true : 'Required a number greater than 0!',
     },
   ];
 
@@ -242,11 +247,17 @@ const setDrop = async () => {
       message: dropTokensAmountLabel,
       validate: (value) => (!value ? 'Required!' : true),
     },
+    {
+      type: 'number',
+      name: 'dropTokensLimitPerAddressPerDrop',
+      message: dropTokensLimitPerAddressPerDropLabel,
+    },
   ];
 
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
   try {
-    const { dropTokensAmount } = await prompts(promptQuestions);
+    const { dropTokensAmount, dropTokensLimitPerAddressPerDrop } =
+      await prompts(promptQuestions);
 
     const { smartContract, userAccount, signer, provider } = await setup(
       smartContractAddress
@@ -255,7 +266,8 @@ const setDrop = async () => {
     const setDropTx = getSetDropTransaction(
       smartContract,
       setUnsetDropTxGasLimit,
-      dropTokensAmount
+      dropTokensAmount,
+      dropTokensLimitPerAddressPerDrop
     );
 
     await commonTxOperations(setDropTx, userAccount, signer, provider);
@@ -469,7 +481,7 @@ const setNewTokensLimitPerAddress = async () => {
   }
 };
 
-const getTokensMintedPerAddress = async () => {
+const getMintedPerAddressTotal = async () => {
   const promptQuestions: PromptObject[] = [
     {
       type: 'text',
@@ -481,7 +493,25 @@ const getTokensMintedPerAddress = async () => {
 
   try {
     const { address } = await prompts(promptQuestions);
-    getTokensMintedPerAddressQuery(address);
+    getMintedPerAddressQuery(address);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const getMintedPerAddressPerDrop = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'address',
+      message: 'Provide the address:\n',
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
+
+  try {
+    const { address } = await prompts(promptQuestions);
+    getMintedPerAddressPerDropQuery(address);
   } catch (e) {
     console.log(e);
   }
@@ -527,8 +557,10 @@ export const nftMinter = async (subcommand?: string) => {
     getNftPrice: 'get-nft-price',
     getNftTokenId: 'get-nft-token-id',
     getNftTokenName: 'get-nft-token-name',
-    getTokensLimitPerAddress: 'get-tokens-limit-per-address',
-    getTokensMintedPerAddress: 'get-tokens-minted-per-address',
+    getTokensLimitPerAddressTotal: 'get-tokens-limit-per-address-total',
+    getMintedPerAddressTotal: 'get-minted-per-address-total',
+    getMintedPerAddressPerDrop: 'get-minted-per-address-per-drop',
+    getTokensLimitPerAddressPerDrop: 'get-tokens-limit-per-address-per-drop',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -634,15 +666,25 @@ export const nftMinter = async (subcommand?: string) => {
         resultType: 'string',
       });
       break;
-    case COMMANDS.getTokensLimitPerAddress:
+    case COMMANDS.getTokensLimitPerAddressTotal:
       commonScQuery({
-        functionName: getTokensLimitPerAddressFunctionName,
+        functionName: getTokensLimitPerAddressTotalFunctionName,
         resultLabel: 'Tokens limit per address',
         resultType: 'number',
       });
       break;
-    case COMMANDS.getTokensMintedPerAddress:
-      getTokensMintedPerAddress();
+    case COMMANDS.getMintedPerAddressPerDrop:
+      getMintedPerAddressPerDrop();
+      break;
+    case COMMANDS.getTokensLimitPerAddressPerDrop:
+      commonScQuery({
+        functionName: getTokensLimitPerAddressPerDropFunctionName,
+        resultLabel: 'Tokens limit per address per current drop',
+        resultType: 'number',
+      });
+      break;
+    case COMMANDS.getMintedPerAddressTotal:
+      getMintedPerAddressTotal();
       break;
   }
 };

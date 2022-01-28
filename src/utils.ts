@@ -48,11 +48,12 @@ import {
   shuffleFunctionName,
   deployNftMinterSCabiRelativeFilePath,
   deployNftMinterSCabiFileUrl,
-  getTokensMintedPerAddressFunctionName,
+  getMintedPerAddressTotalFunctionName,
   elrondExplorer,
   changeBaseCidsFunctionName,
   setNewTokensLimitPerAddressFunctionName,
   claimScFundsFunctionName,
+  getMintedPerAddressPerDropFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -310,12 +311,18 @@ export const getGiveawayTransaction = (
 export const getSetDropTransaction = (
   contract: SmartContract,
   gasLimit: number,
-  tokensAmount: number
+  tokensAmount: number,
+  tokensLimitPerAddressPerDrop?: number
 ) => {
   return contract.call({
     func: new ContractFunction(setDropFunctionName),
     gasLimit: new GasLimit(gasLimit),
-    args: [new U32Value(tokensAmount)],
+    args: [
+      new U32Value(tokensAmount),
+      ...(tokensLimitPerAddressPerDrop
+        ? [new U32Value(tokensLimitPerAddressPerDrop)]
+        : []),
+    ],
   });
 };
 
@@ -505,10 +512,19 @@ export const commonScQuery = async ({
   }
 };
 
-export const getTokensMintedPerAddressQuery = (address: string) => {
+export const getMintedPerAddressQuery = (address: string) => {
   commonScQuery({
-    functionName: getTokensMintedPerAddressFunctionName,
+    functionName: getMintedPerAddressTotalFunctionName,
     resultLabel: 'Tokens already minted per address',
+    resultType: 'number',
+    args: [new AddressValue(new Address(address))],
+  });
+};
+
+export const getMintedPerAddressPerDropQuery = (address: string) => {
+  commonScQuery({
+    functionName: getMintedPerAddressPerDropFunctionName,
+    resultLabel: 'Tokens already minted per address per drop',
     resultType: 'number',
     args: [new AddressValue(new Address(address))],
   });
