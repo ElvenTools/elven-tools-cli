@@ -20,12 +20,15 @@ import {
   nftSCupgradableLabel,
   nftSCreadableLabel,
   nftSCpayableLabel,
+  populateIndexesBaseTxGasLimit,
+  populateIndexesMaxBatchSize,
 } from './config';
 import {
   getDeployTransaction,
   updateOutputFile,
   getFileContents,
   baseDir,
+  getPopulateIndexesTx,
 } from './utils';
 
 const deployNftMinter = async () => {
@@ -131,6 +134,8 @@ const deployNftMinter = async () => {
     },
   ];
 
+  const spinner = ora('Processing transaction...');
+
   try {
     const { scWasmCode, smartContract, userAccount, signer, provider } =
       await setup();
@@ -184,13 +189,45 @@ const deployNftMinter = async () => {
     userAccount.incrementNonce();
     signer.sign(deployTransaction);
 
-    const spinner = ora('Processing transaction...');
     spinner.start();
 
     await deployTransaction.send(provider);
     await deployTransaction.awaitExecuted(provider);
     const txStatus = deployTransaction.getStatus();
     const txHash = deployTransaction.getHash();
+
+    // This is done to populate VecMapper of token indexes,
+    // with big amounts it had to be split into more transactions
+    const populateTxOperations = async (numberOfbatches: number, i: number) => {
+      const amountOfTokens =
+        numberOfbatches === i
+          ? deployNftMinterAmountOfTokens -
+            (numberOfbatches - 1) * populateIndexesMaxBatchSize
+          : populateIndexesMaxBatchSize;
+
+      const populateIndexesTx = getPopulateIndexesTx(
+        smartContract,
+        populateIndexesBaseTxGasLimit * amountOfTokens,
+        amountOfTokens
+      );
+
+      populateIndexesTx.setNonce(userAccount.nonce);
+      userAccount.incrementNonce();
+      signer.sign(populateIndexesTx);
+      await populateIndexesTx.send(provider);
+      await populateIndexesTx.awaitExecuted(provider);
+    };
+
+    if (deployNftMinterAmountOfTokens > populateIndexesMaxBatchSize) {
+      const numberOfbatches = Math.ceil(
+        deployNftMinterAmountOfTokens / populateIndexesMaxBatchSize
+      );
+      for (let i = 1; i <= numberOfbatches; i++) {
+        await populateTxOperations(numberOfbatches, i);
+      }
+    } else {
+      await populateTxOperations(1, 1);
+    }
 
     spinner.stop();
 
@@ -203,6 +240,7 @@ const deployNftMinter = async () => {
       sellingPrice: deployNftMinterSellingPrice,
     });
   } catch (e) {
+    spinner.stop();
     console.log(e);
   }
 };

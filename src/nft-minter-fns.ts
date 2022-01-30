@@ -61,8 +61,6 @@ import {
 } from './config';
 import { exit } from 'process';
 
-// TODO: better UX overall, catch statuses from smart contract results
-
 // Issue a collection token + add required roles
 const issueCollectionToken = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
@@ -81,6 +79,8 @@ const issueCollectionToken = async () => {
       validate: (value) => (!value ? 'Required!' : true),
     },
   ];
+
+  const spinner = ora('Processing transaction...');
 
   try {
     const { tokenName, tokenTicker } = await prompts(promptQuestions);
@@ -106,7 +106,6 @@ const issueCollectionToken = async () => {
     userAccount.incrementNonce();
     signer.sign(issueCollectionTokenTx);
 
-    const spinner = ora('Processing transaction...');
     spinner.start();
 
     await issueCollectionTokenTx.send(provider);
@@ -118,7 +117,7 @@ const issueCollectionToken = async () => {
       .getResultingCalls()
       .filter((item) => item.callType === 2)?.[0]?.data;
 
-    const tokenSection = scResults.split('@')?.[2];
+    const tokenSection = scResults?.split('@')?.[2];
     const tokenId = tokenSection
       ? Buffer.from(tokenSection, 'hex').toString('utf8')
       : '';
@@ -136,6 +135,7 @@ const issueCollectionToken = async () => {
       );
     }
   } catch (e) {
+    spinner.stop();
     console.log(e);
   }
 };

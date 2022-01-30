@@ -6,6 +6,7 @@
   - `getTokensLimitPerAddressTotal` endpoint | command `get-tokens-limit-per-address-total`,
   - `getMintedPerAddressPerDrop` endpoint | command `get-minted-per-address-per-drop`,
   - `getTokensLimitPerAddressPerDrop` endpoint | command `get-tokens-limit-per-address-per-drop`
+- small changes in the default gas limits for mint and giveaway
 
 ### [1.1.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.1.0) (2022-01-24)
 - added possibility to set codeMetadata (upgradable, readable, payable) when deploying the SC

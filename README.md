@@ -82,7 +82,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "mintBaseGasLimit": 11000000,
     "tokenSelingPrice": "",
     "mintFnName": "mint",
-    "giveawayBaseGasLimit": 10000000,
+    "giveawayBaseGasLimit": 11000000,
     "giveawayFnName": "giveaway",
     "setDropFnName": "setDrop",
     "setUnsetDropGasLimit": 12000000,
@@ -109,7 +109,10 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "setNewTokensLimitPerAddressFnName": "setNewTokensLimitPerAddress",
     "setNewTokensLimitPerAddressGasLimit": 5000000,
     "claimScFundsFnName": "claimScFunds",
-    "claimScFundsGasLimit": 6000000
+    "claimScFundsGasLimit": 6000000,
+    "populateIndexesBaseGasLimit": 120000,
+    "populateIndexesMaxBatchSize": 5000,
+    "populateIndexesFnName": "populateIndexes"
   }
 }
 ```
@@ -124,7 +127,6 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
 ### TODO
 - better docs
 - add nft-minter upgrade function (test init function setup)
-- smart contract metadata management (optional with default set)
 - possibility to use predefined configuration files or prompts when not provided (???)
 - tests where it makes sense
 
