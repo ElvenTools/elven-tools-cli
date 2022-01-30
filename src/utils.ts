@@ -23,12 +23,19 @@ import {
   TypedValue,
   CodeMetadata,
 } from '@elrondnetwork/erdjs';
+
 import prompts, { PromptObject } from 'prompts';
+
 import BigNumber from 'bignumber.js';
+
 import ora from 'ora';
+
 import { readFileSync, accessSync, constants, writeFileSync } from 'fs';
+
 import { exit, cwd } from 'process';
+
 import { Buffer } from 'buffer';
+
 import {
   proxyGateways,
   chain,
@@ -43,6 +50,8 @@ import {
   unsetDropFunctionName,
   pauseMintingFunctionName,
   unpauseMintingFunctionName,
+  enableMintByOwnerOnlyFunctionName,
+  disableMintByOwnerOnlyFunctionName,
   commonConfirmLabel,
   setNewPriceFunctionName,
   shuffleFunctionName,
@@ -335,6 +344,25 @@ export const getPauseMintingTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(pauseMintingFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+  });
+};
+
+export const getEnableMintByOwnerOnlyTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(enableMintByOwnerOnlyFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+  });
+};
+export const getDisableMintByOwnerOnlyTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(disableMintByOwnerOnlyFunctionName),
     gasLimit: new GasLimit(gasLimit),
   });
 };

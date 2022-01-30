@@ -1,28 +1,9 @@
-import { setup } from './setup';
 import ora from 'ora';
+
 import prompts, { PromptObject } from 'prompts';
-import {
-  getIssueTransaction,
-  updateOutputFile,
-  getTheSCAddressFromOutputOrConfig,
-  getAssignRolesTransaction,
-  getMintTransaction,
-  getGiveawayTransaction,
-  getSetDropTransaction,
-  getUnsetDropTransaction,
-  getPauseMintingTransaction,
-  getUnpauseMintingTransaction,
-  commonTxOperations,
-  getSetNewPriceTransaction,
-  areYouSureAnswer,
-  getClaimDevRewardsTransaction,
-  getShuffleTransaction,
-  commonScQuery,
-  getTokensMintedPerAddressQuery,
-  getChangeBaseCidsTransaction,
-  getSetNewTokensLimitPerAddressTransaction,
-  getClaimScFundsTransaction,
-} from './utils';
+
+import { exit } from 'process';
+
 import {
   issueNftMinterGasLimit,
   issueNftMinterValue,
@@ -56,7 +37,31 @@ import {
   setNewTokensLimitPerAddressGasLimit,
   claimScFundsTxGasLimit,
 } from './config';
-import { exit } from 'process';
+import { setup } from './setup';
+import {
+  getIssueTransaction,
+  updateOutputFile,
+  getTheSCAddressFromOutputOrConfig,
+  getAssignRolesTransaction,
+  getMintTransaction,
+  getGiveawayTransaction,
+  getSetDropTransaction,
+  getUnsetDropTransaction,
+  getPauseMintingTransaction,
+  getUnpauseMintingTransaction,
+  getEnableMintByOwnerOnlyTransaction,
+  getDisableMintByOwnerOnlyTransaction,
+  commonTxOperations,
+  getSetNewPriceTransaction,
+  areYouSureAnswer,
+  getClaimDevRewardsTransaction,
+  getShuffleTransaction,
+  commonScQuery,
+  getTokensMintedPerAddressQuery,
+  getChangeBaseCidsTransaction,
+  getSetNewTokensLimitPerAddressTransaction,
+  getClaimScFundsTransaction,
+} from './utils';
 
 // TODO: better UX overall, catch statuses from smart contract results
 
@@ -322,6 +327,45 @@ const startMinting = async () => {
   }
 };
 
+const enableMintByOwnerOnly = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const enableMintByOwner = getEnableMintByOwnerOnlyTransaction(
+      smartContract,
+      pauseUnpauseTxGasLimit
+    );
+
+    await commonTxOperations(enableMintByOwner, userAccount, signer, provider);
+  } catch (e) {
+    console.log(e);
+  }
+};
+const disableMintByOwnerOnly = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const disableMintByOwner = getDisableMintByOwnerOnlyTransaction(
+      smartContract,
+      pauseUnpauseTxGasLimit
+    );
+
+    await commonTxOperations(disableMintByOwner, userAccount, signer, provider);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const setNewPrice = async () => {
   const promptQuestions: PromptObject[] = [
     {
@@ -516,6 +560,8 @@ export const nftMinter = async (subcommand?: string) => {
     unsetDrop: 'unset-drop',
     pauseMinting: 'pause-minting',
     startMinting: 'start-minting',
+    enableMintByOwnerOnly: 'enable-mint-by-owner-only',
+    disableMintByOwnerOnly: 'disable-mint-by-owner-only',
     setNewPrice: 'set-new-price',
     claimDevRewards: 'claim-dev-rewards',
     shuffle: 'shuffle',
@@ -573,6 +619,12 @@ export const nftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.startMinting:
       startMinting();
+      break;
+    case COMMANDS.enableMintByOwnerOnly:
+      enableMintByOwnerOnly();
+      break;
+    case COMMANDS.disableMintByOwnerOnly:
+      disableMintByOwnerOnly();
       break;
     case COMMANDS.setNewPrice:
       setNewPrice();

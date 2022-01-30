@@ -1,4 +1,5 @@
 import { cosmiconfigSync } from 'cosmiconfig';
+
 import { cwd } from 'process';
 
 const configFileName = 'elventools';
@@ -82,6 +83,12 @@ export const pauseMintingFunctionName =
 
 export const unpauseMintingFunctionName =
   customConfig?.config?.nftMinterSc?.unpauseMintingFnName || 'startMinting';
+
+export const enableMintByOwnerOnlyFunctionName =
+  customConfig?.config?.nftMinterSc?.enableMintByOwnerOnlyFnName || 'enableMintByOwnerOnly';
+
+export const disableMintByOwnerOnlyFunctionName =
+  customConfig?.config?.nftMinterSc?.disableMintByOwnerOnlyFnName || 'disableMintByOwnerOnly';
 
 export const setNewPriceGasLimit =
   customConfig?.config?.nftMinterSc?.setNewPriceGasLimit || 5000000;
