@@ -82,13 +82,13 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "assignRolesGasLimit": 80000000,
     "issueTokenFnName": "issueToken",
     "setLocalRolesFnName": "setLocalRoles",
-    "mintBaseGasLimit": 10000000,
+    "mintBaseGasLimit": 11000000,
     "tokenSelingPrice": "",
     "mintFnName": "mint",
-    "giveawayBaseGasLimit": 10000000,
+    "giveawayBaseGasLimit": 11000000,
     "giveawayFnName": "giveaway",
     "setDropFnName": "setDrop",
-    "setUnsetDropGasLimit": 6000000,
+    "setUnsetDropGasLimit": 12000000,
     "unsetDropFnName": "unsetDrop",
     "pauseUnpauseGasLimit": 5000000,
     "pauseMintingFnName": "pauseMinting",
@@ -96,21 +96,26 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "setNewPriceGasLimit": 5000000,
     "setNewPriceFnName": "setNewPrice",
     "shuffleFnName": "shuffle",
-    "shuffleGasLimit": 5000000,
+    "shuffleGasLimit": 6000000,
     "getTotalTokensLeftFnName": "getTotalTokensLeft",
     "getProvenanceHashFnName": "getProvenanceHash",
     "getDropTokensLeftFnName": "getDropTokensLeft",
     "getNftPriceFnName": "getNftPrice",
     "getNftTokenIdFnName": "getNftTokenId",
     "getNftTokenNameFnName": "getNftTokenName",
-    "getTokensLimitPerAddressFnName": "getTokensLimitPerAddress",
-    "getTokensMintedPerAddressFnName": "getTokensMintedPerAddress",
+    "getMintedPerAddressTotalFnName": "getMintedPerAddressTotal",
+    "getTokensLimitPerAddressTotalFnName": "getTokensLimitPerAddressTotal",
+    "getMintedPerAddressPerDropFnName": "getMintedPerAddressPerDrop",
+    "getTokensLimitPerAddressPerDropFnName": "getTokensLimitPerAddressPerDrop",
     "changeBaseCidsFnName": "changeBaseCids",
     "changeBaseCidsGasLimit": 5000000,
     "setNewTokensLimitPerAddressFnName": "setNewTokensLimitPerAddress",
     "setNewTokensLimitPerAddressGasLimit": 5000000,
     "claimScFundsFnName": "claimScFunds",
-    "claimScFundsGasLimit": 6000000
+    "claimScFundsGasLimit": 6000000,
+    "populateIndexesBaseGasLimit": 5000000,
+    "populateIndexesMaxBatchSize": 5000,
+    "populateIndexesFnName": "populateIndexes"
   }
 }
 ```
@@ -123,11 +128,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
 - Smart Contract in version 1 doesn't have many mechanisms which will strongly limit unwanted behaviors. It only implements random minting, but in version 2, there will be more mechanisms for fair launches.
 
 ### TODO
-- better docs
-- add nft-minter upgrade function (test init function setup)
-- smart contract metadata management (optional with default set)
-- possibility to use predefined configuration files or prompts when not provided (???)
-- tests where it makes sense
+- check the [issues](https://github.com/juliancwirko/elven-tools-cli/issues)
 
 ### Contact
 

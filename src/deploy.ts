@@ -20,13 +20,17 @@ import {
   nftSCupgradableLabel,
   nftSCreadableLabel,
   nftSCpayableLabel,
+  populateIndexesBaseTxGasLimit,
+  populateIndexesMaxBatchSize,
 } from './config';
 import {
   getDeployTransaction,
   updateOutputFile,
   getFileContents,
   baseDir,
+  getPopulateIndexesTx,
 } from './utils';
+import { TransactionHash } from '@elrondnetwork/erdjs/out';
 
 const deployNftMinter = async () => {
   // Check if there is an old output file
@@ -131,6 +135,8 @@ const deployNftMinter = async () => {
     },
   ];
 
+  const spinner = ora('Processing the transaction...');
+
   try {
     const { scWasmCode, smartContract, userAccount, signer, provider } =
       await setup();
@@ -184,7 +190,6 @@ const deployNftMinter = async () => {
     userAccount.incrementNonce();
     signer.sign(deployTransaction);
 
-    const spinner = ora('Processing transaction...');
     spinner.start();
 
     await deployTransaction.send(provider);
@@ -192,10 +197,59 @@ const deployNftMinter = async () => {
     const txStatus = deployTransaction.getStatus();
     const txHash = deployTransaction.getHash();
 
+    // This is done to populate VecMapper of token indexes,
+    // with big amounts it had to be split into more transactions
+    // this assures that later the random minting is more performant on SC
+    const pTxHashes: TransactionHash[] = [];
+    const populateTxOperations = async (numberOfbatches: number, i: number) => {
+      const amountOfTokens =
+        numberOfbatches === i
+          ? deployNftMinterAmountOfTokens -
+            (numberOfbatches - 1) * populateIndexesMaxBatchSize
+          : populateIndexesMaxBatchSize;
+
+      const populateIndexesTx = getPopulateIndexesTx(
+        smartContract,
+        Math.ceil(
+          (populateIndexesBaseTxGasLimit * amountOfTokens) / 43 +
+            populateIndexesBaseTxGasLimit
+        ),
+        amountOfTokens
+      );
+
+      populateIndexesTx.setNonce(userAccount.nonce);
+      userAccount.incrementNonce();
+      signer.sign(populateIndexesTx);
+      await populateIndexesTx.send(provider);
+      await populateIndexesTx.awaitExecuted(provider);
+      pTxHashes.push(populateIndexesTx.getHash());
+    };
+
+    if (deployNftMinterAmountOfTokens > populateIndexesMaxBatchSize) {
+      const numberOfbatches = Math.ceil(
+        deployNftMinterAmountOfTokens / populateIndexesMaxBatchSize
+      );
+      for (let i = 1; i <= numberOfbatches; i++) {
+        await populateTxOperations(numberOfbatches, i);
+      }
+    } else {
+      await populateTxOperations(1, 1);
+    }
+
     spinner.stop();
 
     console.log(`Deployment transaction executed: ${txStatus}`);
-    console.log(`Transaction: ${elrondExplorer[chain]}/transactions/${txHash}`);
+    console.log(
+      `Deployment tx: ${elrondExplorer[chain]}/transactions/${txHash}`
+    );
+    pTxHashes.forEach((hash, index) => {
+      console.log(`Populating indexes transaction executed!`);
+      console.log(
+        `Populate indexes tx (${index + 1}): ${
+          elrondExplorer[chain]
+        }/transactions/${hash}`
+      );
+    });
     const scAddress = smartContract.getAddress();
     console.log(`Smart Contract address: ${scAddress}`);
     updateOutputFile({
@@ -203,7 +257,8 @@ const deployNftMinter = async () => {
       sellingPrice: deployNftMinterSellingPrice,
     });
   } catch (e) {
-    console.log(e);
+    spinner.stop();
+    console.log((e as Error)?.message);
   }
 };
 

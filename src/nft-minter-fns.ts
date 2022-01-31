@@ -18,10 +18,12 @@ import {
   getClaimDevRewardsTransaction,
   getShuffleTransaction,
   commonScQuery,
-  getTokensMintedPerAddressQuery,
+  getMintedPerAddressQuery,
   getChangeBaseCidsTransaction,
   getSetNewTokensLimitPerAddressTransaction,
   getClaimScFundsTransaction,
+  getMintedPerAddressPerDropQuery,
+  getPopulateIndexesTx,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -46,7 +48,7 @@ import {
   getNftPriceFunctionName,
   getNftTokenIdFunctionName,
   getNftTokenNameFunctionName,
-  getTokensLimitPerAddressFunctionName,
+  getTokensLimitPerAddressTotalFunctionName,
   chain,
   elrondExplorer,
   deployNftMinterImgCidLabel,
@@ -55,10 +57,13 @@ import {
   deployNftMinterTokensLimitPerAddressLabel,
   setNewTokensLimitPerAddressGasLimit,
   claimScFundsTxGasLimit,
+  dropTokensLimitPerAddressPerDropLabel,
+  getTokensLimitPerAddressPerDropFunctionName,
+  populateIndexesMaxBatchSize,
+  populateIndexesLabel,
+  populateIndexesBaseTxGasLimit,
 } from './config';
 import { exit } from 'process';
-
-// TODO: better UX overall, catch statuses from smart contract results
 
 // Issue a collection token + add required roles
 const issueCollectionToken = async () => {
@@ -78,6 +83,8 @@ const issueCollectionToken = async () => {
       validate: (value) => (!value ? 'Required!' : true),
     },
   ];
+
+  const spinner = ora('Processing the transaction...');
 
   try {
     const { tokenName, tokenTicker } = await prompts(promptQuestions);
@@ -103,7 +110,6 @@ const issueCollectionToken = async () => {
     userAccount.incrementNonce();
     signer.sign(issueCollectionTokenTx);
 
-    const spinner = ora('Processing transaction...');
     spinner.start();
 
     await issueCollectionTokenTx.send(provider);
@@ -115,7 +121,7 @@ const issueCollectionToken = async () => {
       .getResultingCalls()
       .filter((item) => item.callType === 2)?.[0]?.data;
 
-    const tokenSection = scResults.split('@')?.[2];
+    const tokenSection = scResults?.split('@')?.[2];
     const tokenId = tokenSection
       ? Buffer.from(tokenSection, 'hex').toString('utf8')
       : '';
@@ -133,7 +139,8 @@ const issueCollectionToken = async () => {
       );
     }
   } catch (e) {
-    console.log(e);
+    spinner.stop();
+    console.log((e as Error)?.message);
   }
 };
 
@@ -152,7 +159,7 @@ const setLocalRoles = async () => {
 
     await commonTxOperations(assignRolesTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -161,9 +168,11 @@ const mint = async () => {
 
   const promptQuestions: PromptObject[] = [
     {
-      type: 'text',
+      type: 'number',
       name: 'tokensAmount',
       message: amountOfTokensLabel,
+      validate: (value) =>
+        value && value > 0 ? true : 'Required a number greater than 0!',
     },
   ];
 
@@ -184,7 +193,7 @@ const mint = async () => {
 
     await commonTxOperations(mintTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -230,7 +239,7 @@ const giveaway = async () => {
 
     await commonTxOperations(giveawayTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -242,11 +251,17 @@ const setDrop = async () => {
       message: dropTokensAmountLabel,
       validate: (value) => (!value ? 'Required!' : true),
     },
+    {
+      type: 'number',
+      name: 'dropTokensLimitPerAddressPerDrop',
+      message: dropTokensLimitPerAddressPerDropLabel,
+    },
   ];
 
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
   try {
-    const { dropTokensAmount } = await prompts(promptQuestions);
+    const { dropTokensAmount, dropTokensLimitPerAddressPerDrop } =
+      await prompts(promptQuestions);
 
     const { smartContract, userAccount, signer, provider } = await setup(
       smartContractAddress
@@ -255,12 +270,13 @@ const setDrop = async () => {
     const setDropTx = getSetDropTransaction(
       smartContract,
       setUnsetDropTxGasLimit,
-      dropTokensAmount
+      dropTokensAmount,
+      dropTokensLimitPerAddressPerDrop
     );
 
     await commonTxOperations(setDropTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -278,7 +294,7 @@ const unsetDrop = async () => {
 
     await commonTxOperations(unsetDropTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -298,7 +314,7 @@ const pauseMinting = async () => {
 
     await commonTxOperations(pauseMintingTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -318,7 +334,7 @@ const startMinting = async () => {
 
     await commonTxOperations(startMintingTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -353,7 +369,7 @@ const setNewPrice = async () => {
 
     updateOutputFile({ sellingPrice: newPrice });
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -371,7 +387,7 @@ const claimDevRewards = async () => {
 
     await commonTxOperations(claimDevRewardsTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -386,7 +402,7 @@ const shuffle = async () => {
 
     await commonTxOperations(shuffleTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -427,7 +443,7 @@ const changeBaseCids = async () => {
 
     await commonTxOperations(changeBaseCidsTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -465,11 +481,11 @@ const setNewTokensLimitPerAddress = async () => {
       provider
     );
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
-const getTokensMintedPerAddress = async () => {
+const getMintedPerAddressTotal = async () => {
   const promptQuestions: PromptObject[] = [
     {
       type: 'text',
@@ -481,9 +497,27 @@ const getTokensMintedPerAddress = async () => {
 
   try {
     const { address } = await prompts(promptQuestions);
-    getTokensMintedPerAddressQuery(address);
+    getMintedPerAddressQuery(address);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
+  }
+};
+
+const getMintedPerAddressPerDrop = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'address',
+      message: 'Provide the address:\n',
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
+
+  try {
+    const { address } = await prompts(promptQuestions);
+    getMintedPerAddressPerDropQuery(address);
+  } catch (e) {
+    console.log((e as Error)?.message);
   }
 };
 
@@ -501,7 +535,51 @@ const claimScFunds = async () => {
 
     await commonTxOperations(claimScFundsTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
+  }
+};
+
+// The function is here as a fallback if something fails during the deployment
+// Population of the VecMapper indexes will be triggered with the deploy function
+// But if some of the transactions will fail, then there will be a possibility to use 'populate-indexes'
+// Only for the owner. SC will throw an error if the endpoint is called too many times. It should always be in sync.
+// The minting won't start without correctly populated indexes.
+// Read more about it in the docs: https://www.elven.tools
+const populateIndexes = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'number',
+      name: 'nftMinterAmount',
+      message: populateIndexesLabel,
+      validate: (value) =>
+        value > 1 && value <= populateIndexesMaxBatchSize
+          ? true
+          : `Required number between 1 and ${populateIndexesMaxBatchSize}`,
+    },
+  ];
+
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { nftMinterAmount } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const populateIndexesTx = getPopulateIndexesTx(
+      smartContract,
+      Math.ceil(
+        (populateIndexesBaseTxGasLimit * nftMinterAmount) / 43 +
+          populateIndexesBaseTxGasLimit
+      ),
+      nftMinterAmount
+    );
+
+    await commonTxOperations(populateIndexesTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
   }
 };
 
@@ -509,6 +587,7 @@ export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
     setLocalRoles: 'set-roles',
+    populateIndexes: 'populate-indexes',
     mint: 'mint',
     giveaway: 'giveaway',
     claimScFunds: 'claim-sc-funds',
@@ -527,8 +606,10 @@ export const nftMinter = async (subcommand?: string) => {
     getNftPrice: 'get-nft-price',
     getNftTokenId: 'get-nft-token-id',
     getNftTokenName: 'get-nft-token-name',
-    getTokensLimitPerAddress: 'get-tokens-limit-per-address',
-    getTokensMintedPerAddress: 'get-tokens-minted-per-address',
+    getTokensLimitPerAddressTotal: 'get-tokens-limit-per-address-total',
+    getMintedPerAddressTotal: 'get-minted-per-address-total',
+    getMintedPerAddressPerDrop: 'get-minted-per-address-per-drop',
+    getTokensLimitPerAddressPerDrop: 'get-tokens-limit-per-address-per-drop',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -558,6 +639,9 @@ export const nftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.mint:
       mint();
+      break;
+    case COMMANDS.populateIndexes:
+      populateIndexes();
       break;
     case COMMANDS.giveaway:
       giveaway();
@@ -634,15 +718,25 @@ export const nftMinter = async (subcommand?: string) => {
         resultType: 'string',
       });
       break;
-    case COMMANDS.getTokensLimitPerAddress:
+    case COMMANDS.getTokensLimitPerAddressTotal:
       commonScQuery({
-        functionName: getTokensLimitPerAddressFunctionName,
+        functionName: getTokensLimitPerAddressTotalFunctionName,
         resultLabel: 'Tokens limit per address',
         resultType: 'number',
       });
       break;
-    case COMMANDS.getTokensMintedPerAddress:
-      getTokensMintedPerAddress();
+    case COMMANDS.getMintedPerAddressPerDrop:
+      getMintedPerAddressPerDrop();
+      break;
+    case COMMANDS.getTokensLimitPerAddressPerDrop:
+      commonScQuery({
+        functionName: getTokensLimitPerAddressPerDropFunctionName,
+        resultLabel: 'Tokens limit per address per current drop',
+        resultType: 'number',
+      });
+      break;
+    case COMMANDS.getMintedPerAddressTotal:
+      getMintedPerAddressTotal();
       break;
   }
 };
