@@ -93,7 +93,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "setNewPriceGasLimit": 5000000,
     "setNewPriceFnName": "setNewPrice",
     "shuffleFnName": "shuffle",
-    "shuffleGasLimit": 5000000,
+    "shuffleGasLimit": 6000000,
     "getTotalTokensLeftFnName": "getTotalTokensLeft",
     "getProvenanceHashFnName": "getProvenanceHash",
     "getDropTokensLeftFnName": "getDropTokensLeft",
@@ -110,7 +110,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "setNewTokensLimitPerAddressGasLimit": 5000000,
     "claimScFundsFnName": "claimScFunds",
     "claimScFundsGasLimit": 6000000,
-    "populateIndexesBaseGasLimit": 120000,
+    "populateIndexesBaseGasLimit": 5000000,
     "populateIndexesMaxBatchSize": 5000,
     "populateIndexesFnName": "populateIndexes"
   }
@@ -125,10 +125,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
 - Smart Contract in version 1 doesn't have many mechanisms which will strongly limit unwanted behaviors. It only implements random minting, but in version 2, there will be more mechanisms for fair launches.
 
 ### TODO
-- better docs
-- add nft-minter upgrade function (test init function setup)
-- possibility to use predefined configuration files or prompts when not provided (???)
-- tests where it makes sense
+- check the [issues](https://github.com/juliancwirko/elven-tools-cli/issues)
 
 ### Contact
 

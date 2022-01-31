@@ -365,7 +365,7 @@ export const commonTxOperations = async (
   account.incrementNonce();
   signer.sign(tx);
 
-  const spinner = ora('Processing transaction...');
+  const spinner = ora('Processing the transaction...');
   spinner.start();
 
   await tx.send(provider);
@@ -508,7 +508,7 @@ export const commonScQuery = async ({
     console.log(`${resultLabel}: `, result.trim());
   } catch (e) {
     spinner.stop();
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 

@@ -23,6 +23,7 @@ import {
   getSetNewTokensLimitPerAddressTransaction,
   getClaimScFundsTransaction,
   getMintedPerAddressPerDropQuery,
+  getPopulateIndexesTx,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -58,6 +59,9 @@ import {
   claimScFundsTxGasLimit,
   dropTokensLimitPerAddressPerDropLabel,
   getTokensLimitPerAddressPerDropFunctionName,
+  populateIndexesMaxBatchSize,
+  populateIndexesLabel,
+  populateIndexesBaseTxGasLimit,
 } from './config';
 import { exit } from 'process';
 
@@ -80,7 +84,7 @@ const issueCollectionToken = async () => {
     },
   ];
 
-  const spinner = ora('Processing transaction...');
+  const spinner = ora('Processing the transaction...');
 
   try {
     const { tokenName, tokenTicker } = await prompts(promptQuestions);
@@ -136,7 +140,7 @@ const issueCollectionToken = async () => {
     }
   } catch (e) {
     spinner.stop();
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -155,7 +159,7 @@ const setLocalRoles = async () => {
 
     await commonTxOperations(assignRolesTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -189,7 +193,7 @@ const mint = async () => {
 
     await commonTxOperations(mintTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -235,7 +239,7 @@ const giveaway = async () => {
 
     await commonTxOperations(giveawayTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -272,7 +276,7 @@ const setDrop = async () => {
 
     await commonTxOperations(setDropTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -290,7 +294,7 @@ const unsetDrop = async () => {
 
     await commonTxOperations(unsetDropTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -310,7 +314,7 @@ const pauseMinting = async () => {
 
     await commonTxOperations(pauseMintingTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -330,7 +334,7 @@ const startMinting = async () => {
 
     await commonTxOperations(startMintingTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -365,7 +369,7 @@ const setNewPrice = async () => {
 
     updateOutputFile({ sellingPrice: newPrice });
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -383,7 +387,7 @@ const claimDevRewards = async () => {
 
     await commonTxOperations(claimDevRewardsTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -398,7 +402,7 @@ const shuffle = async () => {
 
     await commonTxOperations(shuffleTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -439,7 +443,7 @@ const changeBaseCids = async () => {
 
     await commonTxOperations(changeBaseCidsTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -477,7 +481,7 @@ const setNewTokensLimitPerAddress = async () => {
       provider
     );
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -495,7 +499,7 @@ const getMintedPerAddressTotal = async () => {
     const { address } = await prompts(promptQuestions);
     getMintedPerAddressQuery(address);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -513,7 +517,7 @@ const getMintedPerAddressPerDrop = async () => {
     const { address } = await prompts(promptQuestions);
     getMintedPerAddressPerDropQuery(address);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
   }
 };
 
@@ -531,7 +535,51 @@ const claimScFunds = async () => {
 
     await commonTxOperations(claimScFundsTx, userAccount, signer, provider);
   } catch (e) {
-    console.log(e);
+    console.log((e as Error)?.message);
+  }
+};
+
+// The function is here as a fallback if something fails during the deployment
+// Population of the VecMapper indexes will be triggered with the deploy function
+// But if some of the transactions will fail, then there will be a possibility to use 'populate-indexes'
+// Only for the owner. SC will throw an error if the endpoint is called too many times. It should always be in sync.
+// The minting won't start without correctly populated indexes.
+// Read more about it in the docs: https://www.elven.tools
+const populateIndexes = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'number',
+      name: 'nftMinterAmount',
+      message: populateIndexesLabel,
+      validate: (value) =>
+        value > 1 && value <= populateIndexesMaxBatchSize
+          ? true
+          : `Required number between 1 and ${populateIndexesMaxBatchSize}`,
+    },
+  ];
+
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    const { nftMinterAmount } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const populateIndexesTx = getPopulateIndexesTx(
+      smartContract,
+      Math.ceil(
+        (populateIndexesBaseTxGasLimit * nftMinterAmount) / 43 +
+          populateIndexesBaseTxGasLimit
+      ),
+      nftMinterAmount
+    );
+
+    await commonTxOperations(populateIndexesTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
   }
 };
 
@@ -539,6 +587,7 @@ export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
     setLocalRoles: 'set-roles',
+    populateIndexes: 'populate-indexes',
     mint: 'mint',
     giveaway: 'giveaway',
     claimScFunds: 'claim-sc-funds',
@@ -590,6 +639,9 @@ export const nftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.mint:
       mint();
+      break;
+    case COMMANDS.populateIndexes:
+      populateIndexes();
       break;
     case COMMANDS.giveaway:
       giveaway();
