@@ -63,8 +63,10 @@ First steps:
 - `elven-tools nft-minter get-nft-price` - the Smart Contract query, returns the current price
 - `elven-tools nft-minter get-nft-token-id` - the Smart Contract query, returns the collection token id
 - `elven-tools nft-minter get-nft-token-name` - the Smart Contract query, returns the collection token name
-- `elven-tools nft-minter get-tokens-limit-per-address` - the Smart Contract query returns the tokens limit per address
-- `elven-tools nft-minter get-tokens-minted-per-address` - the Smart Contract query returns the number of tokens minted per one address
+- `elven-tools nft-minter get-tokens-limit-per-address-total` - the Smart Contract query returns the tokens limit per address
+- `elven-tools nft-minter get-minted-per-address-total` - the Smart Contract query returns the number of tokens minted per one address
+- `get-minted-per-address-per-drop` - when the drop is configured, it will return the number of tokens minted per address per drop
+- `get-tokens-limit-per-address-per-drop` - when the drop is configured, it will return the total limit of tokens per address per drop
 
 ### Custom configuration options
 
