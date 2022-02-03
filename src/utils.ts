@@ -57,11 +57,13 @@ import {
   shuffleFunctionName,
   deployNftMinterSCabiRelativeFilePath,
   deployNftMinterSCabiFileUrl,
-  getTokensMintedPerAddressFunctionName,
+  getMintedPerAddressTotalFunctionName,
   elrondExplorer,
   changeBaseCidsFunctionName,
   setNewTokensLimitPerAddressFunctionName,
   claimScFundsFunctionName,
+  getMintedPerAddressPerDropFunctionName,
+  populateIndexesFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -293,9 +295,7 @@ export const getMintTransaction = (
   } else {
     return contract.call({
       func: new ContractFunction(mintFunctionName),
-      gasLimit: new GasLimit(
-        baseGasLimit + (baseGasLimit / 1.6) * tokensAmount
-      ),
+      gasLimit: new GasLimit(baseGasLimit * tokensAmount),
       args: [new U32Value(tokens)],
       value: Balance.fromString(tokenSellingPrice).times(tokens),
     });
@@ -319,12 +319,18 @@ export const getGiveawayTransaction = (
 export const getSetDropTransaction = (
   contract: SmartContract,
   gasLimit: number,
-  tokensAmount: number
+  tokensAmount: number,
+  tokensLimitPerAddressPerDrop?: number
 ) => {
   return contract.call({
     func: new ContractFunction(setDropFunctionName),
     gasLimit: new GasLimit(gasLimit),
-    args: [new U32Value(tokensAmount)],
+    args: [
+      new U32Value(tokensAmount),
+      ...(tokensLimitPerAddressPerDrop
+        ? [new U32Value(tokensLimitPerAddressPerDrop)]
+        : []),
+    ],
   });
 };
 
@@ -387,7 +393,7 @@ export const commonTxOperations = async (
   account.incrementNonce();
   signer.sign(tx);
 
-  const spinner = ora('Processing transaction...');
+  const spinner = ora('Processing the transaction...');
   spinner.start();
 
   await tx.send(provider);
@@ -497,6 +503,7 @@ export const commonScQuery = async ({
   args?: TypedValue[];
 }) => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const spinner = ora('Processing query...');
   try {
     const provider = getProvider();
     await syncProviderConfig(provider);
@@ -511,7 +518,6 @@ export const commonScQuery = async ({
       smartContractAddress
     );
 
-    const spinner = ora('Processing query...');
     spinner.start();
 
     const response = await scQuery(functionName, smartContract, provider, args);
@@ -529,14 +535,24 @@ export const commonScQuery = async ({
     console.log('Query results:');
     console.log(`${resultLabel}: `, result.trim());
   } catch (e) {
-    console.log(e);
+    spinner.stop();
+    console.log((e as Error)?.message);
   }
 };
 
-export const getTokensMintedPerAddressQuery = (address: string) => {
+export const getMintedPerAddressQuery = (address: string) => {
   commonScQuery({
-    functionName: getTokensMintedPerAddressFunctionName,
+    functionName: getMintedPerAddressTotalFunctionName,
     resultLabel: 'Tokens already minted per address',
+    resultType: 'number',
+    args: [new AddressValue(new Address(address))],
+  });
+};
+
+export const getMintedPerAddressPerDropQuery = (address: string) => {
+  commonScQuery({
+    functionName: getMintedPerAddressPerDropFunctionName,
+    resultLabel: 'Tokens already minted per address per drop',
     resultType: 'number',
     args: [new AddressValue(new Address(address))],
   });
@@ -577,5 +593,17 @@ export const getClaimScFundsTransaction = (
   return contract.call({
     func: new ContractFunction(claimScFundsFunctionName),
     gasLimit: new GasLimit(gasLimit),
+  });
+};
+
+export const getPopulateIndexesTx = (
+  contract: SmartContract,
+  gasLimit: number,
+  amount: number
+) => {
+  return contract.call({
+    func: new ContractFunction(populateIndexesFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+    args: [new U32Value(amount)],
   });
 };
