@@ -53,7 +53,7 @@ export const setLocalRolesFnName =
   customConfig?.config?.nftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
 
 export const mintTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 11000000;
+  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 14000000;
 
 export const nftMinterTokenSellingPrice =
   customConfig?.config?.nftMinterSc?.tokenSelingPrice;
@@ -205,15 +205,15 @@ export const deployNftMinterTagsLabel =
 export const deployNftMinterProvenanceHashLabel =
   'Provide the provenance hash (sha256 hash of all images) [optional]:\n';
 export const deployNftMinterTokensLimitPerAddressLabel =
-  'Total tokens limit per one address per whole collection (ex 3 for three, keep it as small as possible):\n';
+  'Total tokens limit per one address per whole collection\nKeep it low. Max 55 because of single transaction gas limits:\n';
 export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
 
 export const amountOfTokensLabel =
-  'Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract (ex 3 for three tokens):\n';
+  'Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract (You need to provide the value which fits in limits as a whole.):\n';
 
 export const giveawayAddressLabel = 'Provide the address for giveaway: \n';
 export const giveawayTokensAmount =
-  'Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract (ex 3 for three tokens):\n';
+  'Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract (You need to provide the value which fits in limits as a whole.):\n';
 
 export const dropTokensAmountLabel =
   'Provide the amount of the tokens for the drop:\n';

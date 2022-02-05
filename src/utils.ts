@@ -289,7 +289,9 @@ export const getMintTransaction = (
   } else {
     return contract.call({
       func: new ContractFunction(mintFunctionName),
-      gasLimit: new GasLimit(baseGasLimit * tokensAmount),
+      gasLimit: new GasLimit(
+        baseGasLimit + (baseGasLimit / 1.4) * (tokensAmount - 1)
+      ),
       args: [new U32Value(tokens)],
       value: Balance.fromString(tokenSellingPrice).times(tokens),
     });

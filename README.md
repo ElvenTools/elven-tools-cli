@@ -85,7 +85,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "assignRolesGasLimit": 80000000,
     "issueTokenFnName": "issueToken",
     "setLocalRolesFnName": "setLocalRoles",
-    "mintBaseGasLimit": 11000000,
+    "mintBaseGasLimit": 14000000,
     "tokenSelingPrice": "",
     "mintFnName": "mint",
     "giveawayBaseGasLimit": 11000000,

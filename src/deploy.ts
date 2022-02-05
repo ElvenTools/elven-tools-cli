@@ -120,7 +120,8 @@ const deployNftMinter = async () => {
       type: 'number',
       name: 'deployNftMinterTokensLimitPerAddress',
       message: deployNftMinterTokensLimitPerAddressLabel,
-      validate: (value) => (value && value >= 1 ? true : 'Minimum 1!'),
+      validate: (value) =>
+        value && value >= 1 && value <= 55 ? true : 'Min 1; max 55!',
     },
     {
       type: 'number',
