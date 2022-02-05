@@ -22,6 +22,7 @@ import {
   nftSCpayableLabel,
   populateIndexesBaseTxGasLimit,
   populateIndexesMaxBatchSize,
+  deployMetadataInAssetsLabel,
 } from './config';
 import {
   getDeployTransaction,
@@ -79,6 +80,15 @@ const deployNftMinter = async () => {
       name: 'deployNftMinterMetaCid',
       message: deployNftMinterMetaCidLabel,
       validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'select',
+      name: 'metadataInAssets',
+      message: deployMetadataInAssetsLabel,
+      choices: [
+        { title: 'No', value: false },
+        { title: 'Yes', value: true },
+      ],
     },
     {
       type: 'select',
@@ -154,6 +164,7 @@ const deployNftMinter = async () => {
       nftSCupgradable,
       nftSCreadable,
       nftSCpayable,
+      metadataInAssets,
     } = await prompts(promptsQuestions);
 
     if (
@@ -183,7 +194,8 @@ const deployNftMinter = async () => {
       deployNftMinterProvenanceHash,
       nftSCupgradable,
       nftSCreadable,
-      nftSCpayable
+      nftSCpayable,
+      metadataInAssets
     );
 
     deployTransaction.setNonce(userAccount.nonce);

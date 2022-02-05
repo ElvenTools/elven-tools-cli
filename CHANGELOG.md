@@ -1,3 +1,7 @@
+### [1.3.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.3.0) (2022-02-04)
+- Metadata JSON file can be now attached also in the Assets/Uris section (some marketplaces require that),
+- There will be no `ipfs://` schema-based Uri from the Assets/Uris. It is because there are usually gateway Uris only. It is still possible to add the ipfs schema-based Uri to the metadata JSON file. (Smart Contract only change)
+
 ### [1.2.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.2.0) (2022-01-31)
 - adjustments for SC v 1.1.0
 - setDrop function changes and additional queries

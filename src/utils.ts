@@ -22,6 +22,7 @@ import {
   QueryResponse,
   TypedValue,
   CodeMetadata,
+  BooleanValue,
 } from '@elrondnetwork/erdjs';
 import prompts, { PromptObject } from 'prompts';
 import BigNumber from 'bignumber.js';
@@ -158,7 +159,8 @@ export const getDeployTransaction = (
   provenanceHash?: string,
   upgradable = true,
   readable = false,
-  payable = false
+  payable = false,
+  metadataInAssets = false
 ) => {
   return contract.deploy({
     code,
@@ -174,6 +176,7 @@ export const getDeployTransaction = (
       BytesValue.fromUTF8(fileExtension.trim()),
       BytesValue.fromUTF8(tags?.trim() || ''),
       BytesValue.fromUTF8(provenanceHash?.trim() || ''),
+      new BooleanValue(metadataInAssets),
     ],
   });
 };
