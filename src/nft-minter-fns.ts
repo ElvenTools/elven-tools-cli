@@ -1,4 +1,4 @@
-import { setup } from './setup';
+import { setup, publicEndpointSetup } from './setup';
 import ora from 'ora';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -181,12 +181,10 @@ const mint = async () => {
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
-      smartContractAddress
-    );
+    const { userAccount, signer, provider } = await publicEndpointSetup();
 
     const mintTx = getMintTransaction(
-      smartContract,
+      smartContractAddress,
       mintTxBaseGasLimit,
       Number(tokensAmount)
     );
@@ -394,11 +392,12 @@ const claimDevRewards = async () => {
 const shuffle = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
   try {
-    const { smartContract, userAccount, signer, provider } = await setup(
-      smartContractAddress
-    );
+    const { userAccount, signer, provider } = await publicEndpointSetup();
 
-    const shuffleTx = getShuffleTransaction(smartContract, shuffleGasLimit);
+    const shuffleTx = getShuffleTransaction(
+      smartContractAddress,
+      shuffleGasLimit
+    );
 
     await commonTxOperations(shuffleTx, userAccount, signer, provider);
   } catch (e) {

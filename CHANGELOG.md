@@ -1,3 +1,8 @@
+### [1.3.1](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.3.1) (2022-02-06)
+- bump Smart Contract version usage
+- there was a change in the `mint` endpoint arguments. The amount of tokens is now mandatory. But it doesn't change anything for the CLI. It was always mandatory here.
+- fix the logic for public endpoints setup
+
 ### [1.3.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.3.0) (2022-02-04)
 - Metadata JSON file can be now attached also in the Assets/Uris section (some marketplaces require that),
 - There will be no `ipfs://` schema-based Uri from the Assets/Uris. It is because there are usually gateway Uris only. It is still possible to add the ipfs schema-based Uri to the metadata JSON file. (Smart Contract only change)
