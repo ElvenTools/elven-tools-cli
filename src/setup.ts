@@ -16,9 +16,26 @@ import {
   prepareUserSigner,
 } from './utils';
 
+export const publicEndpointSetup = async () => {
+  const walletPemKey = getFileContents(pemKeyFileName, { isJSON: false });
+  // Provider type based on initial configuration
+  const provider = getProvider();
+  await syncProviderConfig(provider);
+
+  const userAccount = await prepareUserAccount(walletPemKey);
+  await userAccount.sync(provider);
+
+  const signer = prepareUserSigner(walletPemKey);
+
+  return {
+    signer,
+    userAccount,
+    provider,
+  };
+};
+
 export const setup = async (smartContractAddress?: string) => {
   // PEM wallet key file
-  const walletPemKey = getFileContents(pemKeyFileName, { isJSON: false });
   const abiFile = await getAbi(
     deployNftMinterSCabiRelativeFilePath,
     deployNftMinterSCabiFileUrl
@@ -34,20 +51,11 @@ export const setup = async (smartContractAddress?: string) => {
     smartContractAddress
   );
 
-  // Provider type based on initial configuration
-  const provider = getProvider();
-  await syncProviderConfig(provider);
-
-  const userAccount = await prepareUserAccount(walletPemKey);
-  await userAccount.sync(provider);
-
-  const signer = prepareUserSigner(walletPemKey);
+  const publicSetup = await publicEndpointSetup();
 
   return {
     scWasmCode,
     smartContract,
-    signer,
-    userAccount,
-    provider,
+    ...publicSetup,
   };
 };

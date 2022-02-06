@@ -47,8 +47,6 @@ import {
   commonConfirmLabel,
   setNewPriceFunctionName,
   shuffleFunctionName,
-  deployNftMinterSCabiRelativeFilePath,
-  deployNftMinterSCabiFileUrl,
   getMintedPerAddressTotalFunctionName,
   elrondExplorer,
   changeBaseCidsFunctionName,
@@ -272,7 +270,7 @@ export const getAssignRolesTransaction = (
 };
 
 export const getMintTransaction = (
-  contract: SmartContract,
+  contractAddress: string,
   baseGasLimit: number,
   tokensAmount: number
 ) => {
@@ -287,6 +285,9 @@ export const getMintTransaction = (
     );
     exit(9);
   } else {
+    const contract = new SmartContract({
+      address: new Address(contractAddress),
+    });
     return contract.call({
       func: new ContractFunction(mintFunctionName),
       gasLimit: new GasLimit(
@@ -430,9 +431,10 @@ export const getClaimDevRewardsTransaction = (
 };
 
 export const getShuffleTransaction = (
-  contract: SmartContract,
+  contractAddress: string,
   gasLimit: number
 ) => {
+  const contract = new SmartContract({ address: new Address(contractAddress) });
   return contract.call({
     func: new ContractFunction(shuffleFunctionName),
     gasLimit: new GasLimit(gasLimit),
@@ -442,10 +444,11 @@ export const getShuffleTransaction = (
 
 export const scQuery = (
   functionName: string,
-  contract: SmartContract,
+  contractAddress: string,
   provider: IProvider,
   args: TypedValue[] = []
 ) => {
+  const contract = new SmartContract({ address: new Address(contractAddress) });
   return contract.runQuery(provider, {
     func: new ContractFunction(functionName),
     args,
@@ -485,19 +488,14 @@ export const commonScQuery = async ({
     const provider = getProvider();
     await syncProviderConfig(provider);
 
-    const abiFile = await getAbi(
-      deployNftMinterSCabiRelativeFilePath,
-      deployNftMinterSCabiFileUrl
-    );
-
-    const smartContract = createSmartContractInstance(
-      abiFile,
-      smartContractAddress
-    );
-
     spinner.start();
 
-    const response = await scQuery(functionName, smartContract, provider, args);
+    const response = await scQuery(
+      functionName,
+      smartContractAddress,
+      provider,
+      args
+    );
 
     spinner.stop();
 
