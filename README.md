@@ -138,6 +138,10 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
 - [Telegram](https://t.me/juliancwirko)
 - [Twitter](https://twitter.com/JulianCwirko)
 
+### You my also like
+
+- [NFT Art Maker](https://github.com/juliancwirko/nft-art-maker) - generates images and metadata files and packs them into CAR files, all from provided PNG layers.
+
 ### Issues and ideas
 
 Please post issues and ideas [here](https://github.com/juliancwirko/elven-tools-cli/issues).
