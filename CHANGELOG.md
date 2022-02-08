@@ -1,3 +1,7 @@
+### [1.3.2](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.3.2) (2022-02-08)
+- fix gas limit calculation for the `giveaway` endpoint
+- temporary removed misleading message when issuing the collection token, retrieving the token ticker stopped working after update to erdjs v9 - needs more debugging
+
 ### [1.3.1](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.3.1) (2022-02-06)
 - bump Smart Contract version usage
 - there was a change in the `mint` endpoint arguments. The amount of tokens is now mandatory. But it doesn't change anything for the CLI. It was always mandatory here.

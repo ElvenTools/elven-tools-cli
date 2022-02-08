@@ -88,7 +88,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "mintBaseGasLimit": 14000000,
     "tokenSelingPrice": "",
     "mintFnName": "mint",
-    "giveawayBaseGasLimit": 11000000,
+    "giveawayBaseGasLimit": 14000000,
     "giveawayFnName": "giveaway",
     "setDropFnName": "setDrop",
     "setUnsetDropGasLimit": 12000000,
