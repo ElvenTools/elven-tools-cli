@@ -116,28 +116,31 @@ const issueCollectionToken = async () => {
     await issueCollectionTokenTx.awaitExecuted(provider);
     const txHash = issueCollectionTokenTx.getHash();
 
-    const scResults = (await issueCollectionTokenTx.getAsOnNetwork(provider))
-      .getSmartContractResults()
-      .getResultingCalls()
-      .filter((item) => item.callType === 2)?.[0]?.data;
+    // TODO: after updates to erdjs v9 retriving the token stopped working
+    // But it is properly issued
+    // const scResults = (await issueCollectionTokenTx.getAsOnNetwork(provider))
+    //   .getSmartContractResults()
+    //   .getResultingCalls()
+    //   .filter((item) => item.callType === 2)?.[0]?.data;
 
-    const tokenSection = scResults?.split('@')?.[2];
-    const tokenId = tokenSection
-      ? Buffer.from(tokenSection, 'hex').toString('utf8')
-      : '';
+    // const tokenSection = scResults?.split('@')?.[2];
+    // const tokenId = tokenSection
+    //   ? Buffer.from(tokenSection, 'hex').toString('utf8')
+    //   : '';
 
     spinner.stop();
 
     console.log(`Transaction: ${elrondExplorer[chain]}/transactions/${txHash}`);
-    if (tokenId) {
-      console.log('Your collection token id: ', tokenId);
-      console.log('Also saved in the output.json file.');
-      updateOutputFile({ tokenId });
-    } else {
-      console.log(
-        'Something went wrong on the Smart Contract. Check the explorer!'
-      );
-    }
+    // TODO: check what changed in v9
+    // if (tokenId) {
+    //   console.log('Your collection token id: ', tokenId);
+    //   console.log('Also saved in the output.json file.');
+    //   updateOutputFile({ tokenId });
+    // } else {
+    //   console.log(
+    //     'Something went wrong on the Smart Contract. Check the explorer!'
+    //   );
+    // }
   } catch (e) {
     spinner.stop();
     console.log((e as Error)?.message);
@@ -206,9 +209,11 @@ const giveaway = async () => {
       validate: (value) => (!value ? 'Required!' : true),
     },
     {
-      type: 'text',
+      type: 'number',
       name: 'giveawayTokensAmount',
       message: giveawayTokensAmount,
+      validate: (value) =>
+        value && value > 0 ? true : 'Required a number greater than 0!',
     },
   ];
 

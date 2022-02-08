@@ -308,7 +308,9 @@ export const getGiveawayTransaction = (
   const tokens = tokensAmount || 1;
   return contract.call({
     func: new ContractFunction(giveawayFunctionName),
-    gasLimit: new GasLimit(baseGasLimit + (baseGasLimit / 1.6) * tokensAmount),
+    gasLimit: new GasLimit(
+      baseGasLimit + (baseGasLimit / 1.4) * (tokensAmount - 1)
+    ),
     args: [new AddressValue(new Address(address.trim())), new U32Value(tokens)],
   });
 };
