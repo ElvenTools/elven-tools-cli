@@ -71,7 +71,7 @@ export const setDropFunctionName =
   customConfig?.config?.nftMinterSc?.setDropFnName || 'setDrop';
 
 export const setUnsetDropTxGasLimit =
-  customConfig?.config?.nftMinterSc?.setUnsetDropGasLimit || 12000000;
+  customConfig?.config?.nftMinterSc?.setUnsetDropGasLimit || 6000000;
 
 export const unsetDropFunctionName =
   customConfig?.config?.nftMinterSc?.unsetDropFnName || 'unsetDrop';
@@ -205,15 +205,15 @@ export const deployNftMinterTagsLabel =
 export const deployNftMinterProvenanceHashLabel =
   'Provide the provenance hash (sha256 hash of all images) [optional]:\n';
 export const deployNftMinterTokensLimitPerAddressLabel =
-  'Total tokens limit per one address per whole collection\nKeep it low. Max 55 because of single transaction gas limits:\n';
+  'Total tokens limit per one address per whole collection (the best is to keep it as low as possible):\n';
 export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
 
 export const amountOfTokensLabel =
-  'Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract (You need to provide the value which fits in limits as a whole.):\n';
+  'Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max 55 because of the max gas limit per transaction:\n';
 
 export const giveawayAddressLabel = 'Provide the address for giveaway: \n';
 export const giveawayTokensAmount =
-  'Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract (You need to provide the value which fits in limits as a whole.):\n';
+  'Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract\nYou need to provide the value which fits in limits as a whole. Max 55 because of the max gas limit per transaction:\n';
 
 export const dropTokensAmountLabel =
   'Provide the amount of the tokens for the drop:\n';
@@ -228,7 +228,7 @@ export const nftSCpayableLabel =
   'Decide if the contract can receive funds. Recommended because of the royalties.\n';
 
 export const dropTokensLimitPerAddressPerDropLabel =
-  'Provide the tokens limit per single address per whole drop (keep it as small as possible) [optional]:\n';
+  'Provide the tokens limit per single address per whole drop (the best is to keep it as low as possible) [optional]:\n';
 
 export const populateIndexesLabel =
   'Provide the amount. By default the max batch size is 5000:\n';

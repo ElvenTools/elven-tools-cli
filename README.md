@@ -91,7 +91,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
     "giveawayBaseGasLimit": 14000000,
     "giveawayFnName": "giveaway",
     "setDropFnName": "setDrop",
-    "setUnsetDropGasLimit": 12000000,
+    "setUnsetDropGasLimit": 6000000,
     "unsetDropFnName": "unsetDrop",
     "pauseUnpauseGasLimit": 5000000,
     "pauseMintingFnName": "pauseMinting",
