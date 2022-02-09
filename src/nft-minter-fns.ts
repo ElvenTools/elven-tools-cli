@@ -113,7 +113,8 @@ const issueCollectionToken = async () => {
     spinner.start();
 
     await issueCollectionTokenTx.send(provider);
-    await issueCollectionTokenTx.awaitExecuted(provider);
+    // TODO: change to awaitExecuted when token retrive will work
+    await issueCollectionTokenTx.awaitNotarized(provider);
     const txHash = issueCollectionTokenTx.getHash();
 
     // TODO: after updates to erdjs v9 retriving the token stopped working
@@ -175,7 +176,9 @@ const mint = async () => {
       name: 'tokensAmount',
       message: amountOfTokensLabel,
       validate: (value) =>
-        value && value > 0 ? true : 'Required a number greater than 0!',
+        value && value > 0 && value <= 55
+          ? true
+          : 'Required a number greater than 0 and lower than 55 because of the max gas limits!',
     },
   ];
 
@@ -213,7 +216,9 @@ const giveaway = async () => {
       name: 'giveawayTokensAmount',
       message: giveawayTokensAmount,
       validate: (value) =>
-        value && value > 0 ? true : 'Required a number greater than 0!',
+        value && value > 0 && value <= 55
+          ? true
+          : 'Required a number greater than 0 and lower than 55 because of the max gas limits!',
     },
   ];
 

@@ -1,3 +1,8 @@
+### [1.3.3](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.3.3) (2022-02-09)
+- bump Smart Contract version after fixes
+- changes in the default gas limits for setting 'drops'
+- removed the limit of 55 tokens per address when deploying, but the mint, giveaway commands will now have max 55 limit per **one** transaction. You can always make more transactions. This will be also improved in the future to be more automatic.
+
 ### [1.3.2](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.3.2) (2022-02-08)
 - fix gas limit calculation for the `giveaway` endpoint
 - temporary removed misleading message when issuing the collection token, retrieving the token ticker stopped working after update to erdjs v9 - needs more debugging
