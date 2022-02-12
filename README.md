@@ -1,6 +1,7 @@
 ### Elven Tools CLI
 
 - Docs: [www.elven.tools](https://www.elven.tools)
+- Quick jumpstart: [www.elven.tools/docs/jump-start.html](https://www.elven.tools/docs/jump-start.html)
 - Intro video: [youtu.be/szkNE_qOy6Q](https://youtu.be/szkNE_qOy6Q)
 
 🚨 Not enough tests! As for the mainnet, use it at your own risk! 🚨
@@ -40,95 +41,17 @@ First steps:
 6. You can also mint the tokens using the same or different `walletKey.pem` for that run `elven-tools nft-minter mint`.
 7. You can list all the commands using `elven-tools nft-minter --help`; below, you'll find all of them with short descriptions.
 
+### Check out possible workflows
+
+Examples of how you can configure your Smart Contract in a couple of scenarios and how to use the CLI to do this faster and more efficient: [www.elven.tools/docs/elven-tools-workflows.html](https://www.elven.tools/docs/elven-tools-workflows.html)
+
 ### All Commands
 
-- `elven-tools derive-pem` - derives the PEM file from seed phrase (keywords)
-- `elven-tools deploy nft-minter` - deploys the smart contract (by default from the defined tag branch using the devnet, can be configured)
-- `elven-tools nft-minter issue-collection-token` [only owner] - issue main collection handle, it costs 0.05 EGLD, and it is a must in the Elrond chain. All NFTs will be under this collection. The cost here is a one-time payment for the whole collection.
-- `elven-tools nft-minter set-roles` [only owner] - for now, the command sets the critical role for the collection handle. It is a 'create nft' role.
-- `elven-tools nft-minter start-minting` [only owner] - by default, after deploying the smart contract, the minting is disabled. You would need to start it
-- `elven-tools nft-minter pause-minting` [only owner] - you can also pause it at any moment
-- `elven-tools nft-minter set-new-price` [only owner] - you can set a new price per NFT for the whole collection
-- `elven-tools nft-minter giveaway` [only owner] - as an owner, you can give some random tokens to other addresses.
-- `elven-tools nft-minter set-drop` [only owner] - you can also split the minting into drops. These are 'waves' of minting where you can change prices and promote each one (v1 doesn't include any logic for revealing the CIDs with delay, the revealed NFTs will be sent in every drop).
-- `elven-tools nft-minter unset-drop` [only owner] - you can also disable the drop and pause minting
-- `elven-tools nft-minter claim-dev-rewards` [only owner] - as an owner of the Smart Contract, you can always claim the developer rewards. Read more about them in the Elrond docs.
-- `elven-tools nft-minter change-base-cids` [only owner] - you can change base IPFS CIDs only before any NFT was minted. Otherwise, it doesn't make sense to do that.
-- `elven-tools nft-minter set-new-tokens-limit-per-address` [only owner] - it is possible to change the limits per address which are configured when deploying the Smart Contract
-- `elven-tools nft-minter claim-sc-funds` [only owner] - this is treated as a fallback for royalties, there is no way for now to implement other solution, the Smart Contract will receive the royalties as the creator, so there has to be a way to get them back. Generally, it shouldn't be required otherwise. Proper solutions will be with the `esdt_nft_create_as_caller`, which doesn't work yet.
-- `elven-tools nft-minter shuffle` - as a user, you can take part and ensure that the minting is random. This transaction will reshuffle the next index to mint. Everyone can run it.
-- `elven-tools nft-minter mint` - the main mint function, you can mint NFTs using any `walletKey.pem` file
-- `elven-tools nft-minter get-total-tokens-left` - the Smart Contract query, returns amount of tokens left
-- `elven-tools nft-minter get-provenance-hash` - the Smart Contract query returns the provenance hash if provided when deploying
-- `elven-tools nft-minter get-drop-tokens-left` - the Smart Contract query returns the number of tokens left per drop
-- `elven-tools nft-minter get-nft-price` - the Smart Contract query, returns the current price
-- `elven-tools nft-minter get-nft-token-id` - the Smart Contract query, returns the collection token id
-- `elven-tools nft-minter get-nft-token-name` - the Smart Contract query, returns the collection token name
-- `elven-tools nft-minter get-tokens-limit-per-address-total` - the Smart Contract query returns the tokens limit per address
-- `elven-tools nft-minter get-minted-per-address-total` - the Smart Contract query returns the number of tokens minted per one address
-- `get-minted-per-address-per-drop` - when the drop is configured, it will return the number of tokens minted per address per drop
-- `get-tokens-limit-per-address-per-drop` - when the drop is configured, it will return the total limit of tokens per address per drop
+For all commands, check out the docs: [www.elven.tools/docs/cli-commands.html](https://www.elven.tools/docs/cli-commands.html)
 
 ### Custom configuration options
 
-Below is an example of a `.elventoolsrc` config file with default values. It is not required if you will work on the devnet with the defined tag branch of the Smart Contract. In other cases, you would need to have it. It should be located in the same directory from which the `elven-tools` commands are triggered—the same directory as the one where the `walletKey.pem` file is located.
-
-```json
-{
-  "chain": "devnet",
-  "customProxyGateway": "https://devnet-gateway.elrond.com",
-  "nftMinter": {
-    "version": "{tag version here or branch name, for example: v1.2.0}",
-    "deployGasLimit": 120000000,
-    "issueCollectionTokenGasLimit": 80000000,
-    "issueValue": "0.05",
-    "assignRolesGasLimit": 80000000,
-    "issueTokenFnName": "issueToken",
-    "setLocalRolesFnName": "setLocalRoles",
-    "mintBaseGasLimit": 14000000,
-    "tokenSelingPrice": "",
-    "mintFnName": "mint",
-    "giveawayBaseGasLimit": 14000000,
-    "giveawayFnName": "giveaway",
-    "setDropFnName": "setDrop",
-    "setUnsetDropGasLimit": 6000000,
-    "unsetDropFnName": "unsetDrop",
-    "pauseUnpauseGasLimit": 5000000,
-    "pauseMintingFnName": "pauseMinting",
-    "unpauseMintingFnName": "startMinting",
-    "setNewPriceGasLimit": 5000000,
-    "setNewPriceFnName": "setNewPrice",
-    "shuffleFnName": "shuffle",
-    "shuffleGasLimit": 6000000,
-    "getTotalTokensLeftFnName": "getTotalTokensLeft",
-    "getProvenanceHashFnName": "getProvenanceHash",
-    "getDropTokensLeftFnName": "getDropTokensLeft",
-    "getNftPriceFnName": "getNftPrice",
-    "getNftTokenIdFnName": "getNftTokenId",
-    "getNftTokenNameFnName": "getNftTokenName",
-    "getMintedPerAddressTotalFnName": "getMintedPerAddressTotal",
-    "getTokensLimitPerAddressTotalFnName": "getTokensLimitPerAddressTotal",
-    "getMintedPerAddressPerDropFnName": "getMintedPerAddressPerDrop",
-    "getTokensLimitPerAddressPerDropFnName": "getTokensLimitPerAddressPerDrop",
-    "changeBaseCidsFnName": "changeBaseCids",
-    "changeBaseCidsGasLimit": 5000000,
-    "setNewTokensLimitPerAddressFnName": "setNewTokensLimitPerAddress",
-    "setNewTokensLimitPerAddressGasLimit": 5000000,
-    "claimScFundsFnName": "claimScFunds",
-    "claimScFundsGasLimit": 6000000,
-    "populateIndexesBaseGasLimit": 5000000,
-    "populateIndexesMaxBatchSize": 5000,
-    "populateIndexesFnName": "populateIndexes"
-  }
-}
-```
-
-**Whole config with default values:** [config.ts](https://github.com/juliancwirko/elven-tools-cli/blob/main/src/config.ts)
-
-### Limitations and caveats
-
-- there are main limitations related to the Smart Contract. Remember that it is most likely that this CLI tool won't be used only in a way that everyone would want to, be aware that you can always change the names of the endpoints in the Smart Contract. Then you can also use the config file and change them here in the CLI
-- Smart Contract in version 1 doesn't have many mechanisms which will strongly limit unwanted behaviors. It only implements random minting, but in version 2, there will be more mechanisms for fair launches.
+For all configuration options check out the docs: [www.elven.tools/docs/cli-introduction.html#custom-configuration-options](https://www.elven.tools/docs/cli-introduction.html#custom-configuration-options)
 
 ### TODO
 - check the [issues](https://github.com/juliancwirko/elven-tools-cli/issues)
@@ -138,7 +61,7 @@ Below is an example of a `.elventoolsrc` config file with default values. It is 
 - [Telegram](https://t.me/juliancwirko)
 - [Twitter](https://twitter.com/JulianCwirko)
 
-### You my also like
+### You may also like
 
 - [NFT Art Maker](https://github.com/juliancwirko/nft-art-maker) - generates images and metadata files and packs them into CAR files, all from provided PNG layers.
 

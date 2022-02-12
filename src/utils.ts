@@ -23,6 +23,9 @@ import {
   TypedValue,
   CodeMetadata,
   BooleanValue,
+  List,
+  ListType,
+  AddressType,
 } from '@elrondnetwork/erdjs';
 import prompts, { PromptObject } from 'prompts';
 import BigNumber from 'bignumber.js';
@@ -54,6 +57,10 @@ import {
   claimScFundsFunctionName,
   getMintedPerAddressPerDropFunctionName,
   populateIndexesFunctionName,
+  populateAllowlistFunctionName,
+  getAllowlistAddressCheckFunctionName,
+  enableAllowlistFunctionName,
+  disableAllowlistFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -363,6 +370,26 @@ export const getUnpauseMintingTransaction = (
   });
 };
 
+export const getEnableAllowlistTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(enableAllowlistFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+  });
+};
+
+export const getDisableAllowlistTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(disableAllowlistFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+  });
+};
+
 export const commonTxOperations = async (
   tx: Transaction,
   account: Account,
@@ -457,6 +484,14 @@ export const scQuery = (
   });
 };
 
+export const parseQueryResultBoolean = (queryResponse: QueryResponse) => {
+  const resultBuff = Buffer.from(
+    queryResponse?.returnData?.[0],
+    'base64'
+  ).toString('hex');
+  return resultBuff === '01' ? 'true' : 'false';
+};
+
 export const parseQueryResultInt = (queryResponse: QueryResponse) => {
   const resultBuff = Buffer.from(
     queryResponse?.returnData?.[0],
@@ -477,11 +512,13 @@ export const commonScQuery = async ({
   functionName,
   resultLabel,
   resultType,
+  resultModifier,
   args,
 }: {
   functionName: string;
-  resultLabel: string;
-  resultType: 'number' | 'string';
+  resultType: 'number' | 'string' | 'boolean';
+  resultLabel?: string;
+  resultModifier?: (result: boolean | string | number) => string;
   args?: TypedValue[];
 }) => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
@@ -505,12 +542,18 @@ export const commonScQuery = async ({
 
     if (resultType === 'string') {
       result = parseQueryResultString(response);
+    } else if (resultType === 'boolean') {
+      result = parseQueryResultBoolean(response);
     } else {
       result = parseQueryResultInt(response);
     }
 
-    console.log('Query results:');
-    console.log(`${resultLabel}: `, result.trim());
+    resultModifier?.(result.trim());
+
+    console.log(
+      `${resultLabel ? resultLabel : 'Query results:'} `,
+      resultModifier ? resultModifier(result.trim()) : result.trim()
+    );
   } catch (e) {
     spinner.stop();
     console.log((e as Error)?.message);
@@ -520,7 +563,7 @@ export const commonScQuery = async ({
 export const getMintedPerAddressQuery = (address: string) => {
   commonScQuery({
     functionName: getMintedPerAddressTotalFunctionName,
-    resultLabel: 'Tokens already minted per address',
+    resultLabel: 'Tokens already minted per address:',
     resultType: 'number',
     args: [new AddressValue(new Address(address))],
   });
@@ -529,8 +572,21 @@ export const getMintedPerAddressQuery = (address: string) => {
 export const getMintedPerAddressPerDropQuery = (address: string) => {
   commonScQuery({
     functionName: getMintedPerAddressPerDropFunctionName,
-    resultLabel: 'Tokens already minted per address per drop',
+    resultLabel: 'Tokens already minted per address per drop:',
     resultType: 'number',
+    args: [new AddressValue(new Address(address))],
+  });
+};
+
+export const getAllowlistAddressCheckQuery = (address: string) => {
+  commonScQuery({
+    functionName: getAllowlistAddressCheckFunctionName,
+    resultType: 'boolean',
+    resultLabel: 'Result:',
+    resultModifier: (result) =>
+      result === 'true'
+        ? 'Provided address is included!'
+        : "Provided address isn't included!",
     args: [new AddressValue(new Address(address))],
   });
 };
@@ -582,5 +638,24 @@ export const getPopulateIndexesTx = (
     func: new ContractFunction(populateIndexesFunctionName),
     gasLimit: new GasLimit(gasLimit),
     args: [new U32Value(amount)],
+  });
+};
+
+export const getPopulateAllowlistTx = (
+  contract: SmartContract,
+  baseGasLimit: number,
+  addresses: string[]
+) => {
+  const getList = () => {
+    return new List(
+      new ListType(new AddressType()),
+      addresses.map((a) => new AddressValue(new Address(a)))
+    );
+  };
+
+  return contract.call({
+    func: new ContractFunction(populateAllowlistFunctionName),
+    gasLimit: new GasLimit(baseGasLimit + 2300000 * (addresses.length - 1)),
+    args: [getList()],
   });
 };

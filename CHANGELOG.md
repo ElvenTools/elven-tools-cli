@@ -1,3 +1,6 @@
+### [1.4.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.4.0) (2022-02-11)
+- added `allowlist` support, check out the docs at www.elven.tools especially [possible workflows](http://www.elven.tools/docs/elven-tools-workflows.html)
+
 ### [1.3.3](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.3.3) (2022-02-09)
 - bump Smart Contract version after fixes
 - changes in the default gas limits for setting 'drops'

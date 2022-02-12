@@ -30,6 +30,7 @@ import {
   getFileContents,
   baseDir,
   getPopulateIndexesTx,
+  areYouSureAnswer,
 } from './utils';
 import { TransactionHash } from '@elrondnetwork/erdjs/out';
 
@@ -166,6 +167,8 @@ const deployNftMinter = async () => {
       nftSCpayable,
       metadataInAssets,
     } = await prompts(promptsQuestions);
+
+    await areYouSureAnswer();
 
     if (
       !deployNftMinterImgCid ||
