@@ -612,7 +612,7 @@ const populateIndexes = async () => {
       name: 'nftMinterAmount',
       message: populateIndexesLabel,
       validate: (value) =>
-        value > 1 && value <= populateIndexesMaxBatchSize
+        value >= 1 && value <= populateIndexesMaxBatchSize
           ? true
           : `Required number between 1 and ${populateIndexesMaxBatchSize}`,
     },

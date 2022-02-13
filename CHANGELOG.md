@@ -1,5 +1,6 @@
 ### [1.4.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.4.0) (2022-02-11)
 - added `allowlist` support, check out the docs at www.elven.tools especially [possible workflows](http://www.elven.tools/docs/elven-tools-workflows.html)
+- Switch to public and official API endpoints instead of gateway ones for three reasons. The first one is because the gateway is lately overloaded, and the second one is that they will probably be merged soon. There were also problems fetching the smart contract results with the gateway, which will be required for future improvements.
 
 ### [1.3.3](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.3.3) (2022-02-09)
 - bump Smart Contract version after fixes

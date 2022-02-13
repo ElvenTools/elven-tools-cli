@@ -200,12 +200,10 @@ export const proxyGateways: { [key: string]: string } = {
   local: customConfig?.config?.customProxyGateway || 'http://localhost:7950',
   testnet:
     customConfig?.config?.customProxyGateway ||
-    'https://testnet-gateway.elrond.com',
+    'https://testnet-api.elrond.com',
   devnet:
-    customConfig?.config?.customProxyGateway ||
-    'https://devnet-gateway.elrond.com',
-  mainnet:
-    customConfig?.config?.customProxyGateway || 'https://gateway.elrond.com',
+    customConfig?.config?.customProxyGateway || 'https://devnet-api.elrond.com',
+  mainnet: customConfig?.config?.customProxyGateway || 'https://api.elrond.com',
 };
 
 export const elrondExplorer: { [key: string]: string } = {
