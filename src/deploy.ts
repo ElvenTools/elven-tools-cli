@@ -247,9 +247,7 @@ const deployNftMinter = async () => {
         deployNftMinterAmountOfTokens / populateIndexesMaxBatchSize
       );
       for (let i = 1; i <= numberOfbatches; i++) {
-        spinner.stopAndPersist({
-          text: `(Batch ${i}) Populating indexes, please wait...`,
-        });
+        spinner.text = `(Batch ${i}) Populating indexes, please wait...`;
         await populateTxOperations(numberOfbatches, i);
       }
     } else {
