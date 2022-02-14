@@ -225,8 +225,10 @@ const deployNftMinter = async () => {
 
       const populateIndexesTx = getPopulateIndexesTx(
         smartContract,
+        // TODO: this will probably change anyway over time, there are optimization implemented
+        // on elrond side from time to time, should be adjusted each time
         Math.ceil(
-          (populateIndexesBaseTxGasLimit * amountOfTokens) / 43 +
+          (populateIndexesBaseTxGasLimit * amountOfTokens) / 18.5 +
             populateIndexesBaseTxGasLimit
         ),
         amountOfTokens
@@ -245,6 +247,7 @@ const deployNftMinter = async () => {
         deployNftMinterAmountOfTokens / populateIndexesMaxBatchSize
       );
       for (let i = 1; i <= numberOfbatches; i++) {
+        spinner.text = `(Batch ${i}) Populating indexes, please wait...`;
         await populateTxOperations(numberOfbatches, i);
       }
     } else {

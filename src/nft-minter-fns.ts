@@ -73,6 +73,7 @@ import {
   enableDisableAllowlistGasLimit,
   allowlistFileRelativePath,
   addressesListLabel,
+  allowlistBatchSize,
 } from './config';
 import { exit } from 'process';
 
@@ -630,8 +631,10 @@ const populateIndexes = async () => {
 
     const populateIndexesTx = getPopulateIndexesTx(
       smartContract,
+      // TODO: this will probably change anyway over time, there are optimization implemented
+      // on elrond side from time to time, should be adjusted each time
       Math.ceil(
-        (populateIndexesBaseTxGasLimit * nftMinterAmount) / 43 +
+        (populateIndexesBaseTxGasLimit * nftMinterAmount) / 18.5 +
           populateIndexesBaseTxGasLimit
       ),
       nftMinterAmount
@@ -689,9 +692,9 @@ const populateAllowlist = async () => {
       addresses = addressesList;
     }
 
-    if (Array.isArray(addresses) && addresses.length > 250) {
+    if (Array.isArray(addresses) && addresses.length > allowlistBatchSize) {
       console.log(
-        'The amount of addresses is more than 250. Please split it into batches with a max of 250 addresses per transaction.'
+        `The amount of addresses is more than ${allowlistBatchSize}. Please split it into batches with a max of ${allowlistBatchSize} addresses per transaction.`
       );
       exit(9);
     }
