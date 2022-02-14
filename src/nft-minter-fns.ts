@@ -24,6 +24,11 @@ import {
   getClaimScFundsTransaction,
   getMintedPerAddressPerDropQuery,
   getPopulateIndexesTx,
+  getPopulateAllowlistTx,
+  getAllowlistAddressCheckQuery,
+  getEnableAllowlistTransaction,
+  getDisableAllowlistTransaction,
+  getFileContents,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -62,6 +67,12 @@ import {
   populateIndexesMaxBatchSize,
   populateIndexesLabel,
   populateIndexesBaseTxGasLimit,
+  populateAllowlistBaseGasLimit,
+  getAllowlistFunctionName,
+  isAllowlistEnabledFunctionName,
+  enableDisableAllowlistGasLimit,
+  allowlistFileRelativePath,
+  addressesListLabel,
 } from './config';
 import { exit } from 'process';
 
@@ -494,6 +505,46 @@ const setNewTokensLimitPerAddress = async () => {
   }
 };
 
+const enableAllowlist = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const enableAllowlistTx = getEnableAllowlistTransaction(
+      smartContract,
+      enableDisableAllowlistGasLimit
+    );
+
+    await commonTxOperations(enableAllowlistTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const disableAllowlist = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  try {
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const disableAllowlistTx = getDisableAllowlistTransaction(
+      smartContract,
+      enableDisableAllowlistGasLimit
+    );
+
+    await commonTxOperations(disableAllowlistTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
 const getMintedPerAddressTotal = async () => {
   const promptQuestions: PromptObject[] = [
     {
@@ -561,7 +612,7 @@ const populateIndexes = async () => {
       name: 'nftMinterAmount',
       message: populateIndexesLabel,
       validate: (value) =>
-        value > 1 && value <= populateIndexesMaxBatchSize
+        value >= 1 && value <= populateIndexesMaxBatchSize
           ? true
           : `Required number between 1 and ${populateIndexesMaxBatchSize}`,
     },
@@ -592,6 +643,90 @@ const populateIndexes = async () => {
   }
 };
 
+// Calls the allowlist endpoint on the smart contract
+// Can be called multiple times
+const populateAllowlist = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'list',
+      name: 'addressesList',
+      message: addressesListLabel,
+      validate: (value) =>
+        value && value.length > 0 ? true : `Required at least one address!`,
+    },
+  ];
+
+  try {
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const allowlistFile = getFileContents(allowlistFileRelativePath, {
+      noExitOnError: true,
+    });
+
+    let addresses = [];
+
+    if (allowlistFile) {
+      console.log(' ');
+      console.log(
+        'Populating addresses from the file: sc/nft-minter/allowlist.json'
+      );
+      console.log(' ');
+      await areYouSureAnswer();
+      addresses = allowlistFile;
+    } else {
+      console.log(' ');
+      console.log(
+        'There is no file with the addresses here: sc/nft-minter/allowlist.json'
+      );
+      console.log('You will be providing addresses by hand.');
+      console.log(' ');
+      await areYouSureAnswer();
+      const { addressesList } = await prompts(promptQuestions);
+      addresses = addressesList;
+    }
+
+    if (Array.isArray(addresses) && addresses.length > 250) {
+      console.log(
+        'The amount of addresses is more than 250. Please split it into batches with a max of 250 addresses per transaction.'
+      );
+      exit(9);
+    }
+
+    const claimScFundsTx = getPopulateAllowlistTx(
+      smartContract,
+      populateAllowlistBaseGasLimit,
+      addresses
+    );
+
+    await commonTxOperations(claimScFundsTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const getAllowlistAddressCheck = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'address',
+      message:
+        'Provide the address to check if it is included in the allowlist:\n',
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
+
+  try {
+    const { address } = await prompts(promptQuestions);
+    getAllowlistAddressCheckQuery(address);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
 export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
@@ -607,6 +742,9 @@ export const nftMinter = async (subcommand?: string) => {
     setNewPrice: 'set-new-price',
     claimDevRewards: 'claim-dev-rewards',
     shuffle: 'shuffle',
+    populateAllowlist: 'populate-allowlist',
+    enableAllowlist: 'enable-allowlist',
+    disableAllowlist: 'disable-allowlist',
     changeBaseCids: 'change-base-cids',
     setNewTokensLimitPerAddress: 'set-new-tokens-limit-per-address',
     getTotalTokensLeft: 'get-total-tokens-left',
@@ -619,6 +757,9 @@ export const nftMinter = async (subcommand?: string) => {
     getMintedPerAddressTotal: 'get-minted-per-address-total',
     getMintedPerAddressPerDrop: 'get-minted-per-address-per-drop',
     getTokensLimitPerAddressPerDrop: 'get-tokens-limit-per-address-per-drop',
+    getAllowlistSize: 'get-allowlist-size',
+    isAllowlistEnabled: 'is-allowlist-enabled',
+    getAllowlistAddressCheck: 'get-allowlist-address-check',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -676,6 +817,15 @@ export const nftMinter = async (subcommand?: string) => {
     case COMMANDS.shuffle:
       shuffle();
       break;
+    case COMMANDS.populateAllowlist:
+      populateAllowlist();
+      break;
+    case COMMANDS.enableAllowlist:
+      enableAllowlist();
+      break;
+    case COMMANDS.disableAllowlist:
+      disableAllowlist();
+      break;
     case COMMANDS.changeBaseCids:
       changeBaseCids();
       break;
@@ -688,49 +838,49 @@ export const nftMinter = async (subcommand?: string) => {
     case COMMANDS.getTotalTokensLeft:
       commonScQuery({
         functionName: getTotalTokensLeftFunctionName,
-        resultLabel: 'Total tokens left',
+        resultLabel: 'Total tokens left:',
         resultType: 'number',
       });
       break;
     case COMMANDS.getProvenanceHash:
       commonScQuery({
         functionName: getProvenanceHashFunctionName,
-        resultLabel: 'Provenance hash of the collection',
+        resultLabel: 'Provenance hash of the collection:',
         resultType: 'string',
       });
       break;
     case COMMANDS.getDropTokensLeft:
       commonScQuery({
         functionName: getDropTokensLeftFunctionName,
-        resultLabel: 'Tokens left for the current drop',
+        resultLabel: 'Tokens left for the current drop:',
         resultType: 'number',
       });
       break;
     case COMMANDS.getNftPrice:
       commonScQuery({
         functionName: getNftPriceFunctionName,
-        resultLabel: 'Current NFT price is',
+        resultLabel: 'Current NFT price is:',
         resultType: 'number',
       });
       break;
     case COMMANDS.getNftTokenId:
       commonScQuery({
         functionName: getNftTokenIdFunctionName,
-        resultLabel: 'NFT token id',
+        resultLabel: 'NFT token id:',
         resultType: 'string',
       });
       break;
     case COMMANDS.getNftTokenName:
       commonScQuery({
         functionName: getNftTokenNameFunctionName,
-        resultLabel: 'NFT token name',
+        resultLabel: 'NFT token name:',
         resultType: 'string',
       });
       break;
     case COMMANDS.getTokensLimitPerAddressTotal:
       commonScQuery({
         functionName: getTokensLimitPerAddressTotalFunctionName,
-        resultLabel: 'Tokens limit per address',
+        resultLabel: 'Tokens limit per address:',
         resultType: 'number',
       });
       break;
@@ -740,12 +890,33 @@ export const nftMinter = async (subcommand?: string) => {
     case COMMANDS.getTokensLimitPerAddressPerDrop:
       commonScQuery({
         functionName: getTokensLimitPerAddressPerDropFunctionName,
-        resultLabel: 'Tokens limit per address per current drop',
+        resultLabel: 'Tokens limit per address per current drop:',
         resultType: 'number',
       });
       break;
     case COMMANDS.getMintedPerAddressTotal:
       getMintedPerAddressTotal();
+      break;
+    case COMMANDS.getAllowlistSize:
+      commonScQuery({
+        functionName: getAllowlistFunctionName,
+        resultLabel: 'Total size of the Allowlist:',
+        resultType: 'number',
+      });
+      break;
+    case COMMANDS.isAllowlistEnabled:
+      commonScQuery({
+        functionName: isAllowlistEnabledFunctionName,
+        resultLabel: 'Result:',
+        resultModifier: (result) =>
+          result === 'true'
+            ? 'The allowlist is enabled!'
+            : 'The allowlist is disabled!',
+        resultType: 'boolean',
+      });
+      break;
+    case COMMANDS.getAllowlistAddressCheck:
+      getAllowlistAddressCheck();
       break;
   }
 };
