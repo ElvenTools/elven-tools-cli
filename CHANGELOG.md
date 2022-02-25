@@ -1,5 +1,5 @@
-### [1.4.2](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.4.2) (2022-02-17)
-- bump Smart Contract version. See more in [SC repo changelog](https://github.com/juliancwirko/elven-nft-minter-sc/blob/main/CHANGELOG.md).
+### [1.5.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.5.0) (2022-02-25)
+- bump Smart Contract version, check out [SC v1.5.0](https://github.com/juliancwirko/elven-nft-minter-sc/releases/tag/v1.5.0) for more details. Important performance fixes.
 
 ### [1.4.1](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.4.1) (2022-02-14)
 - fix populate indexes after changes in the Elrond's architecture, check out: [#34](https://github.com/juliancwirko/elven-nft-minter-sc/issues/34) for more details. It results in more transactions that have to be done. But for now, it is necessary.
