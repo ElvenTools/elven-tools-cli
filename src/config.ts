@@ -198,6 +198,9 @@ export const disableAllowlistFunctionName =
 export const enableDisableAllowlistGasLimit =
   customConfig?.config?.nftMinterSc?.enableDisableAllowlistGasLimit || 6000000;
 
+export const isDropActiveFunctionName =
+  customConfig?.config?.nftMinterSc?.isDropActiveFnName || 'isDropActive';
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Other predefined config settings
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡

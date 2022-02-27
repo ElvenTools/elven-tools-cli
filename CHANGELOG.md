@@ -1,3 +1,7 @@
+### [1.5.1](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.5.0) (2022-02-25)
+- bump Smart Contract version, check out [SC v1.5.1](https://github.com/juliancwirko/elven-nft-minter-sc/releases/tag/v1.5.1) for more details. Fixes in how the unsetDrop logic clears previous drop.
+- added new command: `is-drop-active`
+
 ### [1.5.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.5.0) (2022-02-25)
 - bump Smart Contract version, check out [SC v1.5.0](https://github.com/juliancwirko/elven-nft-minter-sc/releases/tag/v1.5.0) for more details. Important performance fixes.
 

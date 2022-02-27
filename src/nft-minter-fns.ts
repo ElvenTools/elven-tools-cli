@@ -74,6 +74,7 @@ import {
   allowlistFileRelativePath,
   addressesListLabel,
   allowlistBatchSize,
+  isDropActiveFunctionName,
 } from './config';
 import { exit } from 'process';
 
@@ -763,6 +764,7 @@ export const nftMinter = async (subcommand?: string) => {
     getAllowlistSize: 'get-allowlist-size',
     isAllowlistEnabled: 'is-allowlist-enabled',
     getAllowlistAddressCheck: 'get-allowlist-address-check',
+    isDropActive: 'is-drop-active',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -920,6 +922,15 @@ export const nftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.getAllowlistAddressCheck:
       getAllowlistAddressCheck();
+      break;
+    case COMMANDS.isDropActive:
+      commonScQuery({
+        functionName: isDropActiveFunctionName,
+        resultLabel: 'Result:',
+        resultModifier: (result) =>
+          result === 'true' ? 'The drop is active!' : 'The drop is not active!',
+        resultType: 'boolean',
+      });
       break;
   }
 };
