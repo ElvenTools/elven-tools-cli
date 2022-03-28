@@ -14,6 +14,8 @@ esbuild
       'ora',
       '@elrondnetwork/erdjs',
       'bignumber.js',
+      'cross-fetch',
+      'p-throttle',
     ],
   })
   .catch(() => process.exit(1));

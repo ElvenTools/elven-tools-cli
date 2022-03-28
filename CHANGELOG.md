@@ -1,3 +1,7 @@
+### [1.6.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.6.0) (2022-03-28)
+- new functionality for getting the collection NFT owners' addresses, you can filter smart contract addresses, and also you can decide if you need unique addresses in a case when one address is an owner of a couple of NFTs from the collection
+- this update doesn't affect the interaction with the Elven Tools smart contract in any way
+
 ### [1.5.2](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.5.2) (2022-03-05)
 - bump Smart Contract version,  check out [SC v1.5.2](https://github.com/juliancwirko/elven-nft-minter-sc/releases/tag/v1.5.2) for more details. Upgrades for the elrond-wasm and cleanup.
 

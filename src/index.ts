@@ -2,6 +2,7 @@
 
 import { exit, argv } from 'process';
 import { deploy } from './deploy';
+import { collectionNftOwners } from './collection-nft-owners';
 import { derivePem } from './derive-pem';
 import { nftMinter } from './nft-minter-fns';
 import packageJson from '../package.json';
@@ -10,6 +11,7 @@ const COMMANDS = {
   deploy: 'deploy',
   derivePem: 'derive-pem',
   nftMinter: 'nft-minter',
+  collectionNftOwners: 'collection-nft-owners',
 };
 
 const args = argv;
@@ -43,14 +45,19 @@ if (!command || !Object.values(COMMANDS).includes(command)) {
   exit(9);
 }
 
-if (command === COMMANDS.derivePem) {
-  derivePem();
-}
-
-if (command === COMMANDS.deploy) {
-  deploy(args ? args[3] : undefined);
-}
-
-if (command === COMMANDS.nftMinter) {
-  nftMinter(args ? args[3] : undefined);
+switch (command) {
+  case COMMANDS.derivePem:
+    derivePem();
+    break;
+  case COMMANDS.deploy:
+    deploy(args ? args[3] : undefined);
+    break;
+  case COMMANDS.nftMinter:
+    nftMinter(args ? args[3] : undefined);
+    break;
+  case COMMANDS.collectionNftOwners:
+    collectionNftOwners();
+    break;
+  default:
+    break;
 }
