@@ -74,6 +74,10 @@ export const collectionNftOwners = async () => {
 
     console.log(`There is ${tokensNumber} tokens in that collection.`);
 
+    if (Number(tokensNumber) === 0) {
+      exit(9);
+    }
+
     spinner.start();
 
     const makeCalls = () =>

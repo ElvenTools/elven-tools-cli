@@ -1,3 +1,6 @@
+### [1.6.1](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.6.1) (2022-03-28)
+- fix for `collection-nft-owners` spinner when collection doesn't exist on chain or is empty
+
 ### [1.6.0](https://github.com/juliancwirko/elven-tools-cli/releases/tag/v1.6.0) (2022-03-28)
 - new functionality for getting the collection NFT owners' addresses, you can filter smart contract addresses, and also you can decide if you need unique addresses in a case when one address is an owner of a couple of NFTs from the collection
 - this update doesn't affect the interaction with the Elven Tools smart contract in any way
