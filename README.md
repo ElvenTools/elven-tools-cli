@@ -1,6 +1,7 @@
 ### Elven Tools CLI
 
 - Docs: [www.elven.tools](https://www.elven.tools)
+- Elven Tools Twitter: [www.twitter.com/ElvenTools](https://twitter.com/ElvenTools)
 - Quick jumpstart: [www.elven.tools/docs/jump-start.html](https://www.elven.tools/docs/jump-start.html)
 - Intro video: [youtu.be/resGP6a7_34](https://youtu.be/resGP6a7_34)
 
