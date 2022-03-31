@@ -13,7 +13,7 @@
   - deploy the NFT minter Smart Contract on the Elrond blockchain
   - interact with the NFT minter Smart Contract on the Elrond blockchain
 
-For now it is designed to deploy the contract: [elven-nft-minter-sc](https://github.com/juliancwirko/elven-nft-minter-sc).
+For now it is designed to deploy the contract: [elven-nft-minter-sc](https://github.com/ElvenTools/elven-nft-minter-sc).
 
 ### How does it work? 
 
@@ -41,7 +41,7 @@ For all commands, check out the docs: [www.elven.tools/docs/cli-commands.html](h
 For all configuration options check out the docs: [www.elven.tools/docs/cli-introduction.html#custom-configuration-options](https://www.elven.tools/docs/cli-introduction.html#custom-configuration-options)
 
 ### TODO
-- check the [issues](https://github.com/juliancwirko/elven-tools-cli/issues)
+- check the [issues](https://github.com/ElvenTools/elven-tools-cli/issues)
 
 ### Contact
 
@@ -54,7 +54,7 @@ For all configuration options check out the docs: [www.elven.tools/docs/cli-intr
 
 ### Issues and ideas
 
-Please post issues and ideas [here](https://github.com/juliancwirko/elven-tools-cli/issues).
+Please post issues and ideas [here](https://github.com/ElvenTools/elven-tools-cli/issues).
 
 ### License
 

@@ -4,7 +4,7 @@
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "types": "build/types",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "elvenTools": {
     "smartContractVersionTagName": "v1.5.2"
   },
@@ -22,17 +22,18 @@
   },
   "author": "Julian Ćwirko <julian.io>",
   "license": "MIT",
-  "homepage": "https://github.com/juliancwirko/elven-tools-cli",
+  "homepage": "https://github.com/ElvenTools/elven-tools-cli",
   "repository": {
     "type": "git",
-    "url": "https://github.com/juliancwirko/elven-tools-cli"
+    "url": "https://github.com/ElvenTools/elven-tools-cli"
   },
   "keywords": [
     "elrond",
     "blockchain",
     "sdk",
     "javascript",
-    "nft"
+    "nft",
+    "cli"
   ],
   "devDependencies": {
     "@types/ledgerhq__hw-transport": "^4.21.4",

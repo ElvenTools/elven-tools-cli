@@ -300,8 +300,8 @@ export const deployNftMinterSCwasmRelativeFilePath =
   'sc/nft-minter/elven-nft-minter.wasm';
 
 // Urls to the repo, when there are no local files
-export const deployNftMinterSCabiFileUrl = `https://raw.githubusercontent.com/juliancwirko/elven-nft-minter-sc/${deployNftMinterScVersion}/output/elven-nft-minter.abi.json`;
-export const deployNftMinterSCwasmFileUrl = `https://raw.githubusercontent.com/juliancwirko/elven-nft-minter-sc/${deployNftMinterScVersion}/output/elven-nft-minter.wasm`;
+export const deployNftMinterSCabiFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-nft-minter-sc/${deployNftMinterScVersion}/output/elven-nft-minter.abi.json`;
+export const deployNftMinterSCwasmFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-nft-minter-sc/${deployNftMinterScVersion}/output/elven-nft-minter.wasm`;
 
 // Used for output data like the smart contract address after deploy
 export const outputFileName = 'output.json';
