@@ -25,6 +25,14 @@ const MAX_SIZE = 100;
 
 const spinner = ora('Processing, please wait...');
 
+const getMetadataFileName = (str: string) => {
+  return str
+    .split(';')
+    .filter((item) => item.includes('metadata'))?.[0]
+    .split('/')?.[1]
+    .split('.')?.[0];
+};
+
 export const collectionNftOwners = async () => {
   let tokensNumber = '';
 
@@ -117,9 +125,9 @@ export const collectionNftOwners = async () => {
                 ? Buffer.from(item.attributes, 'base64').toString()
                 : undefined;
               if (attrsDecoded) {
-                return fileNamesList.some((item: string) =>
-                  attrsDecoded.includes(item)
-                );
+                return fileNamesList.some((item: string) => {
+                  return item === getMetadataFileName(attrsDecoded);
+                });
               }
               return false;
             });

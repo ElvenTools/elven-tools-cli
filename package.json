@@ -4,7 +4,7 @@
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "types": "build/types",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "elvenTools": {
     "smartContractVersionTagName": "v1.5.2"
   },

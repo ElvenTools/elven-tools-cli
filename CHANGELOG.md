@@ -1,3 +1,6 @@
+### [1.6.4](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.6.4) (2022-04-10)
+- fixed metadata file name filter for `collection-nft-owners` 
+
 ### [1.6.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.6.3) (2022-04-10)
 - new filter for `collection-nft-owners` you can now get owners filtered by metadata JSON file name saved in the attributes field. This is optional. If there is not provided at least one file name, the filter will be ignored.
 
