@@ -1,5 +1,6 @@
 import { Address } from '@elrondnetwork/erdjs';
 import fetch from 'cross-fetch';
+import { Buffer } from 'buffer';
 import fs from 'fs';
 import { exit, cwd } from 'process';
 import ora from 'ora';
@@ -12,10 +13,12 @@ import {
   collectionNftOwnersOnlyUniqLabel,
   collectionNftOwnersNoSmartContractsLabel,
   collectionNftOwnersCallsPerSecond,
+  collectionNftOwnersMetadataFileName,
 } from './config';
 
 interface NftToken {
   owner: string;
+  attributes: string;
 }
 
 const MAX_SIZE = 100;
@@ -50,12 +53,16 @@ export const collectionNftOwners = async () => {
         { title: 'No', value: false },
       ],
     },
+    {
+      type: 'list',
+      name: 'fileNamesList',
+      message: collectionNftOwnersMetadataFileName,
+    },
   ];
 
   try {
-    const { collectionTicker, onlyUniq, noSmartContracts } = await prompts(
-      promptsQuestions
-    );
+    const { collectionTicker, onlyUniq, noSmartContracts, fileNamesList } =
+      await prompts(promptsQuestions);
 
     if (!collectionTicker) {
       console.log(
@@ -100,7 +107,25 @@ export const collectionNftOwners = async () => {
             }&size=${MAX_SIZE}`
           );
           const data = await response.json();
-          const addrs = data.map((token: NftToken) => token.owner);
+
+          let filteredData: NftToken[] = data;
+
+          // Filtering by metadata json file name
+          if (fileNamesList?.length > 0) {
+            filteredData = data.filter((item: NftToken) => {
+              const attrsDecoded = item.attributes
+                ? Buffer.from(item.attributes, 'base64').toString()
+                : undefined;
+              if (attrsDecoded) {
+                return fileNamesList.some((item: string) =>
+                  attrsDecoded.includes(item)
+                );
+              }
+              return false;
+            });
+          }
+
+          const addrs = filteredData.map((token: NftToken) => token.owner);
           if (index >= Math.ceil(repeats / 2)) {
             spinner.text = 'Almost there...';
           }
@@ -132,22 +157,23 @@ export const collectionNftOwners = async () => {
 
     const addressesLength = addresses.length;
 
+    let additionalInfo = '';
+
     if (addressesLength > 0) {
       fs.writeFileSync(
         `${cwd()}/nft-collection-owners.json`,
         JSON.stringify(addresses, null, 2),
         'utf8'
       );
-
-      let additionalInfo = '';
-
-      if (onlyUniq || noSmartContracts) {
-        additionalInfo = `${onlyUniq ? ' Only uniq addresses.' : ''}${
-          noSmartContracts ? ' Without smart contract addresses.' : ''
-        }`;
-      }
-      console.log(`Done, ${addressesLength} addresses saved.${additionalInfo}`);
     }
+
+    if (onlyUniq || noSmartContracts) {
+      additionalInfo = `${onlyUniq ? ' Only uniq addresses.' : ''}${
+        noSmartContracts ? ' Without smart contract addresses.' : ''
+      }`;
+    }
+
+    console.log(`Done, ${addressesLength} addresses saved.${additionalInfo}`);
   } catch (e) {
     console.log((e as Error)?.message);
   }
