@@ -20,7 +20,7 @@ For now it is designed to deploy the contract: [elven-nft-minter-sc](https://git
 #### General how to:
 
 - `npm install elven-tools -g`
-- `elven-tools --version` or `elvent-tools -v`
+- `elven-tools --version` or `elven-tools -v`
 - `elven-tools --help` or `elven-tools -h` - for getting the commands on the root level
 - `elven-tools nft-minter --help` or `elven-tools nft-minter -h` - for getting all the commands for the subcommand
 

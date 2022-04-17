@@ -1,3 +1,6 @@
+### [1.6.5](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.6.5) (2022-04-17)
+- fixed regression for `collection-nft-owners` 
+
 ### [1.6.4](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.6.4) (2022-04-10)
 - fixed metadata file name filter for `collection-nft-owners` 
 

@@ -119,7 +119,7 @@ export const collectionNftOwners = async () => {
           let filteredData: NftToken[] = data;
 
           // Filtering by metadata json file name
-          if (fileNamesList?.length > 0) {
+          if (fileNamesList?.[0]) {
             filteredData = data.filter((item: NftToken) => {
               const attrsDecoded = item.attributes
                 ? Buffer.from(item.attributes, 'base64').toString()
