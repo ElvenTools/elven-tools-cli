@@ -1,3 +1,9 @@
+### [1.7.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.7.0) (2022-04-24)
+- an additional option for `issue-collection-token` - now you can also set the name for NFTs, previously it was the same name as the collection token name
+- better validation for `issue-collection-token` arguments
+- changes in `get-nft-token-name` it will now display the NFTs name, not the collection token name
+- new query: `get-collection-token-name` - it will display the collection token name
+
 ### [1.6.5](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.6.5) (2022-04-17)
 - fixed regression for `collection-nft-owners` 
 

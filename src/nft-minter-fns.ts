@@ -36,6 +36,7 @@ import {
   assignRolesNftMinterGasLimit,
   collectionTokenNameLabel,
   collectionTokenTickerLabel,
+  nftTokenNameLabel,
   amountOfTokensLabel,
   mintTxBaseGasLimit,
   giveawayAddressLabel,
@@ -53,6 +54,7 @@ import {
   getNftPriceFunctionName,
   getNftTokenIdFunctionName,
   getNftTokenNameFunctionName,
+  getCollectionTokenNameFunctionName,
   getTokensLimitPerAddressTotalFunctionName,
   chain,
   elrondExplorer,
@@ -87,20 +89,45 @@ const issueCollectionToken = async () => {
       type: 'text',
       name: 'tokenName',
       message: collectionTokenNameLabel,
-      validate: (value) => (!value ? 'Required!' : true),
+      validate: (value) => {
+        if (!value) return 'Required!';
+        if (value.length > 20 || value.length < 3) {
+          return 'Length between 3 and 20 characters!';
+        }
+        if (!new RegExp(/^[a-zA-Z0-9]+$/).test(value)) {
+          return 'Alphanumeric characters only!';
+        }
+        return true;
+      },
     },
     {
       type: 'text',
       name: 'tokenTicker',
       message: collectionTokenTickerLabel,
-      validate: (value) => (!value ? 'Required!' : true),
+      validate: (value) => {
+        if (!value) return 'Required!';
+        if (value.length > 10 || value.length < 3) {
+          return 'Length between 3 and 10 characters!';
+        }
+        if (!new RegExp(/^[A-Z0-9]+$/).test(value)) {
+          return 'Alphanumeric UPPERCASE only!';
+        }
+        return true;
+      },
+    },
+    {
+      type: 'text',
+      name: 'nftTokenName',
+      message: nftTokenNameLabel,
     },
   ];
 
   const spinner = ora('Processing the transaction...');
 
   try {
-    const { tokenName, tokenTicker } = await prompts(promptQuestions);
+    const { tokenName, tokenTicker, nftTokenName } = await prompts(
+      promptQuestions
+    );
 
     if (!tokenName || !tokenTicker) {
       console.log('You have to provide the token name and ticker value!');
@@ -116,7 +143,8 @@ const issueCollectionToken = async () => {
       issueNftMinterGasLimit,
       issueNftMinterValue,
       tokenName,
-      tokenTicker
+      tokenTicker,
+      nftTokenName
     );
 
     issueCollectionTokenTx.setNonce(userAccount.nonce);
@@ -757,6 +785,7 @@ export const nftMinter = async (subcommand?: string) => {
     getNftPrice: 'get-nft-price',
     getNftTokenId: 'get-nft-token-id',
     getNftTokenName: 'get-nft-token-name',
+    getCollectionTokenName: 'get-collection-token-name',
     getTokensLimitPerAddressTotal: 'get-tokens-limit-per-address-total',
     getMintedPerAddressTotal: 'get-minted-per-address-total',
     getMintedPerAddressPerDrop: 'get-minted-per-address-per-drop',
@@ -879,6 +908,13 @@ export const nftMinter = async (subcommand?: string) => {
       commonScQuery({
         functionName: getNftTokenNameFunctionName,
         resultLabel: 'NFT token name:',
+        resultType: 'string',
+      });
+      break;
+    case COMMANDS.getCollectionTokenName:
+      commonScQuery({
+        functionName: getCollectionTokenNameFunctionName,
+        resultLabel: 'Collection token name:',
         resultType: 'string',
       });
       break;

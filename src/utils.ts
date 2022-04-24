@@ -240,13 +240,15 @@ export const getIssueTransaction = (
   gasLimit: number,
   value: number, // mandatory 0.05 EGLD
   tokenName: string,
-  tokenTicker: string
+  tokenTicker: string,
+  nftTokenName?: string
 ) => {
   return contract.call({
     func: new ContractFunction(issueTokenFnName),
     args: [
       BytesValue.fromUTF8(tokenName.trim()),
       BytesValue.fromUTF8(tokenTicker.trim()),
+      ...(nftTokenName ? [BytesValue.fromUTF8(nftTokenName.trim())] : []),
     ],
     value: Balance.egld(value),
     gasLimit: new GasLimit(gasLimit),

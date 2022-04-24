@@ -56,7 +56,7 @@ export const mintTxBaseGasLimit =
   customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 14000000;
 
 export const nftMinterTokenSellingPrice =
-  customConfig?.config?.nftMinterSc?.tokenSelingPrice;
+  customConfig?.config?.nftMinterSc?.tokenSellingPrice;
 
 export const mintFunctionName =
   customConfig?.config?.nftMinterSc?.mintFnName || 'mint';
@@ -117,6 +117,10 @@ export const getNftTokenIdFunctionName =
 
 export const getNftTokenNameFunctionName =
   customConfig?.config?.nftMinterSc?.getNftTokenNameFnName || 'getNftTokenName';
+
+export const getCollectionTokenNameFunctionName =
+  customConfig?.config?.nftMinterSc?.getCollectionTokenNameFnName ||
+  'getCollectionTokenName';
 
 export const getTokensLimitPerAddressTotalFunctionName =
   customConfig?.config?.nftMinterSc?.getTokensLimitPerAddressTotalFnName ||
@@ -231,10 +235,11 @@ export const elrondExplorer: { [key: string]: string } = {
 
 export const derivePemSeedQuestion = 'Enter mnemonic (seed phrase)\n';
 export const collectionTokenNameLabel =
-  'Enter the name for the collection token (ex. MyName123). \nAvoid spaces and special characters\n';
+  'Enter the name for the collection token (ex. MyName123). \n(3-20 characters, alphanumeric only)\n';
 export const collectionTokenTickerLabel =
-  'Enter the ticker for the collection token (ex. MYNAME). \nAvoid spaces and special characters. Keep it short and capitalize.\n';
-
+  'Enter the ticker for the collection token (ex. MYNAME). \n(3-10 characters, alphanumeric and uppercase only)\n';
+export const nftTokenNameLabel =
+  "Enter the name for NFTs. If not provided, the name of the collection will be used. \nEach name will additionally get a unique number, so don't add it here. (Optional)\n";
 export const deployNftMinterImgCidLabel =
   'Provide the base assets files IPFS CID:\n';
 export const deployNftMinterMetaCidLabel =
