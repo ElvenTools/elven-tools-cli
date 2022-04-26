@@ -217,9 +217,9 @@ const mint = async () => {
       name: 'tokensAmount',
       message: amountOfTokensLabel,
       validate: (value) =>
-        value && value > 0 && value <= 55
+        value && value > 0 && value <= 99
           ? true
-          : 'Required a number greater than 0 and lower than 55 because of the max gas limits!',
+          : 'Required a number greater than 0 and lower than 99 because of the max gas limits!',
     },
   ];
 
@@ -257,9 +257,9 @@ const giveaway = async () => {
       name: 'giveawayTokensAmount',
       message: giveawayTokensAmount,
       validate: (value) =>
-        value && value > 0 && value <= 55
+        value && value > 0 && value <= 99
           ? true
-          : 'Required a number greater than 0 and lower than 55 because of the max gas limits!',
+          : 'Required a number greater than 0 and lower than 99 because of the max gas limits!',
     },
   ];
 

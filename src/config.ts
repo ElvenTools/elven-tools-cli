@@ -53,7 +53,7 @@ export const setLocalRolesFnName =
   customConfig?.config?.nftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
 
 export const mintTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 14000000;
+  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 12000000;
 
 export const nftMinterTokenSellingPrice =
   customConfig?.config?.nftMinterSc?.tokenSellingPrice;
@@ -62,7 +62,7 @@ export const mintFunctionName =
   customConfig?.config?.nftMinterSc?.mintFnName || 'mint';
 
 export const giveawayTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 14000000;
+  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 12000000;
 
 export const giveawayFunctionName =
   customConfig?.config?.nftMinterSc?.giveawayFnName || 'giveaway';
@@ -71,13 +71,13 @@ export const setDropFunctionName =
   customConfig?.config?.nftMinterSc?.setDropFnName || 'setDrop';
 
 export const setUnsetDropTxGasLimit =
-  customConfig?.config?.nftMinterSc?.setUnsetDropGasLimit || 6000000;
+  customConfig?.config?.nftMinterSc?.setUnsetDropGasLimit || 5000000;
 
 export const unsetDropFunctionName =
   customConfig?.config?.nftMinterSc?.unsetDropFnName || 'unsetDrop';
 
 export const pauseUnpauseTxGasLimit =
-  customConfig?.config?.nftMinterSc?.pauseUnpauseGasLimit || 5000000;
+  customConfig?.config?.nftMinterSc?.pauseUnpauseGasLimit || 4500000;
 
 export const pauseMintingFunctionName =
   customConfig?.config?.nftMinterSc?.pauseMintingFnName || 'pauseMinting';
@@ -86,7 +86,7 @@ export const unpauseMintingFunctionName =
   customConfig?.config?.nftMinterSc?.unpauseMintingFnName || 'startMinting';
 
 export const setNewPriceGasLimit =
-  customConfig?.config?.nftMinterSc?.setNewPriceGasLimit || 5000000;
+  customConfig?.config?.nftMinterSc?.setNewPriceGasLimit || 4500000;
 
 export const setNewPriceFunctionName =
   customConfig?.config?.nftMinterSc?.setNewPriceFnName || 'setNewPrice';
@@ -95,7 +95,7 @@ export const shuffleFunctionName =
   customConfig?.config?.nftMinterSc?.shuffleFnName || 'shuffle';
 
 export const shuffleGasLimit =
-  customConfig?.config?.nftMinterSc?.shuffleGasLimit || 6000000;
+  customConfig?.config?.nftMinterSc?.shuffleGasLimit || 5000000;
 
 export const getTotalTokensLeftFunctionName =
   customConfig?.config?.nftMinterSc?.getTotalTokensLeftFnName ||
@@ -169,7 +169,7 @@ export const populateIndexesMaxBatchSize =
 
 // TODO: here the same situation as about, it could be more in the future
 export const allowlistBatchSize =
-  customConfig?.config?.nftMinterSc?.allowlistBatchSize || 250;
+  customConfig?.config?.nftMinterSc?.allowlistBatchSize || 320;
 
 export const populateIndexesFunctionName =
   customConfig?.config?.nftMinterSc?.populateIndexesFnName || 'populateIndexes';
@@ -259,11 +259,11 @@ export const deployNftMinterTokensLimitPerAddressLabel =
 export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
 
 export const amountOfTokensLabel =
-  'Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max 55 because of the max gas limit per transaction:\n';
+  'Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max 99 because of the max gas limit per transaction:\n';
 
 export const giveawayAddressLabel = 'Provide the address for giveaway: \n';
 export const giveawayTokensAmount =
-  'Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract\nYou need to provide the value which fits in limits as a whole. Max 55 because of the max gas limit per transaction:\n';
+  'Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract\nYou need to provide the value which fits in limits as a whole. Max 99 because of the max gas limit per transaction:\n';
 
 export const dropTokensAmountLabel =
   'Provide the amount of the tokens for the drop:\n';

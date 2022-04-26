@@ -300,7 +300,7 @@ export const getMintTransaction = (
     return contract.call({
       func: new ContractFunction(mintFunctionName),
       gasLimit: new GasLimit(
-        baseGasLimit + (baseGasLimit / 1.4) * (tokensAmount - 1)
+        baseGasLimit + (baseGasLimit / 2) * (tokensAmount - 1)
       ),
       args: [new U32Value(tokens)],
       value: Balance.fromString(tokenSellingPrice).times(tokens),
@@ -318,7 +318,7 @@ export const getGiveawayTransaction = (
   return contract.call({
     func: new ContractFunction(giveawayFunctionName),
     gasLimit: new GasLimit(
-      baseGasLimit + (baseGasLimit / 1.4) * (tokensAmount - 1)
+      baseGasLimit + (baseGasLimit / 2) * (tokensAmount - 1)
     ),
     args: [new AddressValue(new Address(address.trim())), new U32Value(tokens)],
   });
@@ -657,7 +657,7 @@ export const getPopulateAllowlistTx = (
 
   return contract.call({
     func: new ContractFunction(populateAllowlistFunctionName),
-    gasLimit: new GasLimit(baseGasLimit + 2300000 * (addresses.length - 1)),
+    gasLimit: new GasLimit(baseGasLimit + 1850000 * (addresses.length - 1)),
     args: [getList()],
   });
 };
