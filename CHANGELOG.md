@@ -1,6 +1,7 @@
 ### [1.7.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.7.1) (2022-04-26)
 - gas limits adjustments
 - max tokens to mint per one transaction limit adjusted
+- max addresses for allowlist limit adjusted
 
 ### [1.7.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.7.0) (2022-04-24)
 - an additional option for `issue-collection-token` - now you can also set the name for NFTs, previously it was the same name as the collection token name

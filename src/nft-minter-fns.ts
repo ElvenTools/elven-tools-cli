@@ -77,6 +77,7 @@ import {
   addressesListLabel,
   allowlistBatchSize,
   isDropActiveFunctionName,
+  tokensPerOneTx,
 } from './config';
 import { exit } from 'process';
 
@@ -217,9 +218,9 @@ const mint = async () => {
       name: 'tokensAmount',
       message: amountOfTokensLabel,
       validate: (value) =>
-        value && value > 0 && value <= 99
+        value && value > 0 && value <= tokensPerOneTx
           ? true
-          : 'Required a number greater than 0 and lower than 99 because of the max gas limits!',
+          : `Required a number greater than 0 and lower than ${tokensPerOneTx} because of the max gas limits!`,
     },
   ];
 
@@ -257,9 +258,9 @@ const giveaway = async () => {
       name: 'giveawayTokensAmount',
       message: giveawayTokensAmount,
       validate: (value) =>
-        value && value > 0 && value <= 99
+        value && value > 0 && value <= tokensPerOneTx
           ? true
-          : 'Required a number greater than 0 and lower than 99 because of the max gas limits!',
+          : `Required a number greater than 0 and lower than ${tokensPerOneTx} because of the max gas limits!`,
     },
   ];
 
@@ -704,7 +705,7 @@ const populateAllowlist = async () => {
     if (allowlistFile) {
       console.log(' ');
       console.log(
-        'Populating addresses from the file: sc/nft-minter/allowlist.json'
+        `Populating addresses from the file: sc/nft-minter/allowlist.json (max ${allowlistBatchSize} addresses per one transaction).`
       );
       console.log(' ');
       await areYouSureAnswer();

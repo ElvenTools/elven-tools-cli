@@ -53,7 +53,7 @@ export const setLocalRolesFnName =
   customConfig?.config?.nftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
 
 export const mintTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 12000000;
+  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 12500000;
 
 export const nftMinterTokenSellingPrice =
   customConfig?.config?.nftMinterSc?.tokenSellingPrice;
@@ -62,7 +62,7 @@ export const mintFunctionName =
   customConfig?.config?.nftMinterSc?.mintFnName || 'mint';
 
 export const giveawayTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 12000000;
+  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 12500000;
 
 export const giveawayFunctionName =
   customConfig?.config?.nftMinterSc?.giveawayFnName || 'giveaway';
@@ -205,6 +205,9 @@ export const enableDisableAllowlistGasLimit =
 export const isDropActiveFunctionName =
   customConfig?.config?.nftMinterSc?.isDropActiveFnName || 'isDropActive';
 
+export const tokensPerOneTx =
+  customConfig?.config?.nftMinterSc?.tokensPerOneTx || 95;
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Collection NFT owners
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
@@ -258,12 +261,10 @@ export const deployNftMinterTokensLimitPerAddressLabel =
   'Total tokens limit per one address per whole collection (the best is to keep it as low as possible):\n';
 export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
 
-export const amountOfTokensLabel =
-  'Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max 99 because of the max gas limit per transaction:\n';
+export const amountOfTokensLabel = `Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneTx} because of the max gas limit per transaction:\n`;
 
 export const giveawayAddressLabel = 'Provide the address for giveaway: \n';
-export const giveawayTokensAmount =
-  'Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract\nYou need to provide the value which fits in limits as a whole. Max 99 because of the max gas limit per transaction:\n';
+export const giveawayTokensAmount = `Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneTx} because of the max gas limit per transaction:\n`;
 
 export const dropTokensAmountLabel =
   'Provide the amount of the tokens for the drop:\n';
