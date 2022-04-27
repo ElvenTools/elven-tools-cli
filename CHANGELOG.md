@@ -1,4 +1,4 @@
-### [1.7.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.7.1) (2022-04-26)
+### [1.7.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.7.1) (2022-04-27)
 - gas limits adjustments
 - max tokens to mint per one transaction limit adjusted
 - max addresses for allowlist limit adjusted
