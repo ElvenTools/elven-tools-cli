@@ -315,4 +315,4 @@ export const deployNftMinterSCwasmFileUrl = `https://raw.githubusercontent.com/E
 export const outputFileName = 'output.json';
 
 // Used for the addresses list when populating the allowlist on the smart contract
-export const allowlistFileRelativePath = 'sc/nft-minter/allowlist.json';
+export const allowlistFileRelativePath = 'allowlist.json';

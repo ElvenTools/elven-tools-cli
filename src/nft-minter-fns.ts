@@ -705,16 +705,14 @@ const populateAllowlist = async () => {
     if (allowlistFile) {
       console.log(' ');
       console.log(
-        `Populating addresses from the file: sc/nft-minter/allowlist.json (max ${allowlistBatchSize} addresses per one transaction).`
+        `Populating addresses from the file: allowlist.json (max ${allowlistBatchSize} addresses per file/transaction).`
       );
       console.log(' ');
       await areYouSureAnswer();
       addresses = allowlistFile;
     } else {
       console.log(' ');
-      console.log(
-        'There is no file with the addresses here: sc/nft-minter/allowlist.json'
-      );
+      console.log('There is no allowlist.json file with the addresses.');
       console.log('You will be providing addresses by hand.');
       console.log(' ');
       await areYouSureAnswer();
