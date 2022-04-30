@@ -61,6 +61,8 @@ import {
   getAllowlistAddressCheckFunctionName,
   enableAllowlistFunctionName,
   disableAllowlistFunctionName,
+  clearAllowlistFunctionName,
+  removeAllowlistFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -659,5 +661,28 @@ export const getPopulateAllowlistTx = (
     func: new ContractFunction(populateAllowlistFunctionName),
     gasLimit: new GasLimit(baseGasLimit + 1850000 * (addresses.length - 1)),
     args: [getList()],
+  });
+};
+
+export const getClearAllowlistTx = (
+  contract: SmartContract,
+  baseGasLimit: number,
+  itemsInAllowlist: number
+) => {
+  return contract.call({
+    func: new ContractFunction(clearAllowlistFunctionName),
+    gasLimit: new GasLimit(baseGasLimit + 445000 * (itemsInAllowlist - 1)),
+  });
+};
+
+export const getRemoveAllowlistAddressTx = (
+  contract: SmartContract,
+  gasLimit: number,
+  address: string
+) => {
+  return contract.call({
+    func: new ContractFunction(removeAllowlistFunctionName),
+    gasLimit: new GasLimit(gasLimit),
+    args: [new AddressValue(new Address(address))],
   });
 };

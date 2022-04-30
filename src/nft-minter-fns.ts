@@ -29,6 +29,10 @@ import {
   getEnableAllowlistTransaction,
   getDisableAllowlistTransaction,
   getFileContents,
+  getClearAllowlistTx,
+  scQuery,
+  parseQueryResultInt,
+  getRemoveAllowlistAddressTx,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -78,6 +82,9 @@ import {
   allowlistBatchSize,
   isDropActiveFunctionName,
   tokensPerOneTx,
+  clearAllowlistBaseGasLimit,
+  removeAllowlistAddressLabel,
+  removeAllowlistAddressLimit,
 } from './config';
 import { exit } from 'process';
 
@@ -739,6 +746,72 @@ const populateAllowlist = async () => {
   }
 };
 
+const clearAllowlist = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+
+  try {
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const itemsInAllowlistResponse = await scQuery(
+      getAllowlistFunctionName,
+      smartContractAddress,
+      provider
+    );
+
+    const clearAllowlistTx = getClearAllowlistTx(
+      smartContract,
+      clearAllowlistBaseGasLimit,
+      Number(parseQueryResultInt(itemsInAllowlistResponse))
+    );
+
+    await commonTxOperations(clearAllowlistTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const removeAllowlistAddress = async () => {
+  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'address',
+      message: removeAllowlistAddressLabel,
+      validate: (value) => (value ? true : `Required!`),
+    },
+  ];
+
+  try {
+    const { address } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setup(
+      smartContractAddress
+    );
+
+    const removeAllowlistAddressTx = getRemoveAllowlistAddressTx(
+      smartContract,
+      removeAllowlistAddressLimit,
+      address
+    );
+
+    await commonTxOperations(
+      removeAllowlistAddressTx,
+      userAccount,
+      signer,
+      provider
+    );
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
 const getAllowlistAddressCheck = async () => {
   const promptQuestions: PromptObject[] = [
     {
@@ -774,6 +847,8 @@ export const nftMinter = async (subcommand?: string) => {
     claimDevRewards: 'claim-dev-rewards',
     shuffle: 'shuffle',
     populateAllowlist: 'populate-allowlist',
+    clearAllowlist: 'clear-allowlist',
+    removeAllowlistAddress: 'remove-allowlist-address',
     enableAllowlist: 'enable-allowlist',
     disableAllowlist: 'disable-allowlist',
     changeBaseCids: 'change-base-cids',
@@ -852,6 +927,12 @@ export const nftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.populateAllowlist:
       populateAllowlist();
+      break;
+    case COMMANDS.clearAllowlist:
+      clearAllowlist();
+      break;
+    case COMMANDS.removeAllowlistAddress:
+      removeAllowlistAddress();
       break;
     case COMMANDS.enableAllowlist:
       enableAllowlist();

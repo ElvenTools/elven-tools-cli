@@ -159,7 +159,9 @@ export const collectionNftOwners = async () => {
 
     if (noSmartContracts) {
       addresses = addresses.filter(
-        (address) => !Address.fromString(address).isContractAddress()
+        (address) =>
+          typeof address === 'string' &&
+          !Address.fromString(address).isContractAddress()
       );
     }
 
