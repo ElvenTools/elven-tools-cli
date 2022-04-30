@@ -5,6 +5,7 @@ import { deploy } from './deploy';
 import { collectionNftOwners } from './collection-nft-owners';
 import { derivePem } from './derive-pem';
 import { nftMinter } from './nft-minter-fns';
+import { initDapp } from './init-dapp';
 import packageJson from '../package.json';
 
 const COMMANDS = {
@@ -12,6 +13,7 @@ const COMMANDS = {
   derivePem: 'derive-pem',
   nftMinter: 'nft-minter',
   collectionNftOwners: 'collection-nft-owners',
+  initDapp: 'init-dapp',
 };
 
 const args = argv;
@@ -57,6 +59,9 @@ switch (command) {
     break;
   case COMMANDS.collectionNftOwners:
     collectionNftOwners();
+    break;
+  case COMMANDS.initDapp:
+    initDapp();
     break;
   default:
     break;

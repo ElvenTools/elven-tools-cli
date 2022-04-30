@@ -1,3 +1,6 @@
+### [1.8.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.8.1) (2022-04-30)
+- You can now initialize the Minter Dapp by running `elven-tools init-dapp`. It will download the NextJS-based app and install all npm dependencies. Then you can check the docs on how to start the app.
+
 ### [1.8.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.8.0) (2022-04-28)
 - `allowlist.json` default location changed to the root directory. You will now need to place it in the same directory where you call the elven-tools commands. It will be the place for all similar files with data. The naming convention will always be predefined, maybe later, it will change if there are a lot of such files, but for now, it is ok
 
