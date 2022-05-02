@@ -221,6 +221,16 @@ export const isDropActiveFunctionName =
 export const tokensPerOneTx =
   customConfig?.config?.nftMinterSc?.tokensPerOneTx || 95;
 
+export const isMintingPausedFunctionName =
+  customConfig?.config?.nftMinterSc?.isMintingPausedFnName || 'isMintingPaused';
+
+export const getTotalSupplyFunctionName =
+  customConfig?.config?.nftMinterSc?.getTotalSupplyFnName || 'getTotalSupply';
+
+export const getTotalSupplyOfCurrentDropFunctionName =
+  customConfig?.config?.nftMinterSc?.getTotalSupplyOfCurrentDropFnName ||
+  'getTotalSupplyOfCurrentDrop';
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Collection NFT owners
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡

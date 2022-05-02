@@ -85,6 +85,9 @@ import {
   clearAllowlistBaseGasLimit,
   removeAllowlistAddressLabel,
   removeAllowlistAddressLimit,
+  isMintingPausedFunctionName,
+  getTotalSupplyFunctionName,
+  getTotalSupplyOfCurrentDropFunctionName,
 } from './config';
 import { exit } from 'process';
 
@@ -868,6 +871,9 @@ export const nftMinter = async (subcommand?: string) => {
     isAllowlistEnabled: 'is-allowlist-enabled',
     getAllowlistAddressCheck: 'get-allowlist-address-check',
     isDropActive: 'is-drop-active',
+    isMintingPaused: 'is-minting-paused',
+    getTotalSupply: 'get-total-supply',
+    getTotalSupplyOfCurrentDrop: 'get-total-supply-of-current-drop',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -1046,6 +1052,31 @@ export const nftMinter = async (subcommand?: string) => {
         resultModifier: (result) =>
           result === 'true' ? 'The drop is active!' : 'The drop is not active!',
         resultType: 'boolean',
+      });
+      break;
+    case COMMANDS.isMintingPaused:
+      commonScQuery({
+        functionName: isMintingPausedFunctionName,
+        resultLabel: 'Result:',
+        resultModifier: (result) =>
+          result === 'true'
+            ? 'The minting is paused!'
+            : 'The minting is not paused!',
+        resultType: 'boolean',
+      });
+      break;
+    case COMMANDS.getTotalSupply:
+      commonScQuery({
+        functionName: getTotalSupplyFunctionName,
+        resultLabel: 'Total supply of the collection:',
+        resultType: 'number',
+      });
+      break;
+    case COMMANDS.getTotalSupplyOfCurrentDrop:
+      commonScQuery({
+        functionName: getTotalSupplyOfCurrentDropFunctionName,
+        resultLabel: 'Total supply of current drop:',
+        resultType: 'number',
       });
       break;
   }

@@ -4,9 +4,9 @@
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "types": "build/types",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "elvenTools": {
-    "smartContractVersionTagName": "v1.6.1",
+    "smartContractVersionTagName": "v1.6.2",
     "minterDappVersionTagName": "v1.0.3"
   },
   "description": "Interacting with custom NFT related Smart Contracts on the Elrond blockchain",

@@ -1,3 +1,9 @@
+### [1.8.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.8.2) (2022-04-30)
+- new commands for new endpoints
+  - `elven-tools nft-minter get-total-supply` for endpoint `getTotalSupply`
+  - `elven-tools nft-minter is-minting-paused` for endpoint `isMintingPaused`
+  - `elven-tools nft-minter get-total-supply-of-current-drop` for endpoint `getTotalSupplyOfCurrentDrop`
+
 ### [1.8.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.8.2) (2022-04-30)
 - new command `elven-tools nft-minter clear-allowlist` - It will clear the whole allowlist. The best is to keep max 1300 addresses in the allowlist at a time. Of course, if only you plan to clear it later. If you keep more and want to clear it, you can reach the gas limit for a transaction. So it would be best to split the allowlist per drop, keep it as small as possible and clear it each time.
 - new command `elven-tools nft-minter remove-allowlist-address` - removes single address from the allowlist
