@@ -1,4 +1,4 @@
-### [1.8.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.8.2) (2022-04-30)
+### [1.8.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.8.3) (2022-05-02)
 - new commands for new endpoints
   - `elven-tools nft-minter get-total-supply` for endpoint `getTotalSupply`
   - `elven-tools nft-minter is-minting-paused` for endpoint `isMintingPaused`
