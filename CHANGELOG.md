@@ -1,3 +1,6 @@
+### [1.8.4](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.8.4) (2022-05-05)
+- bump dapp version, which was migrated to erdjs 10
+
 ### [1.8.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.8.3) (2022-05-02)
 - new commands for new endpoints
   - `elven-tools nft-minter get-total-supply` for endpoint `getTotalSupply`
