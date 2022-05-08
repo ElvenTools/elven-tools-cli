@@ -328,6 +328,8 @@ export const collectionNftOwnersNoSmartContractsLabel =
   'Do you want to exclude smart contract addresses?\n';
 export const collectionNftOwnersMetadataFileName =
   'Do you want to filter by metadata JSON file name? Provide names without the extension separated by a comma (example: 123,555,9999) [you can ommit that, just press enter]\n';
+export const collectionNftOwnersAggregateLabel =
+  'Do you want to get a separate file with the NFT number count per address?\n';
 
 export const dappInitDirectoryNameLabel =
   'Please provide the project name (directory name) in which the dapp should be initialized.\n';

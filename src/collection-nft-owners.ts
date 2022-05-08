@@ -14,6 +14,7 @@ import {
   collectionNftOwnersNoSmartContractsLabel,
   collectionNftOwnersCallsPerSecond,
   collectionNftOwnersMetadataFileName,
+  collectionNftOwnersAggregateLabel,
 } from './config';
 
 interface NftToken {
@@ -62,6 +63,15 @@ export const collectionNftOwners = async () => {
       ],
     },
     {
+      type: (_, values) => (!values.onlyUniq ? 'select' : null),
+      name: 'aggregate',
+      message: collectionNftOwnersAggregateLabel,
+      choices: [
+        { title: 'Yes', value: true },
+        { title: 'No', value: false },
+      ],
+    },
+    {
       type: 'list',
       name: 'fileNamesList',
       message: collectionNftOwnersMetadataFileName,
@@ -69,8 +79,13 @@ export const collectionNftOwners = async () => {
   ];
 
   try {
-    const { collectionTicker, onlyUniq, noSmartContracts, fileNamesList } =
-      await prompts(promptsQuestions);
+    const {
+      collectionTicker,
+      onlyUniq,
+      noSmartContracts,
+      fileNamesList,
+      aggregate,
+    } = await prompts(promptsQuestions);
 
     if (!collectionTicker) {
       console.log(
@@ -90,6 +105,9 @@ export const collectionNftOwners = async () => {
     console.log(`There is ${tokensNumber} tokens in that collection.`);
 
     if (Number(tokensNumber) === 0) {
+      console.log(
+        '\nThere are no tokens. Please check if you configured the proper chain. By default, it will be the devnet. You can change it using the .elventoolsrc configuration file.\n'
+      );
       exit(9);
     }
 
@@ -173,6 +191,29 @@ export const collectionNftOwners = async () => {
       fs.writeFileSync(
         `${cwd()}/nft-collection-owners.json`,
         JSON.stringify(addresses, null, 2),
+        'utf8'
+      );
+    }
+
+    if (aggregate) {
+      const countPerAddresses = addresses.reduce(
+        (accumulator: { [key: string]: number }, value) => {
+          const c: number = accumulator[value] || 0;
+          return {
+            ...accumulator,
+            [value]: c + 1,
+          };
+        },
+        {}
+      );
+
+      const countPerAddressesSorted = Object.fromEntries(
+        Object.entries(countPerAddresses).sort(([, a], [, b]) => b - a)
+      );
+
+      fs.writeFileSync(
+        `${cwd()}/nft-collection-owners-count.json`,
+        JSON.stringify(countPerAddressesSorted, null, 2),
         'utf8'
       );
     }
