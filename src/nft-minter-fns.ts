@@ -60,8 +60,6 @@ import {
   getNftTokenNameFunctionName,
   getCollectionTokenNameFunctionName,
   getTokensLimitPerAddressTotalFunctionName,
-  chain,
-  elrondExplorer,
   deployNftMinterImgCidLabel,
   deployNftMinterMetaCidLabel,
   changeBaseCidsGasLimit,
@@ -158,42 +156,12 @@ const issueCollectionToken = async () => {
       nftTokenName
     );
 
-    issueCollectionTokenTx.setNonce(userAccount.nonce);
-    userAccount.incrementNonce();
-    signer.sign(issueCollectionTokenTx);
-
-    spinner.start();
-
-    await issueCollectionTokenTx.send(provider);
-    // TODO: change to awaitExecuted when token retrive will work
-    await issueCollectionTokenTx.awaitNotarized(provider);
-    const txHash = issueCollectionTokenTx.getHash();
-
-    // TODO: after updates to erdjs v9 retriving the token stopped working
-    // But it is properly issued
-    // const scResults = (await issueCollectionTokenTx.getAsOnNetwork(provider))
-    //   .getSmartContractResults()
-    //   .getResultingCalls()
-    //   .filter((item) => item.callType === 2)?.[0]?.data;
-
-    // const tokenSection = scResults?.split('@')?.[2];
-    // const tokenId = tokenSection
-    //   ? Buffer.from(tokenSection, 'hex').toString('utf8')
-    //   : '';
-
-    spinner.stop();
-
-    console.log(`Transaction: ${elrondExplorer[chain]}/transactions/${txHash}`);
-    // TODO: check what changed in v9
-    // if (tokenId) {
-    //   console.log('Your collection token id: ', tokenId);
-    //   console.log('Also saved in the output.json file.');
-    //   updateOutputFile({ tokenId });
-    // } else {
-    //   console.log(
-    //     'Something went wrong on the Smart Contract. Check the explorer!'
-    //   );
-    // }
+    await commonTxOperations(
+      issueCollectionTokenTx,
+      userAccount,
+      signer,
+      provider
+    );
   } catch (e) {
     spinner.stop();
     console.log((e as Error)?.message);

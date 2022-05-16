@@ -1,3 +1,8 @@
+### [1.9.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.0) (2022-05-16)
+- update to the erdjs SDK v10
+- the functionality doesn't change
+- please report issues if any
+
 ### [1.8.5](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.8.5) (2022-05-08)
 - improvements for `collection-nft-owners` - now, you can also aggregate and count NFTs per address. It will create another JSON file. It is like that because the list of addresses will also be helpful for future operations. The option will make sense only when you don't select the unique addresses option. Otherwise, the option will not be available.
 

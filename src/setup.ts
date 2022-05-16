@@ -11,7 +11,6 @@ import {
   getScWasmCode,
   createSmartContractInstance,
   getProvider,
-  syncProviderConfig,
   prepareUserAccount,
   prepareUserSigner,
 } from './utils';
@@ -20,10 +19,10 @@ export const publicEndpointSetup = async () => {
   const walletPemKey = getFileContents(pemKeyFileName, { isJSON: false });
   // Provider type based on initial configuration
   const provider = getProvider();
-  await syncProviderConfig(provider);
 
   const userAccount = await prepareUserAccount(walletPemKey);
-  await userAccount.sync(provider);
+  const userAccountOnNetwork = await provider.getAccount(userAccount.address);
+  userAccount.update(userAccountOnNetwork);
 
   const signer = prepareUserSigner(walletPemKey);
 

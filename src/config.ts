@@ -262,6 +262,12 @@ export const proxyGateways: { [key: string]: string } = {
   mainnet: customConfig?.config?.customProxyGateway || 'https://api.elrond.com',
 };
 
+export const shortChainId: { [key: string]: string } = {
+  testnet: 'T',
+  devnet: 'D',
+  mainnet: '1',
+};
+
 export const elrondExplorer: { [key: string]: string } = {
   devnet: 'https://devnet-explorer.elrond.com',
   testnet: 'https://testnet-explorer.elrond.com',

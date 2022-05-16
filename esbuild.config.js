@@ -13,11 +13,14 @@ esbuild
       'prompts',
       'ora',
       '@elrondnetwork/erdjs',
+      '@elrondnetwork/erdjs-walletcore',
+      '@elrondnetwork/erdjs-network-providers',
       'bignumber.js',
       'cross-fetch',
       'p-throttle',
       'download',
       'cross-spawn',
+      'axios',
     ],
   })
   .catch(() => process.exit(1));

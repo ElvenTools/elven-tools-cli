@@ -14,6 +14,7 @@
 - The CLI tool helps to:
   - deploy the NFT minter Smart Contract on the Elrond blockchain
   - interact with the NFT minter Smart Contract on the Elrond blockchain
+  - provides a couple of helper tools for getting the data from API
 
 For now it is designed to deploy the contract: [elven-nft-minter-sc](https://github.com/ElvenTools/elven-nft-minter-sc).
 

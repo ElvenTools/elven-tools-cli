@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Mnemonic } from '@elrondnetwork/erdjs';
+import { Mnemonic } from '@elrondnetwork/erdjs-walletcore';
 import prompts, { PromptObject } from 'prompts';
 import { exit } from 'process';
 import { derivePemSeedQuestion } from './config';

@@ -1,41 +1,46 @@
 import {
-  ProxyProvider,
-  IProvider,
-  NetworkConfig,
   SmartContract,
   Account,
-  parseUserKey,
-  UserSigner,
   SmartContractAbi,
   Code,
-  GasLimit,
   AbiRegistry,
   Address,
   ContractFunction,
   BytesValue,
-  Balance,
+  TokenPayment,
   U32Value,
   BigUIntValue,
   AddressValue,
   Transaction,
   TransactionPayload,
-  QueryResponse,
+  IContractQueryResponse,
   TypedValue,
   CodeMetadata,
   BooleanValue,
   List,
   ListType,
   AddressType,
+  IAddress,
+  TransactionWatcher,
 } from '@elrondnetwork/erdjs';
+import axios, { AxiosResponse } from 'axios';
+import { parseUserKey, UserSigner } from '@elrondnetwork/erdjs-walletcore';
+import { ApiNetworkProvider } from '@elrondnetwork/erdjs-network-providers';
 import prompts, { PromptObject } from 'prompts';
 import BigNumber from 'bignumber.js';
 import ora from 'ora';
-import { readFileSync, accessSync, constants, writeFileSync } from 'fs';
+import {
+  readFileSync,
+  accessSync,
+  constants,
+  writeFileSync,
+  promises,
+} from 'fs';
 import { exit, cwd } from 'process';
-import { Buffer } from 'buffer';
 import {
   proxyGateways,
   chain,
+  shortChainId,
   outputFileName,
   issueTokenFnName,
   setLocalRolesFnName,
@@ -98,26 +103,18 @@ export const getFileContents = (
 };
 
 export const getProvider = () => {
-  return new ProxyProvider(proxyGateways[chain], { timeout: 10000 });
-};
-
-// Sync proper chain, for example, the devnet
-export const syncProviderConfig = async (provider: IProvider) => {
-  return NetworkConfig.getDefault().sync(provider);
+  return new ApiNetworkProvider(proxyGateways[chain], {
+    timeout: 10000,
+  });
 };
 
 export const createSmartContractInstance = (
-  abi?: AbiRegistry,
+  abi?: SmartContractAbi,
   address?: string
 ) => {
   const contract = new SmartContract({
     address: address ? new Address(address) : undefined,
-    abi:
-      abi &&
-      new SmartContractAbi(
-        abi,
-        abi.interfaces.map((iface) => iface.name)
-      ),
+    abi,
   });
   return contract;
 };
@@ -133,21 +130,37 @@ export const prepareUserSigner = (walletPemKey: string) => {
   return UserSigner.fromPem(walletPemKey);
 };
 
-export const getAbi = (filePath: string, url: string) => {
+export const getAbi = async (filePath: string, url: string) => {
   try {
     accessSync(filePath, constants.R_OK | constants.W_OK);
-    return AbiRegistry.load({ files: [filePath] });
+    const jsonContent: string = await promises.readFile(filePath, {
+      encoding: 'utf8',
+    });
+    const json = JSON.parse(jsonContent);
+    const abiRegistry = AbiRegistry.create(json);
+    return new SmartContractAbi(abiRegistry);
   } catch {
-    return AbiRegistry.load({ urls: [url] });
+    const response: AxiosResponse = await axios.get(url);
+    const abiRegistry = AbiRegistry.create(response.data);
+    return new SmartContractAbi(abiRegistry);
   }
 };
 
-export const getScWasmCode = (filePath: string, url: string) => {
+export const getScWasmCode = async (filePath: string, url: string) => {
   try {
     accessSync(filePath, constants.R_OK | constants.W_OK);
-    return Code.fromFile(filePath);
+    const buffer: Buffer = await promises.readFile(filePath);
+    return Code.fromBuffer(buffer);
   } catch {
-    return Code.fromUrl(url);
+    const response: AxiosResponse<ArrayBuffer> = await axios.get(url, {
+      responseType: 'arraybuffer',
+      transformResponse: [],
+      headers: {
+        Accept: 'application/wasm',
+      },
+    });
+    const buffer = Buffer.from(response.data);
+    return Code.fromBuffer(buffer);
   }
 };
 
@@ -172,19 +185,22 @@ export const getDeployTransaction = (
   return contract.deploy({
     code,
     codeMetadata: new CodeMetadata(upgradable, readable, payable),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
     initArguments: [
       BytesValue.fromUTF8(imgBaseCid.trim()),
       BytesValue.fromUTF8(metadataBaseCid.trim()),
       new U32Value(numberOfTokens),
       new U32Value(tokensLimitPerAddress),
       new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0)),
-      new BigUIntValue(Balance.egld(sellingPrice.trim()).valueOf()),
+      new BigUIntValue(
+        TokenPayment.egldFromAmount(sellingPrice.trim()).valueOf()
+      ),
       BytesValue.fromUTF8(fileExtension.trim()),
       BytesValue.fromUTF8(tags?.trim() || ''),
       BytesValue.fromUTF8(provenanceHash?.trim() || ''),
       new BooleanValue(metadataInAssets),
     ],
+    chainID: shortChainId[chain],
   });
 };
 
@@ -193,7 +209,7 @@ export const updateOutputFile = ({
   sellingPrice,
   tokenId,
 }: {
-  scAddress?: Address;
+  scAddress?: IAddress;
   sellingPrice?: string;
   tokenId?: string;
 }) => {
@@ -207,7 +223,7 @@ export const updateOutputFile = ({
       ...(sellingPrice
         ? {
             nftMinterScCollectionSellingPrice:
-              Balance.egld(sellingPrice).toString(),
+              TokenPayment.egldFromAmount(sellingPrice).toString(),
           }
         : {}),
       ...(tokenId ? { nftMinterCollectionToken: tokenId } : {}),
@@ -225,7 +241,7 @@ export const updateOutputFile = ({
           ...(sellingPrice
             ? {
                 nftMinterScCollectionSellingPrice:
-                  Balance.egld(sellingPrice).toString(),
+                  TokenPayment.egldFromAmount(sellingPrice).toString(),
               }
             : {}),
           ...(tokenId ? { nftMinterCollectionToken: tokenId } : {}),
@@ -252,8 +268,9 @@ export const getIssueTransaction = (
       BytesValue.fromUTF8(tokenTicker.trim()),
       ...(nftTokenName ? [BytesValue.fromUTF8(nftTokenName.trim())] : []),
     ],
-    value: Balance.egld(value),
-    gasLimit: new GasLimit(gasLimit),
+    value: TokenPayment.egldFromAmount(value),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
   });
 };
 
@@ -276,7 +293,8 @@ export const getAssignRolesTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(setLocalRolesFnName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
   });
 };
 
@@ -299,13 +317,13 @@ export const getMintTransaction = (
     const contract = new SmartContract({
       address: new Address(contractAddress),
     });
+    const totalPayment = new BigNumber(tokenSellingPrice).times(tokens);
     return contract.call({
       func: new ContractFunction(mintFunctionName),
-      gasLimit: new GasLimit(
-        baseGasLimit + (baseGasLimit / 2) * (tokensAmount - 1)
-      ),
+      gasLimit: baseGasLimit + (baseGasLimit / 2) * (tokensAmount - 1),
+      chainID: shortChainId[chain],
       args: [new U32Value(tokens)],
-      value: Balance.fromString(tokenSellingPrice).times(tokens),
+      value: TokenPayment.egldFromBigInteger(totalPayment),
     });
   }
 };
@@ -319,9 +337,8 @@ export const getGiveawayTransaction = (
   const tokens = tokensAmount || 1;
   return contract.call({
     func: new ContractFunction(giveawayFunctionName),
-    gasLimit: new GasLimit(
-      baseGasLimit + (baseGasLimit / 2) * (tokensAmount - 1)
-    ),
+    gasLimit: baseGasLimit + (baseGasLimit / 2) * (tokensAmount - 1),
+    chainID: shortChainId[chain],
     args: [new AddressValue(new Address(address.trim())), new U32Value(tokens)],
   });
 };
@@ -334,7 +351,8 @@ export const getSetDropTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(setDropFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
     args: [
       new U32Value(tokensAmount),
       ...(tokensLimitPerAddressPerDrop
@@ -350,7 +368,8 @@ export const getUnsetDropTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(unsetDropFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
   });
 };
 
@@ -360,7 +379,8 @@ export const getPauseMintingTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(pauseMintingFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
   });
 };
 
@@ -370,7 +390,8 @@ export const getUnpauseMintingTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(unpauseMintingFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
   });
 };
 
@@ -380,7 +401,8 @@ export const getEnableAllowlistTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(enableAllowlistFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
   });
 };
 
@@ -390,7 +412,8 @@ export const getDisableAllowlistTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(disableAllowlistFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
   });
 };
 
@@ -398,7 +421,7 @@ export const commonTxOperations = async (
   tx: Transaction,
   account: Account,
   signer: UserSigner,
-  provider: ProxyProvider
+  provider: ApiNetworkProvider
 ) => {
   tx.setNonce(account.nonce);
   account.incrementNonce();
@@ -407,13 +430,20 @@ export const commonTxOperations = async (
   const spinner = ora('Processing the transaction...');
   spinner.start();
 
-  await tx.send(provider);
-  await tx.awaitExecuted(provider);
-  const txHash = tx.getHash();
+  await provider.sendTransaction(tx);
+
+  const watcher = new TransactionWatcher(provider);
+  const transactionOnNetwork = await watcher.awaitCompleted(tx);
+
+  const txHash = transactionOnNetwork.hash;
+  const txStatus = transactionOnNetwork.status;
 
   spinner.stop();
 
-  console.log(`Transaction: ${elrondExplorer[chain]}/transactions/${txHash}`);
+  console.log(`\nTransaction status: ${txStatus}`);
+  console.log(
+    `Transaction link: ${elrondExplorer[chain]}/transactions/${txHash}\n`
+  );
 };
 
 export const getSetNewPriceTransaction = (
@@ -423,8 +453,11 @@ export const getSetNewPriceTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(setNewPriceFunctionName),
-    gasLimit: new GasLimit(gasLimit),
-    args: [new BigUIntValue(Balance.egld(newPrice.trim()).valueOf())],
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
+    args: [
+      new BigUIntValue(TokenPayment.egldFromAmount(newPrice.trim()).valueOf()),
+    ],
   });
 };
 
@@ -456,10 +489,11 @@ export const getClaimDevRewardsTransaction = (
 ) => {
   return new Transaction({
     data: new TransactionPayload('ClaimDeveloperRewards'),
-    gasLimit: new GasLimit(6000000),
+    gasLimit: 6000000,
+    chainID: shortChainId[chain],
     sender: userAccount.address,
     receiver: contract.getAddress(),
-    value: Balance.egld(0),
+    value: TokenPayment.egldFromAmount(0),
   });
 };
 
@@ -470,7 +504,8 @@ export const getShuffleTransaction = (
   const contract = new SmartContract({ address: new Address(contractAddress) });
   return contract.call({
     func: new ContractFunction(shuffleFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
     args: [],
   });
 };
@@ -478,37 +513,33 @@ export const getShuffleTransaction = (
 export const scQuery = (
   functionName: string,
   contractAddress: string,
-  provider: IProvider,
+  provider: ApiNetworkProvider,
   args: TypedValue[] = []
 ) => {
   const contract = new SmartContract({ address: new Address(contractAddress) });
-  return contract.runQuery(provider, {
+  const scQuery = contract.createQuery({
     func: new ContractFunction(functionName),
     args,
   });
+  return provider.queryContract(scQuery);
 };
 
-export const parseQueryResultBoolean = (queryResponse: QueryResponse) => {
-  const resultBuff = Buffer.from(
-    queryResponse?.returnData?.[0],
-    'base64'
-  ).toString('hex');
+export const parseQueryResultBoolean = (
+  queryResponse: IContractQueryResponse
+) => {
+  const resultBuff = queryResponse.getReturnDataParts()?.[0]?.toString('hex');
   return resultBuff === '01' ? 'true' : 'false';
 };
 
-export const parseQueryResultInt = (queryResponse: QueryResponse) => {
-  const resultBuff = Buffer.from(
-    queryResponse?.returnData?.[0],
-    'base64'
-  ).toString('hex');
+export const parseQueryResultInt = (queryResponse: IContractQueryResponse) => {
+  const resultBuff = queryResponse.getReturnDataParts()?.[0]?.toString('hex');
   return new BigNumber(resultBuff, 16).toString(10);
 };
 
-export const parseQueryResultString = (queryResponse: QueryResponse) => {
-  const resultBuff = Buffer.from(
-    queryResponse?.returnData?.[0],
-    'base64'
-  ).toString('utf8');
+export const parseQueryResultString = (
+  queryResponse: IContractQueryResponse
+) => {
+  const resultBuff = queryResponse.getReturnDataParts()?.[0]?.toString('utf8');
   return resultBuff;
 };
 
@@ -529,7 +560,6 @@ export const commonScQuery = async ({
   const spinner = ora('Processing query...');
   try {
     const provider = getProvider();
-    await syncProviderConfig(provider);
 
     spinner.start();
 
@@ -603,7 +633,8 @@ export const getChangeBaseCidsTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(changeBaseCidsFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
     args: [
       BytesValue.fromUTF8(imgBaseCid.trim()),
       BytesValue.fromUTF8(metadataBaseCid.trim()),
@@ -618,7 +649,8 @@ export const getSetNewTokensLimitPerAddressTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(setNewTokensLimitPerAddressFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
     args: [new U32Value(tokensLimitPerAddress)],
   });
 };
@@ -629,7 +661,8 @@ export const getClaimScFundsTransaction = (
 ) => {
   return contract.call({
     func: new ContractFunction(claimScFundsFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
   });
 };
 
@@ -640,7 +673,8 @@ export const getPopulateIndexesTx = (
 ) => {
   return contract.call({
     func: new ContractFunction(populateIndexesFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
     args: [new U32Value(amount)],
   });
 };
@@ -659,7 +693,8 @@ export const getPopulateAllowlistTx = (
 
   return contract.call({
     func: new ContractFunction(populateAllowlistFunctionName),
-    gasLimit: new GasLimit(baseGasLimit + 1850000 * (addresses.length - 1)),
+    gasLimit: baseGasLimit + 1850000 * (addresses.length - 1),
+    chainID: shortChainId[chain],
     args: [getList()],
   });
 };
@@ -671,7 +706,8 @@ export const getClearAllowlistTx = (
 ) => {
   return contract.call({
     func: new ContractFunction(clearAllowlistFunctionName),
-    gasLimit: new GasLimit(baseGasLimit + 445000 * (itemsInAllowlist - 1)),
+    gasLimit: baseGasLimit + 445000 * (itemsInAllowlist - 1),
+    chainID: shortChainId[chain],
   });
 };
 
@@ -682,7 +718,8 @@ export const getRemoveAllowlistAddressTx = (
 ) => {
   return contract.call({
     func: new ContractFunction(removeAllowlistFunctionName),
-    gasLimit: new GasLimit(gasLimit),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
     args: [new AddressValue(new Address(address))],
   });
 };
