@@ -1,3 +1,6 @@
+### [1.9.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.1) (2022-05-18)
+- bump smart contract version, elrond-wasm framework update
+
 ### [1.9.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.0) (2022-05-16)
 - update to the erdjs SDK v10
 - the functionality doesn't change
