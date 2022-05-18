@@ -9,6 +9,10 @@
 
 **You can use [elven-tools-dapp](https://github.com/ElvenTools/elven-tools-dapp) as your frontend dapp for minting process! (NextJS based app)**
 
+### Tracking the progress
+
+- [Elven Tools CLI kanban](https://github.com/orgs/ElvenTools/projects/3)
+
 ### What is it?
 
 - The CLI tool helps to:
@@ -42,9 +46,6 @@ For all commands, check out the docs: [www.elven.tools/docs/cli-commands.html](h
 ### Custom configuration options
 
 For all configuration options check out the docs: [www.elven.tools/docs/cli-introduction.html#custom-configuration-options](https://www.elven.tools/docs/cli-introduction.html#custom-configuration-options)
-
-### TODO
-- check the [issues](https://github.com/ElvenTools/elven-tools-cli/issues)
 
 ### Contact
 
