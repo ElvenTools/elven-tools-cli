@@ -276,7 +276,7 @@ export const getIssueTransaction = (
 
 export const getTheSCAddressFromOutputOrConfig = () => {
   const output = getFileContents(outputFileName, { noExitOnError: true });
-  const smartContractAddress = output?.nftMinterScAddress || nftMinterScAddress;
+  const smartContractAddress = nftMinterScAddress || output?.nftMinterScAddress;
 
   if (!smartContractAddress) {
     console.log(
@@ -306,7 +306,7 @@ export const getMintTransaction = (
   const tokens = tokensAmount || 1;
   const output = getFileContents(outputFileName, { noExitOnError: true });
   const tokenSellingPrice =
-    output?.nftMinterScCollectionSellingPrice || nftMinterTokenSellingPrice;
+    nftMinterTokenSellingPrice || output?.nftMinterScCollectionSellingPrice;
 
   if (!tokenSellingPrice) {
     console.log(

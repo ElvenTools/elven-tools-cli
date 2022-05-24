@@ -1,3 +1,6 @@
+### [1.9.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.1) (2022-05-18)
+- fix the order of reading the smart contract address and 'selling price'. First the config file, then the `output.json`. The logic for that will be unified soon. There will be no `output.json` file anymore.
+
 ### [1.9.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.1) (2022-05-18)
 - bump smart contract version, elrond-wasm framework update
 
