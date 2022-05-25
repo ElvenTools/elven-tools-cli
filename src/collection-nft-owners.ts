@@ -10,24 +10,42 @@ import {
   proxyGateways,
   chain,
   collectionNftOwnersTickerLabel,
-  collectionNftOwnersOnlyUniqLabel,
   collectionNftOwnersNoSmartContractsLabel,
   collectionNftOwnersCallsPerSecond,
   collectionNftOwnersMetadataFileName,
-  collectionNftOwnersAggregateLabel,
 } from './config';
 
 interface NftToken {
   owner: string;
   attributes: string;
+  identifier: string;
+}
+
+interface OutputItemToken {
+  identifier: string;
+  metadataFileName: string;
+}
+
+interface OutputItem {
+  owner: string;
+  tokens: OutputItemToken[];
+  tokensCount: number;
+}
+
+interface SingleApiResponseItem extends OutputItemToken {
+  owner: string;
 }
 
 const MAX_SIZE = 100;
 
 const spinner = ora('Processing, please wait...');
 
-const getMetadataFileName = (str: string) => {
-  return str
+const getMetadataFileName = (attributes: string) => {
+  const attrsDecoded = attributes
+    ? Buffer.from(attributes, 'base64').toString()
+    : undefined;
+  if (!attrsDecoded) return '';
+  return attrsDecoded
     .split(';')
     .filter((item) => item.includes('metadata'))?.[0]
     .split('/')?.[1]
@@ -46,26 +64,8 @@ export const collectionNftOwners = async () => {
     },
     {
       type: 'select',
-      name: 'onlyUniq',
-      message: collectionNftOwnersOnlyUniqLabel,
-      choices: [
-        { title: 'No', value: false },
-        { title: 'Yes', value: true },
-      ],
-    },
-    {
-      type: 'select',
       name: 'noSmartContracts',
       message: collectionNftOwnersNoSmartContractsLabel,
-      choices: [
-        { title: 'Yes', value: true },
-        { title: 'No', value: false },
-      ],
-    },
-    {
-      type: (_, values) => (!values.onlyUniq ? 'select' : null),
-      name: 'aggregate',
-      message: collectionNftOwnersAggregateLabel,
       choices: [
         { title: 'Yes', value: true },
         { title: 'No', value: false },
@@ -79,13 +79,9 @@ export const collectionNftOwners = async () => {
   ];
 
   try {
-    const {
-      collectionTicker,
-      onlyUniq,
-      noSmartContracts,
-      fileNamesList,
-      aggregate,
-    } = await prompts(promptsQuestions);
+    const { collectionTicker, noSmartContracts, fileNamesList } = await prompts(
+      promptsQuestions
+    );
 
     if (!collectionTicker) {
       console.log(
@@ -94,7 +90,7 @@ export const collectionNftOwners = async () => {
       exit(9);
     }
 
-    const addressesArr: string[][] = [];
+    const addressesArr: SingleApiResponseItem[][] = [];
 
     const response = await fetch(
       `${proxyGateways[chain]}/collections/${collectionTicker}/nfts/count`
@@ -102,7 +98,7 @@ export const collectionNftOwners = async () => {
 
     tokensNumber = await response.text();
 
-    console.log(`There is ${tokensNumber} tokens in that collection.`);
+    console.log(`There are ${tokensNumber} tokens in that collection.`);
 
     if (Number(tokensNumber) === 0) {
       console.log(
@@ -114,7 +110,7 @@ export const collectionNftOwners = async () => {
     spinner.start();
 
     const makeCalls = () =>
-      new Promise<string[]>((resolve) => {
+      new Promise<SingleApiResponseItem[]>((resolve) => {
         const repeats = Math.ceil(Number(tokensNumber) / MAX_SIZE);
 
         const throttle = pThrottle({
@@ -134,24 +130,13 @@ export const collectionNftOwners = async () => {
           );
           const data = await response.json();
 
-          let filteredData: NftToken[] = data;
-
-          // Filtering by metadata json file name
-          if (fileNamesList?.[0]) {
-            filteredData = data.filter((item: NftToken) => {
-              const attrsDecoded = item.attributes
-                ? Buffer.from(item.attributes, 'base64').toString()
-                : undefined;
-              if (attrsDecoded) {
-                return fileNamesList.some((item: string) => {
-                  return item === getMetadataFileName(attrsDecoded);
-                });
-              }
-              return false;
-            });
-          }
-
-          const addrs = filteredData.map((token: NftToken) => token.owner);
+          const addrs = data.map((token: NftToken) => {
+            return {
+              owner: token.owner,
+              identifier: token.identifier,
+              metadataFileName: getMetadataFileName(token.attributes),
+            };
+          });
           if (index >= Math.ceil(repeats / 2)) {
             spinner.text = 'Almost there...';
           }
@@ -169,17 +154,13 @@ export const collectionNftOwners = async () => {
         }
       });
 
-    let addresses: string[] = await makeCalls();
-
-    if (onlyUniq) {
-      addresses = [...new Set(addresses)];
-    }
+    let addresses: SingleApiResponseItem[] = await makeCalls();
 
     if (noSmartContracts) {
       addresses = addresses.filter(
-        (address) =>
-          typeof address === 'string' &&
-          !Address.fromString(address).isContractAddress()
+        (addrObj) =>
+          typeof addrObj.owner === 'string' &&
+          !Address.fromString(addrObj.owner).isContractAddress()
       );
     }
 
@@ -187,44 +168,81 @@ export const collectionNftOwners = async () => {
 
     let additionalInfo = '';
 
-    if (addressesLength > 0) {
+    if (addressesLength === 0) {
+      console.log('No addresses found!');
+      exit(9);
+    }
+
+    const onlyUnique = (
+      value: SingleApiResponseItem,
+      index: number,
+      self: SingleApiResponseItem[]
+    ) => {
+      return (
+        self.findIndex(
+          (v: SingleApiResponseItem) => v.owner === value.owner
+        ) === index
+      );
+    };
+
+    const uniqAddresses = addresses.filter(onlyUnique);
+
+    const getTokensForTheSameAddress = (uniqAddr: SingleApiResponseItem) => {
+      return addresses
+        .filter((addr) => addr.owner === uniqAddr.owner)
+        .map((addr) => {
+          return {
+            identifier: addr.identifier,
+            metadataFileName: addr.metadataFileName,
+          };
+        });
+    };
+
+    const notSortedOutput: OutputItem[] = uniqAddresses.map(
+      (uniqAddr: SingleApiResponseItem) => {
+        const tokensForTheSameAddress = getTokensForTheSameAddress(uniqAddr);
+        return {
+          owner: uniqAddr.owner,
+          tokens: tokensForTheSameAddress,
+          tokensCount: tokensForTheSameAddress.length,
+        };
+      }
+    );
+
+    const sortedOutput = notSortedOutput.sort(
+      (a: OutputItem, b: OutputItem) => b.tokensCount - a.tokensCount
+    );
+
+    let output = sortedOutput;
+
+    // Filtering by metadata json file name
+    if (fileNamesList?.[0]) {
+      output = sortedOutput.filter((item: OutputItem) => {
+        return fileNamesList.some((fileName: string) => {
+          return (
+            item.tokens.findIndex(
+              (item: OutputItemToken) => item.metadataFileName === fileName
+            ) > -1
+          );
+        });
+      });
+    }
+
+    if (output) {
       fs.writeFileSync(
         `${cwd()}/nft-collection-owners.json`,
-        JSON.stringify(addresses, null, 2),
+        JSON.stringify(output, null, 2),
         'utf8'
       );
     }
 
-    if (aggregate) {
-      const countPerAddresses = addresses.reduce(
-        (accumulator: { [key: string]: number }, value) => {
-          const c: number = accumulator[value] || 0;
-          return {
-            ...accumulator,
-            [value]: c + 1,
-          };
-        },
-        {}
-      );
-
-      const countPerAddressesSorted = Object.fromEntries(
-        Object.entries(countPerAddresses).sort(([, a], [, b]) => b - a)
-      );
-
-      fs.writeFileSync(
-        `${cwd()}/nft-collection-owners-count.json`,
-        JSON.stringify(countPerAddressesSorted, null, 2),
-        'utf8'
-      );
-    }
-
-    if (onlyUniq || noSmartContracts) {
-      additionalInfo = `${onlyUniq ? ' Only uniq addresses.' : ''}${
+    if (noSmartContracts) {
+      additionalInfo = `${
         noSmartContracts ? ' Without smart contract addresses.' : ''
       }`;
     }
 
-    console.log(`Done, ${addressesLength} addresses saved.${additionalInfo}`);
+    console.log(`Done, ${output.length} addresses saved.${additionalInfo}`);
   } catch (e) {
     console.log((e as Error)?.message);
   }

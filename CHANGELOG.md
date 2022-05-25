@@ -1,3 +1,6 @@
+### [1.9.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.3) (2022-05-25)
+- `collection-nft-owners` changes, cleanup for the output files. From now there will be only one output file with unique addresses. Each address will have info about the number of tokens, tickers, and metadata file names. The output file structure is a standard JSON format that can be transformed further.
+
 ### [1.9.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.2) (2022-05-24)
 - fix the order of reading the smart contract address and 'selling price'. First the config file, then the `output.json`. The logic for that will be unified soon. There will be no `output.json` file anymore.
 
