@@ -1,3 +1,6 @@
+### [1.9.5](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.5) (2022-06-09)
+- bump dapp version - Ledger support added!
+
 ### [1.9.4](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.4) (2022-05-27)
 - bump dapp version, where `useScQuery` was improved
 
