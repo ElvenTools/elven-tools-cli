@@ -23,7 +23,6 @@ import {
   getSetNewTokensLimitPerAddressTransaction,
   getClaimScFundsTransaction,
   getMintedPerAddressPerDropQuery,
-  getPopulateIndexesTx,
   getPopulateAllowlistTx,
   getAllowlistAddressCheckQuery,
   getEnableAllowlistTransaction,
@@ -68,9 +67,6 @@ import {
   claimScFundsTxGasLimit,
   dropTokensLimitPerAddressPerDropLabel,
   getTokensLimitPerAddressPerDropFunctionName,
-  populateIndexesMaxBatchSize,
-  populateIndexesLabel,
-  populateIndexesBaseTxGasLimit,
   populateAllowlistBaseGasLimit,
   getAllowlistFunctionName,
   isAllowlistEnabledFunctionName,
@@ -608,52 +604,6 @@ const claimScFunds = async () => {
   }
 };
 
-// The function is here as a fallback if something fails during the deployment
-// Population of the VecMapper indexes will be triggered with the deploy function
-// But if some of the transactions will fail, then there will be a possibility to use 'populate-indexes'
-// Only for the owner. SC will throw an error if the endpoint is called too many times. It should always be in sync.
-// The minting won't start without correctly populated indexes.
-// Read more about it in the docs: https://www.elven.tools
-const populateIndexes = async () => {
-  const promptQuestions: PromptObject[] = [
-    {
-      type: 'number',
-      name: 'nftMinterAmount',
-      message: populateIndexesLabel,
-      validate: (value) =>
-        value >= 1 && value <= populateIndexesMaxBatchSize
-          ? true
-          : `Required number between 1 and ${populateIndexesMaxBatchSize}`,
-    },
-  ];
-
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
-  try {
-    const { nftMinterAmount } = await prompts(promptQuestions);
-
-    await areYouSureAnswer();
-
-    const { smartContract, userAccount, signer, provider } = await setup(
-      smartContractAddress
-    );
-
-    const populateIndexesTx = getPopulateIndexesTx(
-      smartContract,
-      // TODO: this will probably change anyway over time, there are optimization implemented
-      // on elrond side from time to time, should be adjusted each time
-      Math.ceil(
-        (populateIndexesBaseTxGasLimit * nftMinterAmount) / 18.5 +
-          populateIndexesBaseTxGasLimit
-      ),
-      nftMinterAmount
-    );
-
-    await commonTxOperations(populateIndexesTx, userAccount, signer, provider);
-  } catch (e) {
-    console.log((e as Error)?.message);
-  }
-};
-
 // Calls the allowlist endpoint on the smart contract
 // Can be called multiple times
 const populateAllowlist = async () => {
@@ -806,7 +756,6 @@ export const nftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
     setLocalRoles: 'set-roles',
-    populateIndexes: 'populate-indexes',
     mint: 'mint',
     giveaway: 'giveaway',
     claimScFunds: 'claim-sc-funds',
@@ -871,9 +820,6 @@ export const nftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.mint:
       mint();
-      break;
-    case COMMANDS.populateIndexes:
-      populateIndexes();
       break;
     case COMMANDS.giveaway:
       giveaway();
