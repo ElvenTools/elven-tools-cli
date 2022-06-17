@@ -1,3 +1,6 @@
+### [1.9.6](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.6) (2022-06-17)
+- bump dapp version - Web Wallet tx signing fix there
+
 ### [1.9.5](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.5) (2022-06-09)
 - bump dapp version - Ledger support added!
 
