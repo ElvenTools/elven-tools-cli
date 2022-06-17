@@ -61,7 +61,6 @@ import {
   setNewTokensLimitPerAddressFunctionName,
   claimScFundsFunctionName,
   getMintedPerAddressPerDropFunctionName,
-  populateIndexesFunctionName,
   populateAllowlistFunctionName,
   getAllowlistAddressCheckFunctionName,
   enableAllowlistFunctionName,
@@ -663,19 +662,6 @@ export const getClaimScFundsTransaction = (
     func: new ContractFunction(claimScFundsFunctionName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
-  });
-};
-
-export const getPopulateIndexesTx = (
-  contract: SmartContract,
-  gasLimit: number,
-  amount: number
-) => {
-  return contract.call({
-    func: new ContractFunction(populateIndexesFunctionName),
-    gasLimit: gasLimit,
-    chainID: shortChainId[chain],
-    args: [new U32Value(amount)],
   });
 };
 

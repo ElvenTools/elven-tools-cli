@@ -1,3 +1,7 @@
+### [1.10.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.10.0) (2022-06-18)
+- adjustments in the CLI regarding SC updates, there is no more initial `shuffle` required, and `populateIndexes` was removed at all
+- you can still use the the `shuffle` endpoint - it still does the same
+
 ### [1.9.6](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.9.6) (2022-06-17)
 - bump dapp version - Web Wallet tx signing fix there
 

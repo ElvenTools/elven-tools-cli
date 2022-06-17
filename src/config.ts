@@ -158,21 +158,8 @@ export const getTokensLimitPerAddressPerDropFunctionName =
   customConfig?.config?.nftMinterSc?.getTokensLimitPerAddressPerDropFnName ||
   'getTokensLimitPerAddressPerDrop';
 
-export const populateIndexesBaseTxGasLimit =
-  customConfig?.config?.nftMinterSc?.populateIndexesBaseGasLimit || 5000000;
-
-// TODO: this batch size will probably be increased after the next changes in the elrond architecture
-// For the testnet (which is unstable, but the codebase is newer), it could probably be 3000 with gas calc adjustments
-// for now for the devnet it is the max after lastrequired changes
-export const populateIndexesMaxBatchSize =
-  customConfig?.config?.nftMinterSc?.populateIndexesMaxBatchSize || 2200;
-
-// TODO: here the same situation as about, it could be more in the future
 export const allowlistBatchSize =
   customConfig?.config?.nftMinterSc?.allowlistBatchSize || 320;
-
-export const populateIndexesFunctionName =
-  customConfig?.config?.nftMinterSc?.populateIndexesFnName || 'populateIndexes';
 
 export const populateAllowlistFunctionName =
   customConfig?.config?.nftMinterSc?.populateAllowlistFnName ||
@@ -280,7 +267,7 @@ export const collectionTokenNameLabel =
 export const collectionTokenTickerLabel =
   'Enter the ticker for the collection token (ex. MYNAME). \n(3-10 characters, alphanumeric and uppercase only)\n';
 export const nftTokenNameLabel =
-  "Enter the name for NFTs. If not provided, the name of the collection will be used. \nEach name will additionally get a unique number, so don't add it here. (Optional)\n";
+  "Enter the name for NFTs. If not provided, the name of the collection will be used. \nEach name will additionally get a unique number, so don't add the numbers here. (Optional)\n";
 export const deployNftMinterImgCidLabel =
   'Provide the base assets files IPFS CID:\n';
 export const deployNftMinterMetaCidLabel =
@@ -318,9 +305,6 @@ export const nftSCpayableLabel =
 
 export const dropTokensLimitPerAddressPerDropLabel =
   'Provide the tokens limit per single address per whole drop (the best is to keep it as low as possible) [optional]:\n';
-
-export const populateIndexesLabel =
-  'Provide the amount. By default the max batch size is 5000:\n';
 
 export const deployMetadataInAssetsLabel =
   'Do you want to attach the metadata JSON file in the Assets/Uris? \n (It will be attached and encoded in the attributes anyway, but some marketplaces require that). \n';

@@ -20,8 +20,6 @@ import {
   nftSCupgradableLabel,
   nftSCreadableLabel,
   nftSCpayableLabel,
-  populateIndexesBaseTxGasLimit,
-  populateIndexesMaxBatchSize,
   deployMetadataInAssetsLabel,
 } from './config';
 import {
@@ -29,7 +27,6 @@ import {
   updateOutputFile,
   getFileContents,
   baseDir,
-  getPopulateIndexesTx,
   areYouSureAnswer,
 } from './utils';
 import { TransactionWatcher, SmartContract } from '@elrondnetwork/erdjs/out';
@@ -224,66 +221,13 @@ const deployNftMinter = async () => {
     const txStatus = transactionOnNetwork.status;
     const txHash = transactionOnNetwork.hash;
 
-    // This is done to populate VecMapper of token indexes,
-    // with big amounts it had to be split into more transactions
-    // this assures that later the random minting is more performant on SC
-    const pTxHashes: string[] = [];
-    const populateTxOperations = async (numberOfbatches: number, i: number) => {
-      const amountOfTokens =
-        numberOfbatches === i
-          ? deployNftMinterAmountOfTokens -
-            (numberOfbatches - 1) * populateIndexesMaxBatchSize
-          : populateIndexesMaxBatchSize;
-
-      const populateIndexesTx = getPopulateIndexesTx(
-        smartContract,
-        Math.ceil(
-          (populateIndexesBaseTxGasLimit * amountOfTokens) / 18.5 +
-            populateIndexesBaseTxGasLimit
-        ),
-        amountOfTokens
-      );
-
-      populateIndexesTx.setNonce(userAccount.nonce);
-      userAccount.incrementNonce();
-      signer.sign(populateIndexesTx);
-
-      await provider.sendTransaction(populateIndexesTx);
-
-      const watcher = new TransactionWatcher(provider);
-      const transactionOnNetwork = await watcher.awaitCompleted(
-        populateIndexesTx
-      );
-
-      pTxHashes.push(transactionOnNetwork.hash);
-    };
-
-    if (deployNftMinterAmountOfTokens > populateIndexesMaxBatchSize) {
-      const numberOfbatches = Math.ceil(
-        deployNftMinterAmountOfTokens / populateIndexesMaxBatchSize
-      );
-      for (let i = 1; i <= numberOfbatches; i++) {
-        spinner.text = `(Batch ${i}) Populating indexes, please wait...`;
-        await populateTxOperations(numberOfbatches, i);
-      }
-    } else {
-      await populateTxOperations(1, 1);
-    }
-
     spinner.stop();
 
     console.log(`\nDeployment transaction executed: ${txStatus}`);
     console.log(
       `Deployment tx: ${elrondExplorer[chain]}/transactions/${txHash}\n`
     );
-    pTxHashes.forEach((hash, index) => {
-      console.log(`Populating indexes transaction executed!`);
-      console.log(
-        `Populate indexes tx (${index + 1}): ${
-          elrondExplorer[chain]
-        }/transactions/${hash}\n`
-      );
-    });
+
     console.log(`Smart Contract address: ${smartContractAddress}\n`);
     updateOutputFile({
       scAddress: smartContractAddress,

@@ -5,9 +5,9 @@
 - Quick jumpstart: [www.elven.tools/docs/jump-start.html](https://www.elven.tools/docs/jump-start.html)
 - Intro video: [youtu.be/resGP6a7_34](https://youtu.be/resGP6a7_34)
 
-🚨 Be aware that the Smart Contract doesn't have any audits. It has complete functionality for the first version, but it still needs some improvements. Test it first on the devnet/testnet. 🚨
+Be aware that the Smart Contract doesn't have any audits. It has complete functionality for the first version, but it still needs some improvements. Test it first on the devnet/testnet.
 
-**You can use [elven-tools-dapp](https://github.com/ElvenTools/elven-tools-dapp) as your frontend dapp for minting process! (NextJS based app)**
+**You can use [elven-tools-dapp](https://github.com/ElvenTools/elven-tools-dapp) as your frontend dapp for minting process! (NextJS based app with all 4 auth providers included, and React hooks for interaction)** (Learn more about it here: [How to start with the Dapp](https://www.elven.tools/docs/how-to-start-with-the-dapp.html)).
 
 ### Tracking the progress
 
@@ -15,12 +15,13 @@
 
 ### What is it?
 
-- The CLI tool helps to:
-  - deploy the NFT minter Smart Contract on the Elrond blockchain
-  - interact with the NFT minter Smart Contract on the Elrond blockchain
-  - provides a couple of helper tools for getting the data from API
+The CLI tool helps to:
+- deploy the NFT minter Smart Contract on the Elrond blockchain
+- interact with the NFT minter Smart Contract on the Elrond blockchain
+- provides a couple of helper tools for getting the data from API
+  - get collection owners, filter and export the data
 
-For now it is designed to deploy the contract: [elven-nft-minter-sc](https://github.com/ElvenTools/elven-nft-minter-sc).
+For now it is designed to deploy the contract: [elven-nft-minter-sc](https://github.com/ElvenTools/elven-nft-minter-sc). There will be more in the future.
 
 ### How does it work? 
 
@@ -55,6 +56,8 @@ For all configuration options check out the docs: [www.elven.tools/docs/cli-intr
 ### You may also like
 
 - [NFT Art Maker](https://github.com/juliancwirko/nft-art-maker) - generates images and metadata files and packs them into CAR files, all from provided PNG layers.
+- [Buildo Begins](https://github.com/ElrondDevGuild/buildo-begins) - CLI toolset for interacting with the Elrond blockchain, APIs and smart contracts
+- [Export collection owners to CSV](https://github.com/ElvenTools/elven-tools-collection-owners-csv)
 
 ### Issues and ideas
 
