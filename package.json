@@ -7,7 +7,7 @@
   "version": "1.10.0",
   "elvenTools": {
     "smartContractVersionTagName": "v1.7.0",
-    "minterDappVersionTagName": "v2.2.0"
+    "minterDappVersionTagName": "v2.2.1"
   },
   "description": "Interacting with custom NFT related Smart Contracts on the Elrond blockchain",
   "main": "build/index.js",
