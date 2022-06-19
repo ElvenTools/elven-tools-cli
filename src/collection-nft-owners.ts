@@ -7,8 +7,8 @@ import ora from 'ora';
 import pThrottle from 'p-throttle';
 import prompts, { PromptObject } from 'prompts';
 import {
-  proxyGateways,
   chain,
+  apiProvider,
   collectionNftOwnersTickerLabel,
   collectionNftOwnersNoSmartContractsLabel,
   collectionNftOwnersCallsPerSecond,
@@ -92,8 +92,9 @@ export const collectionNftOwners = async () => {
 
     const addressesArr: SingleApiResponseItem[][] = [];
 
+    // It must be the api, not gateway
     const response = await fetch(
-      `${proxyGateways[chain]}/collections/${collectionTicker}/nfts/count`
+      `${apiProvider[chain]}/collections/${collectionTicker}/nfts/count`
     );
 
     tokensNumber = await response.text();
@@ -123,7 +124,7 @@ export const collectionNftOwners = async () => {
         const throttled = throttle(async (index: number) => {
           const response = await fetch(
             `${
-              proxyGateways[chain]
+              apiProvider[chain]
             }/collections/${collectionTicker}/nfts?withOwner=true&from=${
               index * MAX_SIZE
             }&size=${MAX_SIZE}`
@@ -243,6 +244,10 @@ export const collectionNftOwners = async () => {
     }
 
     console.log(`Done, ${output.length} addresses saved.${additionalInfo}`);
+    console.log('Check the nft-collection-owners.json file');
+    console.log(
+      'You can also export them to CSV using:\nhttps://github.com/ElvenTools/elven-tools-collection-owners-csv'
+    );
   } catch (e) {
     console.log((e as Error)?.message);
   }

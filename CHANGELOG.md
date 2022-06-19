@@ -1,3 +1,9 @@
+### [1.11.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.11.0) (2022-06-18)
+- changes in the configuration structure
+- proper names for network providers
+- when you use the gateway instead of API, you would need to provide the `gatewayProviderEndpoint`. You can also provide a custom API endpoint by `apiProviderEndpoint.`
+- by default, the CLI will still use the public API (api.elrond.com, devnet-api.elrond.com, testnet-api.elrond.com)
+
 ### [1.10.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.10.0) (2022-06-18)
 - adjustments in the CLI regarding SC updates, there is no more initial `shuffle` required, and `populateIndexes` was removed at all
 - you can still use the the `shuffle` endpoint - it still does the same

@@ -25,7 +25,10 @@ import {
 } from '@elrondnetwork/erdjs';
 import axios, { AxiosResponse } from 'axios';
 import { parseUserKey, UserSigner } from '@elrondnetwork/erdjs-walletcore';
-import { ApiNetworkProvider } from '@elrondnetwork/erdjs-network-providers';
+import {
+  ApiNetworkProvider,
+  ProxyNetworkProvider,
+} from '@elrondnetwork/erdjs-network-providers';
 import prompts, { PromptObject } from 'prompts';
 import BigNumber from 'bignumber.js';
 import ora from 'ora';
@@ -38,7 +41,9 @@ import {
 } from 'fs';
 import { exit, cwd } from 'process';
 import {
-  proxyGateways,
+  apiProvider,
+  gatewayProvider,
+  gatewayProviderEndpoint,
   chain,
   shortChainId,
   outputFileName,
@@ -101,8 +106,20 @@ export const getFileContents = (
   return fileString;
 };
 
-export const getProvider = () => {
-  return new ApiNetworkProvider(proxyGateways[chain], {
+export const getNetworkProviderEndpoint = () => {
+  if (gatewayProviderEndpoint) {
+    return gatewayProvider[chain];
+  }
+  return apiProvider[chain];
+};
+
+export const getNetworkProvider = () => {
+  if (gatewayProviderEndpoint) {
+    return new ProxyNetworkProvider(gatewayProvider[chain], {
+      timeout: 10000,
+    });
+  }
+  return new ApiNetworkProvider(apiProvider[chain], {
     timeout: 10000,
   });
 };
@@ -420,7 +437,7 @@ export const commonTxOperations = async (
   tx: Transaction,
   account: Account,
   signer: UserSigner,
-  provider: ApiNetworkProvider
+  provider: ApiNetworkProvider | ProxyNetworkProvider
 ) => {
   tx.setNonce(account.nonce);
   account.incrementNonce();
@@ -512,7 +529,7 @@ export const getShuffleTransaction = (
 export const scQuery = (
   functionName: string,
   contractAddress: string,
-  provider: ApiNetworkProvider,
+  provider: ApiNetworkProvider | ProxyNetworkProvider,
   args: TypedValue[] = []
 ) => {
   const contract = new SmartContract({ address: new Address(contractAddress) });
@@ -558,7 +575,7 @@ export const commonScQuery = async ({
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
   const spinner = ora('Processing query...');
   try {
-    const provider = getProvider();
+    const provider = getNetworkProvider();
 
     spinner.start();
 

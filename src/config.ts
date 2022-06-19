@@ -238,15 +238,24 @@ export const minterDappVersionTagName =
 // Other predefined config settings
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 
+export const apiProviderEndpoint = customConfig?.config?.apiProviderEndpoint;
+
 // Default will be devnet, based on chain value, if the local is chosen you can change the proxy host
-export const proxyGateways: { [key: string]: string } = {
-  local: customConfig?.config?.customProxyGateway || 'http://localhost:7950',
-  testnet:
-    customConfig?.config?.customProxyGateway ||
-    'https://testnet-api.elrond.com',
-  devnet:
-    customConfig?.config?.customProxyGateway || 'https://devnet-api.elrond.com',
-  mainnet: customConfig?.config?.customProxyGateway || 'https://api.elrond.com',
+export const apiProvider: { [key: string]: string } = {
+  local: apiProviderEndpoint || 'http://localhost:7950',
+  testnet: apiProviderEndpoint || 'https://testnet-api.elrond.com',
+  devnet: apiProviderEndpoint || 'https://devnet-api.elrond.com',
+  mainnet: apiProviderEndpoint || 'https://api.elrond.com',
+};
+
+export const gatewayProviderEndpoint =
+  customConfig?.config?.gatewayProviderEndpoint;
+
+export const gatewayProvider: { [key: string]: string } = {
+  local: gatewayProviderEndpoint || 'http://localhost:7950',
+  testnet: gatewayProviderEndpoint || 'https://testnet-gateway.elrond.com',
+  devnet: gatewayProviderEndpoint || 'https://devnet-gateway.elrond.com',
+  mainnet: gatewayProviderEndpoint || 'https://gateway.elrond.com',
 };
 
 export const shortChainId: { [key: string]: string } = {
