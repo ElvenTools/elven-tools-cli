@@ -1,3 +1,8 @@
+### [1.12.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.0)
+- added new functionality. Now you can distribute EGLD, ESDT, and Meta-ESDT to owners of NFTs from a particular collection. It can be any collection, not only yours. More in the docs
+- the first version assumes that chosen token is on the wallet and you have enough amount of it
+- you will get the distribution-log.json file in the end with all transactions hashes, receiver address, and status of the transaction (success, fail)
+
 ### [1.11.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.11.1)
 - bump dapp version, new major version of the dapp, check its changelog [here](https://github.com/ElvenTools/elven-tools-dapp/blob/main/CHANGELOG.md)
 - update erdjs

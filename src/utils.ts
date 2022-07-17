@@ -22,6 +22,8 @@ import {
   AddressType,
   IAddress,
   TransactionWatcher,
+  ESDTTransferPayloadBuilder,
+  ESDTNFTTransferPayloadBuilder,
 } from '@elrondnetwork/erdjs';
 import axios, { AxiosResponse } from 'axios';
 import { parseUserKey, UserSigner } from '@elrondnetwork/erdjs-walletcore';
@@ -80,9 +82,9 @@ export const getFileContents = (
   relativeFilePath: string,
   options: { isJSON?: boolean; noExitOnError?: boolean }
 ) => {
-  const isJSON = options.isJSON === undefined ? true : options.isJSON;
+  const isJSON = options?.isJSON === undefined ? true : options.isJSON;
   const noExitOnError =
-    options.noExitOnError === undefined ? false : options.noExitOnError;
+    options?.noExitOnError === undefined ? false : options.noExitOnError;
 
   const filePath = `${baseDir}/${relativeFilePath}`;
 
@@ -725,4 +727,157 @@ export const getRemoveAllowlistAddressTx = (
     chainID: shortChainId[chain],
     args: [new AddressValue(new Address(address))],
   });
+};
+
+// Distribute functions, used in loop
+export const distributeEgldSingleAddress = async (
+  amount: string,
+  address: string,
+  account: Account,
+  signer: UserSigner,
+  provider: ApiNetworkProvider | ProxyNetworkProvider
+) => {
+  const payment = TokenPayment.egldFromAmount(amount);
+
+  // TODO: add custom message
+  const data = new TransactionPayload('');
+
+  const tx = new Transaction({
+    data,
+    gasLimit: 50000 + 1500 * data.length(),
+    receiver: new Address(address.trim()),
+    value: payment,
+    chainID: shortChainId[chain],
+  });
+
+  tx.setNonce(account.nonce);
+  account.incrementNonce();
+  signer.sign(tx);
+
+  try {
+    await provider.sendTransaction(tx);
+
+    const watcher = new TransactionWatcher(provider);
+    const transactionOnNetwork = await watcher.awaitCompleted(tx);
+
+    const txHash = transactionOnNetwork.hash;
+    const txStatus = await provider.getTransactionStatus(txHash);
+
+    return {
+      receiverAddress: address,
+      txHash,
+      txStatus: txStatus.status,
+    };
+  } catch (e) {
+    console.log((e as Error)?.message);
+    return {
+      receiverAddress: address,
+      txHash: '',
+      txStatus: 'failed',
+    };
+  }
+};
+
+export const distributeEsdtSingleAddress = async (
+  amount: string,
+  address: string,
+  account: Account,
+  signer: UserSigner,
+  provider: ApiNetworkProvider | ProxyNetworkProvider,
+  token: string,
+  numDecimals: number
+) => {
+  const payment = TokenPayment.fungibleFromAmount(token, amount, numDecimals);
+  const data = new ESDTTransferPayloadBuilder().setPayment(payment).build();
+
+  const tx = new Transaction({
+    data,
+    gasLimit: 50000 + 1500 * data.length() + 300000,
+    receiver: new Address(address.trim()),
+    chainID: shortChainId[chain],
+  });
+
+  tx.setNonce(account.nonce);
+  account.incrementNonce();
+  signer.sign(tx);
+
+  try {
+    await provider.sendTransaction(tx);
+
+    const watcher = new TransactionWatcher(provider);
+    const transactionOnNetwork = await watcher.awaitCompleted(tx);
+
+    const txHash = transactionOnNetwork.hash;
+    const txStatus = await provider.getTransactionStatus(txHash);
+
+    return {
+      receiverAddress: address,
+      txHash,
+      txStatus: txStatus.status,
+    };
+  } catch (e) {
+    console.log((e as Error)?.message);
+    return {
+      receiverAddress: address,
+      txHash: '',
+      txStatus: 'failed',
+    };
+  }
+};
+
+export const distributeMetaEsdtSingleAddress = async (
+  amount: string,
+  address: string,
+  account: Account,
+  signer: UserSigner,
+  provider: ApiNetworkProvider | ProxyNetworkProvider,
+  numDecimals: number,
+  collectionTicker: string,
+  nonce: number
+) => {
+  const payment = TokenPayment.metaEsdtFromAmount(
+    collectionTicker,
+    nonce,
+    amount,
+    numDecimals
+  );
+  const data = new ESDTNFTTransferPayloadBuilder()
+    .setPayment(payment)
+    .setDestination(new Address(address.trim()))
+    .build();
+
+  const tx = new Transaction({
+    nonce,
+    data,
+    gasLimit: 50000 + 1500 * data.length() + 300000,
+    receiver: signer.getAddress(), // Same as sender address!
+    chainID: shortChainId[chain],
+  });
+
+  tx.setNonce(account.nonce);
+  account.incrementNonce();
+  signer.sign(tx);
+
+  try {
+    await provider.sendTransaction(tx);
+
+    const watcher = new TransactionWatcher(provider);
+    const transactionOnNetwork = await watcher.awaitCompleted(tx);
+
+    const txHash = transactionOnNetwork.hash;
+    const txStatus = await provider.getTransactionStatus(txHash);
+
+    return {
+      receiverAddress: address,
+      txHash,
+      txStatus: txStatus.status,
+    };
+  } catch (e) {
+    console.log((e as Error)?.message);
+    return {
+      receiverAddress: address,
+      txHash: '',
+      txStatus: 'failed',
+    };
+  }
 };
