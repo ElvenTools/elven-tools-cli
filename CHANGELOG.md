@@ -1,3 +1,6 @@
+### [1.11.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.11.1)
+- bump dapp version, new major version of the dapp, check its changelog [here](https://github.com/ElvenTools/elven-tools-dapp/blob/main/CHANGELOG.md)
+
 ### [1.11.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.11.0) (2022-06-18)
 - changes in the configuration structure
 - proper names for network providers
