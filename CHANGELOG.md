@@ -1,3 +1,6 @@
+### [1.12.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.1)
+- added SFT distribution to `elven-tools distribute-to-owners`
+
 ### [1.12.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.0)
 - added new functionality. Now you can distribute EGLD, ESDT, and Meta-ESDT to owners of NFTs from a particular collection. It can be any collection, not only yours. More in the docs
 - the first version assumes that chosen token is on the wallet and you have enough amount of it

@@ -881,3 +881,59 @@ export const distributeMetaEsdtSingleAddress = async (
     };
   }
 };
+
+export const distributeSftSingleAddress = async (
+  amount: string,
+  address: string,
+  account: Account,
+  signer: UserSigner,
+  provider: ApiNetworkProvider | ProxyNetworkProvider,
+  collectionTicker: string,
+  nonce: number
+) => {
+  const payment = TokenPayment.semiFungible(
+    collectionTicker,
+    nonce,
+    Number(amount)
+  );
+
+  const data = new ESDTNFTTransferPayloadBuilder()
+    .setPayment(payment)
+    .setDestination(new Address(address.trim()))
+    .build();
+
+  const tx = new Transaction({
+    nonce,
+    data,
+    gasLimit: 50000 + 1500 * data.length() + 300000,
+    receiver: signer.getAddress(), // Same as sender address!
+    chainID: shortChainId[chain],
+  });
+
+  tx.setNonce(account.nonce);
+  account.incrementNonce();
+  signer.sign(tx);
+
+  try {
+    await provider.sendTransaction(tx);
+
+    const watcher = new TransactionWatcher(provider);
+    const transactionOnNetwork = await watcher.awaitCompleted(tx);
+
+    const txHash = transactionOnNetwork.hash;
+    const txStatus = await provider.getTransactionStatus(txHash);
+
+    return {
+      receiverAddress: address,
+      txHash,
+      txStatus: txStatus.status,
+    };
+  } catch (e) {
+    console.log((e as Error)?.message);
+    return {
+      receiverAddress: address,
+      txHash: '',
+      txStatus: 'failed',
+    };
+  }
+};

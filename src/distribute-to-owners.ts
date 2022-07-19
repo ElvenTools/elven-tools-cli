@@ -10,6 +10,7 @@ import {
   distributeEgldSingleAddress,
   distributeEsdtSingleAddress,
   distributeMetaEsdtSingleAddress,
+  distributeSftSingleAddress,
 } from './utils';
 import { publicEndpointSetup } from './setup';
 import { apiProvider, chain } from './config';
@@ -19,6 +20,7 @@ const spinner = ora('Processing, please wait...');
 enum TokenType {
   EGLD = 'EGLD',
   ESDT = 'ESDT',
+  SFT = 'SFT',
   MetaESDT = 'Meta ESDT',
 }
 
@@ -37,6 +39,10 @@ const promptQuestions: PromptObject[] = [
         value: TokenType.ESDT,
       },
       {
+        title: 'SFT',
+        value: TokenType.SFT,
+      },
+      {
         title: 'Meta ESDT',
         value: TokenType.MetaESDT,
       },
@@ -47,7 +53,10 @@ const promptQuestions: PromptObject[] = [
     name: 'token',
     message: (_, values) =>
       `Please provide the ${values.tokenType} token ticker/id (ex. ABCD-ds323d${
-        values.tokenType === TokenType.MetaESDT ? '-0d' : ''
+        values.tokenType === TokenType.MetaESDT ||
+        values.tokenType === TokenType.SFT
+          ? '-0d'
+          : ''
       })\n`,
     validate: (value) => (!value ? 'Required!' : true),
   },
@@ -124,7 +133,7 @@ export const distributeToOwners = async () => {
         }
       }
 
-      if (tokenType === TokenType.MetaESDT) {
+      if (tokenType === TokenType.MetaESDT || tokenType === TokenType.SFT) {
         const metaEsdtOnNetwork = await axios.get<{
           decimals: number;
           nonce: number;
@@ -140,7 +149,14 @@ export const distributeToOwners = async () => {
         nonce = metaEsdtOnNetwork?.data?.nonce;
         collectionTicker = metaEsdtOnNetwork?.data?.ticker;
 
-        if (!numDecimals || !nonce || !collectionTicker) {
+        if (tokenType === TokenType.MetaESDT && !numDecimals) {
+          console.log(
+            "Can't get the information about the decimals for the token. Try again."
+          );
+          exit(9);
+        }
+
+        if (!nonce || !collectionTicker) {
           console.log(
             "Can't get the token information (decimals, nonce, collection ticker). Try again."
           );
@@ -194,6 +210,20 @@ export const distributeToOwners = async () => {
 
           promises.push(statusPromise);
         }
+
+        if (tokenType === TokenType.SFT && collectionTicker && nonce) {
+          const statusPromise = distributeSftSingleAddress(
+            amount,
+            owner,
+            userAccount,
+            signer,
+            provider,
+            collectionTicker,
+            nonce
+          );
+
+          promises.push(statusPromise);
+        }
       }
 
       const statuses = await Promise.all(promises);
@@ -223,7 +253,7 @@ export const distributeToOwners = async () => {
   } catch (e) {
     console.log(`\n${(e as Error)?.message}`);
     console.log(
-      'Check if you use the correct chain (mainnet, devnet, testnet) and if the chosen token is on your wallet.'
+      'Check if you use the correct chain (mainnet, devnet, testnet) and if the chosen token is on your wallet. Sometimes it can also be a temporary network outage.'
     );
   } finally {
     spinner.stop();
