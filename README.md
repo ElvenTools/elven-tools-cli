@@ -5,6 +5,18 @@
 - Quick jumpstart: [www.elven.tools/docs/jump-start.html](https://www.elven.tools/docs/jump-start.html)
 - Intro video: [youtu.be/resGP6a7_34](https://youtu.be/resGP6a7_34)
 
+### What is it?
+
+The CLI tool helps to:
+- deploy the NFT minter Smart Contract on the Elrond blockchain
+- interact with the NFT minter Smart Contract on the Elrond blockchain
+- provides a couple of helper tools for getting the data from API
+  - get collection owners
+  - filter and export the data
+  - distribute EGLD, ESDT, SFT and Meta ESDT to the NFT owners of a collection
+
+For now it is designed to deploy the contract: [elven-nft-minter-sc](https://github.com/ElvenTools/elven-nft-minter-sc). There will be more in the future.
+
 Be aware that the Smart Contract doesn't have any audits. It has complete functionality for the first version, but it still needs some improvements. Test it first on the devnet/testnet.
 
 **You can use [elven-tools-dapp](https://github.com/ElvenTools/elven-tools-dapp) as your frontend dapp for minting process! (NextJS based app with all 4 auth providers included, and React hooks for interaction)** (Learn more about it here: [How to start with the Dapp](https://www.elven.tools/docs/how-to-start-with-the-dapp.html)).
@@ -12,16 +24,6 @@ Be aware that the Smart Contract doesn't have any audits. It has complete functi
 ### Tracking the progress
 
 - [Elven Tools CLI kanban](https://github.com/orgs/ElvenTools/projects/3)
-
-### What is it?
-
-The CLI tool helps to:
-- deploy the NFT minter Smart Contract on the Elrond blockchain
-- interact with the NFT minter Smart Contract on the Elrond blockchain
-- provides a couple of helper tools for getting the data from API
-  - get collection owners, filter and export the data
-
-For now it is designed to deploy the contract: [elven-nft-minter-sc](https://github.com/ElvenTools/elven-nft-minter-sc). There will be more in the future.
 
 ### How does it work? 
 
