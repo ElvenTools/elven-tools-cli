@@ -225,6 +225,9 @@ export const getTotalSupplyOfCurrentDropFunctionName =
 export const collectionNftOwnersCallsPerSecond =
   customConfig?.config?.collectionNftOwners?.apiCallsPerSecond || 5;
 
+export const distributeToOwnersCallsPerSecond =
+  customConfig?.config?.distributeToOwners?.apiCallsPerSecond || 5;
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Dapp
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡

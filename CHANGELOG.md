@@ -1,3 +1,7 @@
+### [1.12.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.2)
+- added rate limiting calls for `elven-tools distribute-to-owners` to make it more reliable. There are five calls per second by default. You can change this using the configuration file. Check the docs for more info.
+- fix misleading prompt examples in `elven-tools distribute-to-owners`
+
 ### [1.12.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.1)
 - added SFT distribution to `elven-tools distribute-to-owners`
 

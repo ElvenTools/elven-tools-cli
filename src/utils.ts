@@ -769,7 +769,7 @@ export const distributeEgldSingleAddress = async (
       txStatus: txStatus.status,
     };
   } catch (e) {
-    console.log((e as Error)?.message);
+    console.log(JSON.stringify(e));
     return {
       receiverAddress: address,
       txHash: '',
@@ -816,7 +816,7 @@ export const distributeEsdtSingleAddress = async (
       txStatus: txStatus.status,
     };
   } catch (e) {
-    console.log((e as Error)?.message);
+    console.log(JSON.stringify(e));
     return {
       receiverAddress: address,
       txHash: '',
@@ -873,7 +873,7 @@ export const distributeMetaEsdtSingleAddress = async (
       txStatus: txStatus.status,
     };
   } catch (e) {
-    console.log((e as Error)?.message);
+    console.log(JSON.stringify(e));
     return {
       receiverAddress: address,
       txHash: '',
@@ -929,7 +929,7 @@ export const distributeSftSingleAddress = async (
       txStatus: txStatus.status,
     };
   } catch (e) {
-    console.log((e as Error)?.message);
+    console.log(JSON.stringify(e));
     return {
       receiverAddress: address,
       txHash: '',

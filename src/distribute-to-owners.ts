@@ -3,6 +3,7 @@ import { writeFile } from 'fs';
 import { exit } from 'process';
 import prompts, { PromptObject } from 'prompts';
 import ora from 'ora';
+import pThrottle from 'p-throttle';
 
 import {
   areYouSureAnswer,
@@ -13,9 +14,14 @@ import {
   distributeSftSingleAddress,
 } from './utils';
 import { publicEndpointSetup } from './setup';
-import { apiProvider, chain } from './config';
+import { apiProvider, chain, distributeToOwnersCallsPerSecond } from './config';
 
 const spinner = ora('Processing, please wait...');
+
+const throttle = pThrottle({
+  limit: distributeToOwnersCallsPerSecond,
+  interval: 1000,
+});
 
 enum TokenType {
   EGLD = 'EGLD',
@@ -64,7 +70,7 @@ const promptQuestions: PromptObject[] = [
     type: 'text',
     name: 'amount',
     message: (_, values) =>
-      `Please provide the amount of the ${values.tokenType} to send per one address (ex. 1.5 is 1.5 ${values.tokenType})\n`,
+      `Please provide the amount of the ${values.tokenType} to send per one address (ex. 1 is 1 ${values.tokenType})\n`,
     validate: (value) =>
       value && !Number.isNaN(value) && Number(value) > 0
         ? true
@@ -164,7 +170,7 @@ export const distributeToOwners = async () => {
         }
       }
 
-      for (const owner of onlyAddresses) {
+      const throttled = throttle((owner: string) => {
         if (tokenType === TokenType.EGLD) {
           const statusPromise = distributeEgldSingleAddress(
             amount,
@@ -224,6 +230,10 @@ export const distributeToOwners = async () => {
 
           promises.push(statusPromise);
         }
+      });
+
+      for (const owner of onlyAddresses) {
+        await throttled(owner);
       }
 
       const statuses = await Promise.all(promises);
@@ -251,7 +261,7 @@ export const distributeToOwners = async () => {
       exit(9);
     }
   } catch (e) {
-    console.log(`\n${(e as Error)?.message}`);
+    console.log(`\n${JSON.stringify((e as Error)?.message)}`);
     console.log(
       'Check if you use the correct chain (mainnet, devnet, testnet) and if the chosen token is on your wallet. Sometimes it can also be a temporary network outage.'
     );
