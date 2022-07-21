@@ -1,16 +1,19 @@
-### [1.12.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.2)
+### [1.12.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.3) (2022-07-21)
+- added more data checks in case of wrong input file format
+
+### [1.12.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.2) (2022-07-20)
 - added rate limiting calls for `elven-tools distribute-to-owners` to make it more reliable. There are five calls per second by default. You can change this using the configuration file. Check the docs for more info.
 - fix misleading prompt examples in `elven-tools distribute-to-owners`
 
-### [1.12.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.1)
+### [1.12.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.1) (2022-07-19)
 - added SFT distribution to `elven-tools distribute-to-owners`
 
-### [1.12.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.0)
+### [1.12.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.0) (2022-07-17)
 - added new functionality. Now you can distribute EGLD, ESDT, and Meta-ESDT to owners of NFTs from a particular collection. It can be any collection, not only yours. More in the docs
 - the first version assumes that chosen token is on the wallet and you have enough amount of it
 - you will get the distribution-log.json file in the end with all transactions hashes, receiver address, and status of the transaction (success, fail)
 
-### [1.11.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.11.1)
+### [1.11.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.11.1) (2022-07-17)
 - bump dapp version, new major version of the dapp, check its changelog [here](https://github.com/ElvenTools/elven-tools-dapp/blob/main/CHANGELOG.md)
 - update erdjs
 

@@ -23,6 +23,12 @@ const throttle = pThrottle({
   interval: 1000,
 });
 
+const validAddresses = (addresses: string[]) => {
+  return addresses.every(
+    (address) => Boolean(address) && address.length === 62
+  );
+};
+
 enum TokenType {
   EGLD = 'EGLD',
   ESDT = 'ESDT',
@@ -83,7 +89,7 @@ export const distributeToOwners = async () => {
     const { amount, tokenType, token } = await prompts(promptQuestions);
 
     if (!amount) {
-      console.log('You have to provide the address and amount per address!');
+      console.log('You have to provide the amount per address!');
       exit(9);
     }
 
@@ -102,6 +108,14 @@ export const distributeToOwners = async () => {
 
     if (owners) {
       const onlyAddresses = owners.map((item: { owner: string }) => item.owner);
+
+      if (!validAddresses(onlyAddresses)) {
+        console.log(
+          'One or more addresses are not valid! Check if they are valid Elrond bech32 addresses.'
+        );
+        exit(9);
+      }
+
       const promises: Promise<{
         receiverAddress: string;
         txHash: string;
@@ -171,6 +185,8 @@ export const distributeToOwners = async () => {
       }
 
       const throttled = throttle((owner: string) => {
+        if (!owner) return;
+
         if (tokenType === TokenType.EGLD) {
           const statusPromise = distributeEgldSingleAddress(
             amount,
@@ -256,7 +272,7 @@ export const distributeToOwners = async () => {
         'There were problems when reading the nft-collection-owners.json file.'
       );
       console.log(
-        "Make sure that you've generated it using 'elven-tools collection-nft-owners' command."
+        "Make sure you've generated the file using the 'elven-tools collection-nft-owners' command. Or you created the file with the structure: [{ 'owner': 'erd1...' }, { 'owner': 'erd1...' }]"
       );
       exit(9);
     }

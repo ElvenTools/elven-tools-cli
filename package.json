@@ -4,7 +4,7 @@
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "types": "build/types",
-  "version": "1.12.2",
+  "version": "1.12.3",
   "elvenTools": {
     "smartContractVersionTagName": "v1.7.0",
     "minterDappVersionTagName": "v3.0.0"
