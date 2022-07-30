@@ -1,3 +1,6 @@
+### [1.13.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.13.1) (2022-07-30)
+- bump smart contract verion
+
 ### [1.13.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.13.0) (2022-07-30)
 - added more file formats when deploying ([supported](https://docs.elrond.com/developers/nft-tokens/#supported-media-types) by Elrond services)
 - bump dependencies
