@@ -4,7 +4,7 @@
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "types": "build/types",
-  "version": "1.12.3",
+  "version": "1.13.0",
   "elvenTools": {
     "smartContractVersionTagName": "v1.7.0",
     "minterDappVersionTagName": "v3.0.0"
@@ -54,17 +54,15 @@
     "typescript": "^4.5.3"
   },
   "dependencies": {
-    "@elrondnetwork/erdjs": "10.2.7",
-    "@elrondnetwork/erdjs-network-providers": "0.1.6",
-    "@elrondnetwork/erdjs-walletcore": "1.0.0",
+    "@elrondnetwork/erdjs": "11.0.0",
+    "@elrondnetwork/erdjs-network-providers": "1.0.0",
+    "@elrondnetwork/erdjs-walletcore": "2.0.0",
     "axios": "^0.27.2",
     "bignumber.js": "9.0.2",
     "cosmiconfig": "^7.0.1",
     "cross-fetch": "^3.1.5",
     "cross-spawn": "7.0.3",
     "download": "8.0.0",
-    "install": "^0.13.0",
-    "npm": "^8.10.0",
     "ora": "5.4.1",
     "p-throttle": "4.1.1",
     "prompts": "^2.4.2"

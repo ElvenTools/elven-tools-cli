@@ -739,12 +739,17 @@ export const distributeEgldSingleAddress = async (
 ) => {
   const payment = TokenPayment.egldFromAmount(amount);
 
+  const senderAddress = signer.getAddress();
+
   // TODO: add custom message
-  const data = new TransactionPayload('');
+  const data = new TransactionPayload(
+    'EGLD distribution made by Elven Tools CLI'
+  );
 
   const tx = new Transaction({
     data,
     gasLimit: 50000 + 1500 * data.length(),
+    sender: senderAddress,
     receiver: new Address(address.trim()),
     value: payment,
     chainID: shortChainId[chain],
@@ -790,9 +795,12 @@ export const distributeEsdtSingleAddress = async (
   const payment = TokenPayment.fungibleFromAmount(token, amount, numDecimals);
   const data = new ESDTTransferPayloadBuilder().setPayment(payment).build();
 
+  const senderAddress = signer.getAddress();
+
   const tx = new Transaction({
     data,
     gasLimit: 50000 + 1500 * data.length() + 300000,
+    sender: senderAddress,
     receiver: new Address(address.trim()),
     chainID: shortChainId[chain],
   });
@@ -846,11 +854,14 @@ export const distributeMetaEsdtSingleAddress = async (
     .setDestination(new Address(address.trim()))
     .build();
 
+  const senderAddress = signer.getAddress();
+
   const tx = new Transaction({
     nonce,
     data,
     gasLimit: 50000 + 1500 * data.length() + 300000,
-    receiver: signer.getAddress(), // Same as sender address!
+    sender: senderAddress,
+    receiver: senderAddress, // Same as sender address!
     chainID: shortChainId[chain],
   });
 
@@ -902,11 +913,14 @@ export const distributeSftSingleAddress = async (
     .setDestination(new Address(address.trim()))
     .build();
 
+  const senderAddress = signer.getAddress();
+
   const tx = new Transaction({
     nonce,
     data,
     gasLimit: 50000 + 1500 * data.length() + 300000,
-    receiver: signer.getAddress(), // Same as sender address!
+    sender: senderAddress,
+    receiver: senderAddress, // Same as sender address!
     chainID: shortChainId[chain],
   });
 

@@ -1,3 +1,7 @@
+### [1.13.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.13.0) (2022-07-30)
+- added more file formats when deploying ([supported](https://docs.elrond.com/developers/nft-tokens/#supported-media-types) by Elrond services)
+- bump dependencies
+
 ### [1.12.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.3) (2022-07-21)
 - added more data checks in case of wrong input file format
 

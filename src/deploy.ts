@@ -95,9 +95,17 @@ const deployNftMinter = async () => {
       choices: [
         { title: '.png', value: '.png' },
         { title: '.jpg', value: '.jpg' },
+        { title: '.jpeg', value: '.jpeg' },
         { title: '.gif', value: '.gif' },
         { title: '.mp3', value: '.mp3' },
         { title: '.mp4', value: '.mp4' },
+        { title: '.acc', value: '.acc' },
+        { title: '.flac', value: '.flac' },
+        { title: '.m4a', value: '.m4a' },
+        { title: '.wav', value: '.wav' },
+        { title: '.mov', value: '.mov' },
+        { title: '.quicktime', value: '.quicktime' },
+        { title: '.webm', value: '.webm' },
       ],
     },
     {
