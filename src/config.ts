@@ -53,7 +53,7 @@ export const setLocalRolesFnName =
   customConfig?.config?.nftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
 
 export const mintTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 12500000;
+  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 13000000;
 
 export const nftMinterTokenSellingPrice =
   customConfig?.config?.nftMinterSc?.tokenSellingPrice;
@@ -206,7 +206,7 @@ export const isDropActiveFunctionName =
   customConfig?.config?.nftMinterSc?.isDropActiveFnName || 'isDropActive';
 
 export const tokensPerOneTx =
-  customConfig?.config?.nftMinterSc?.tokensPerOneTx || 95;
+  customConfig?.config?.nftMinterSc?.tokensPerOneTx || 90;
 
 export const isMintingPausedFunctionName =
   customConfig?.config?.nftMinterSc?.isMintingPausedFnName || 'isMintingPaused';
@@ -312,8 +312,9 @@ export const nftSCupgradableLabel =
   'Decide if the contract can be upgraded in the future.\n';
 export const nftSCreadableLabel =
   "Decide if the contract's storage can be read by other contracts. Not recommended in this case.\n";
-export const nftSCpayableLabel =
-  'Decide if the contract can receive funds. Recommended because of the royalties.\n';
+export const nftSCpayableLabel = 'Decide if the contract can receive funds.\n';
+export const nftSCpayableByScLabel =
+  'Decide if the contract can receive funds from other smart contract. Recommended because of the royalties.\n';
 
 export const dropTokensLimitPerAddressPerDropLabel =
   'Provide the tokens limit per single address per whole drop (the best is to keep it as low as possible) [optional]:\n';

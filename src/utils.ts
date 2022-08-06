@@ -198,11 +198,12 @@ export const getDeployTransaction = (
   upgradable = true,
   readable = false,
   payable = false,
+  payableBySc = true,
   metadataInAssets = false
 ) => {
   return contract.deploy({
     code,
-    codeMetadata: new CodeMetadata(upgradable, readable, payable),
+    codeMetadata: new CodeMetadata(upgradable, readable, payable, payableBySc),
     gasLimit: gasLimit,
     initArguments: [
       BytesValue.fromUTF8(imgBaseCid.trim()),

@@ -20,6 +20,7 @@ import {
   nftSCupgradableLabel,
   nftSCreadableLabel,
   nftSCpayableLabel,
+  nftSCpayableByScLabel,
   deployMetadataInAssetsLabel,
 } from './config';
 import {
@@ -29,7 +30,7 @@ import {
   baseDir,
   areYouSureAnswer,
 } from './utils';
-import { TransactionWatcher, SmartContract } from '@elrondnetwork/erdjs/out';
+import { TransactionWatcher, SmartContract } from '@elrondnetwork/erdjs';
 
 const deployNftMinter = async () => {
   // Check if there is an old output file
@@ -62,6 +63,15 @@ const deployNftMinter = async () => {
       type: 'select',
       name: 'nftSCpayable',
       message: nftSCpayableLabel,
+      choices: [
+        { title: 'No', value: false },
+        { title: 'Yes', value: true },
+      ],
+    },
+    {
+      type: 'select',
+      name: 'nftSCpayableBySc',
+      message: nftSCpayableByScLabel,
       choices: [
         { title: 'Yes', value: true },
         { title: 'No', value: false },
@@ -170,6 +180,7 @@ const deployNftMinter = async () => {
       nftSCupgradable,
       nftSCreadable,
       nftSCpayable,
+      nftSCpayableBySc,
       metadataInAssets,
     } = await prompts(promptsQuestions);
 
@@ -203,6 +214,7 @@ const deployNftMinter = async () => {
       nftSCupgradable,
       nftSCreadable,
       nftSCpayable,
+      nftSCpayableBySc,
       metadataInAssets
     );
 
