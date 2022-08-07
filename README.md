@@ -67,4 +67,4 @@ Please post issues and ideas [here](https://github.com/ElvenTools/elven-tools-cl
 
 ### License
 
-MIT + GPLv3 (Elrond tooling)
+MIT
