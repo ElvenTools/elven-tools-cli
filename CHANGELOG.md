@@ -1,3 +1,6 @@
+### [1.14.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.14.2) (2022-08-10)
+- bugfix for `elven-tools collection-nft-owners` - when there was no 'metadata' in the attributes, the script was failing
+
 ### [1.14.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.14.1) (2022-08-10)
 - make it possible to use the decimals for the royalties
 

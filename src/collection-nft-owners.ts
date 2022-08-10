@@ -45,11 +45,14 @@ const getMetadataFileName = (attributes: string) => {
     ? Buffer.from(attributes, 'base64').toString()
     : undefined;
   if (!attrsDecoded) return '';
-  return attrsDecoded
+
+  const metadataKey = attrsDecoded
     .split(';')
-    .filter((item) => item.includes('metadata'))?.[0]
-    .split('/')?.[1]
-    .split('.')?.[0];
+    .filter((item) => item.includes('metadata'))?.[0];
+
+  if (!metadataKey) return '';
+
+  return metadataKey.split('/')?.[1].split('.')?.[0];
 };
 
 export const collectionNftOwners = async () => {
