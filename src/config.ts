@@ -289,7 +289,7 @@ export const deployNftMinterAmountOfTokensLabel =
 export const deployNftMinterSellingPriceLabel =
   'Provide the seling price (ex. 0.5 for 0.5 EGLD):\n';
 export const deployNftMinterRoyaltiesLabel =
-  'Provide the royalties value (ex. 20 for 20%) [optional]:\n';
+  'Provide the royalties value (ex. 5.5 for 5.5%) [optional]:\n';
 export const deployNftMinterTagsLabel =
   'Provide tags (ex. tag1,tag2,tag3) [optional]:\n';
 export const deployNftMinterProvenanceHashLabel =

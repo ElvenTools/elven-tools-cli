@@ -1,3 +1,6 @@
+### [1.14.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.14.1) (2022-08-10)
+- make it possible to use the decimals for the royalties
+
 ### [1.14.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.14.0) (2022-08-06)
 - added 'payable by smart contracts' option when deploying - from now, the 'payable' option is disabled by default, and 'payable by smart contracts' is enabled by default
 - increased the default mint gas limit because of problems when the drop is enabled

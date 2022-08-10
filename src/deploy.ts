@@ -144,6 +144,8 @@ const deployNftMinter = async () => {
       message: deployNftMinterRoyaltiesLabel,
       min: 0,
       max: 100,
+      float: true,
+      round: 2,
       validate: (value) =>
         (value >= 0 && value <= 100) || !value
           ? true
