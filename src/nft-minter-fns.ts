@@ -82,6 +82,8 @@ import {
   isMintingPausedFunctionName,
   getTotalSupplyFunctionName,
   getTotalSupplyOfCurrentDropFunctionName,
+  giveawayFileRelativePath,
+  tokensPerOneGiveawayTx,
 } from './config';
 import { exit } from 'process';
 
@@ -220,45 +222,74 @@ const mint = async () => {
 const giveaway = async () => {
   const smartContractAddress = getTheSCAddressFromOutputOrConfig();
 
-  const promptQuestions: PromptObject[] = [
-    {
-      type: 'text',
-      name: 'giveawayAddress',
-      message: giveawayAddressLabel,
-      validate: (value) => (!value ? 'Required!' : true),
-    },
+  const amountPrompt: PromptObject[] = [
     {
       type: 'number',
       name: 'giveawayTokensAmount',
       message: giveawayTokensAmount,
       validate: (value) =>
-        value && value > 0 && value <= tokensPerOneTx
+        value && value > 0 && value <= tokensPerOneGiveawayTx
           ? true
-          : `Required a number greater than 0 and lower than ${tokensPerOneTx} because of the max gas limits!`,
+          : `Required a number greater than 0 and lower than ${tokensPerOneGiveawayTx} because of the max gas limits!`,
     },
   ];
 
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'list',
+      name: 'giveawayAddressList',
+      message: giveawayAddressLabel,
+      validate: (value) =>
+        value && value.length > 0 ? true : `Required at least one address!`,
+    },
+    ...amountPrompt,
+  ];
+
   try {
-    const { giveawayAddress, giveawayTokensAmount } = await prompts(
-      promptQuestions
-    );
-
-    if (!giveawayAddress) {
-      console.log('You have to provide the give away address!');
-      exit(9);
-    }
-
-    await areYouSureAnswer();
-
     const { smartContract, userAccount, signer, provider } = await setup(
       smartContractAddress
     );
 
+    const giveawayFile = getFileContents(giveawayFileRelativePath, {
+      noExitOnError: true,
+    });
+
+    let addresses = [];
+    let amount = 1;
+
+    if (giveawayFile) {
+      console.log(' ');
+      console.log(`Populating addresses from the file: giveaway.json.`);
+      console.log(' ');
+      await areYouSureAnswer();
+      const { giveawayTokensAmount } = await prompts(amountPrompt);
+      addresses = giveawayFile;
+      amount = giveawayTokensAmount;
+    } else {
+      console.log(' ');
+      console.log('There is no giveaway.json file with the addresses.');
+      console.log('You will be providing addresses by hand.');
+      console.log(' ');
+      await areYouSureAnswer();
+      const { giveawayAddressList, giveawayTokensAmount } = await prompts(
+        promptQuestions
+      );
+      addresses = giveawayAddressList;
+      amount = giveawayTokensAmount;
+    }
+
+    if (amount * addresses.length > tokensPerOneGiveawayTx) {
+      console.log(
+        `Total number of tokens to mint is to big (addresses x amountPerAddress). The maximum is: ${tokensPerOneTx}`
+      );
+      exit(9);
+    }
+
     const giveawayTx = getGiveawayTransaction(
       smartContract,
       giveawayTxBaseGasLimit,
-      giveawayAddress,
-      Number(giveawayTokensAmount)
+      addresses,
+      Number(amount)
     );
 
     await commonTxOperations(giveawayTx, userAccount, signer, provider);

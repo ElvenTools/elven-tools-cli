@@ -62,7 +62,7 @@ export const mintFunctionName =
   customConfig?.config?.nftMinterSc?.mintFnName || 'mint';
 
 export const giveawayTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 12500000;
+  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 10500000;
 
 export const giveawayFunctionName =
   customConfig?.config?.nftMinterSc?.giveawayFnName || 'giveaway';
@@ -208,6 +208,9 @@ export const isDropActiveFunctionName =
 export const tokensPerOneTx =
   customConfig?.config?.nftMinterSc?.tokensPerOneTx || 90;
 
+export const tokensPerOneGiveawayTx =
+  customConfig?.config?.nftMinterSc?.tokensPerOneGiveawayTx || 110;
+
 export const isMintingPausedFunctionName =
   customConfig?.config?.nftMinterSc?.isMintingPausedFnName || 'isMintingPaused';
 
@@ -287,7 +290,7 @@ export const deployNftMinterMetaCidLabel =
 export const deployNftMinterAmountOfTokensLabel =
   'Provide amount of tokens in collection:\n';
 export const deployNftMinterSellingPriceLabel =
-  'Provide the seling price (ex. 0.5 for 0.5 EGLD):\n';
+  'Provide the selling price (ex. 0.5 for 0.5 EGLD):\n';
 export const deployNftMinterRoyaltiesLabel =
   'Provide the royalties value (ex. 5.5 for 5.5%) [optional]:\n';
 export const deployNftMinterTagsLabel =
@@ -300,8 +303,8 @@ export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
 
 export const amountOfTokensLabel = `Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneTx} because of the max gas limit per transaction:\n`;
 
-export const giveawayAddressLabel = 'Provide the address for giveaway: \n';
-export const giveawayTokensAmount = `Provide how many tokens you want to give away.\nTake into account possible limitations set on the Smart Contract\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneTx} because of the max gas limit per transaction:\n`;
+export const giveawayAddressLabel = `Provide the list of addresses.\nSeparate them with comma (","):\n`;
+export const giveawayTokensAmount = `Provide how many tokens per one address you want to give away.\nCheck limits on the Smart Contract\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneGiveawayTx} in total because of the max gas limit per transaction:\n`;
 
 export const dropTokensAmountLabel =
   'Provide the amount of the tokens for the drop:\n';
@@ -357,3 +360,6 @@ export const outputFileName = 'output.json';
 
 // Used for the addresses list when populating the allowlist on the smart contract
 export const allowlistFileRelativePath = 'allowlist.json';
+
+// Used for the addresses list for giveaway functionality, optionally you can also use the giveaway and enter addresses by hand
+export const giveawayFileRelativePath = 'giveaway.json';
