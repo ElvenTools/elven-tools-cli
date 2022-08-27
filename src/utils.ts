@@ -350,15 +350,23 @@ export const getMintTransaction = (
 export const getGiveawayTransaction = (
   contract: SmartContract,
   baseGasLimit: number,
-  address: string,
+  addresses: string[],
   tokensAmount: number
 ) => {
+  const getList = () => {
+    return new List(
+      new ListType(new AddressType()),
+      addresses.map((a) => new AddressValue(new Address(a)))
+    );
+  };
+
   const tokens = tokensAmount || 1;
+  const mintsCount = addresses.length * tokens;
   return contract.call({
     func: new ContractFunction(giveawayFunctionName),
-    gasLimit: baseGasLimit + (baseGasLimit / 2) * (tokensAmount - 1),
+    gasLimit: baseGasLimit + (baseGasLimit / 2) * (mintsCount - 1),
     chainID: shortChainId[chain],
-    args: [new AddressValue(new Address(address.trim())), new U32Value(tokens)],
+    args: [getList(), new U32Value(tokens)],
   });
 };
 
