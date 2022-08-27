@@ -1,3 +1,6 @@
+### [1.15.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.15.1) (2022-08-27)
+- gas limit adjustment - there are differences between the devnet and testnet
+
 ### [1.15.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.15.0) (2022-08-27)
 - giveaway functionality changes - now you can use multiple addresses for the giveaway. You can use the giveaway.json input file or enter them by hand.
 - gas limits adjustments

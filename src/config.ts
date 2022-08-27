@@ -62,7 +62,7 @@ export const mintFunctionName =
   customConfig?.config?.nftMinterSc?.mintFnName || 'mint';
 
 export const giveawayTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 12000000;
+  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 12100000;
 
 export const giveawayFunctionName =
   customConfig?.config?.nftMinterSc?.giveawayFnName || 'giveaway';
@@ -209,7 +209,7 @@ export const tokensPerOneTx =
   customConfig?.config?.nftMinterSc?.tokensPerOneTx || 95;
 
 export const tokensPerOneGiveawayTx =
-  customConfig?.config?.nftMinterSc?.tokensPerOneGiveawayTx || 99;
+  customConfig?.config?.nftMinterSc?.tokensPerOneGiveawayTx || 98;
 
 export const isMintingPausedFunctionName =
   customConfig?.config?.nftMinterSc?.isMintingPausedFnName || 'isMintingPaused';
