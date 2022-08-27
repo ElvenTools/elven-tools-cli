@@ -9,7 +9,7 @@
 
 The CLI tool helps to:
 - deploy the NFT minter Smart Contract on the Elrond blockchain
-- interact with the NFT minter Smart Contract on the Elrond blockchain
+- setup and interact with the NFT minter Smart Contract on the Elrond blockchain
 - provides a couple of helper tools for getting the data from API
   - get collection owners
   - filter and export the data
@@ -50,13 +50,13 @@ For all commands, check out the docs: [www.elven.tools/docs/cli-commands.html](h
 
 For all configuration options check out the docs: [www.elven.tools/docs/cli-introduction.html#custom-configuration-options](https://www.elven.tools/docs/cli-introduction.html#custom-configuration-options)
 
-### Contact
+### Most common recipes
 
-- [Telegram](https://t.me/juliancwirko)
-- [Twitter](https://twitter.com/JulianCwirko)
+Here are ready-to-use recipes and more information on real-life use cases: [Elven Tools Recipes](https://www.elven.tools/docs/recipes.html)
 
 ### You may also like
 
+- [elven.js](https://github.com/juliancwirko/elven.js) - simplified wrapper over erdjs, designed to work as a plug-n-play solution for browser based use cases. No build steps and frameworks, just one file to rule it all! Check usage examples!
 - [NFT Art Maker](https://github.com/juliancwirko/nft-art-maker) - generates images and metadata files and packs them into CAR files, all from provided PNG layers.
 - [Buildo Begins](https://github.com/ElrondDevGuild/buildo-begins) - CLI toolset for interacting with the Elrond blockchain, APIs and smart contracts
 - [Export collection owners to CSV](https://github.com/ElvenTools/elven-tools-collection-owners-csv)
@@ -64,6 +64,11 @@ For all configuration options check out the docs: [www.elven.tools/docs/cli-intr
 ### Issues and ideas
 
 Please post issues and ideas [here](https://github.com/ElvenTools/elven-tools-cli/issues).
+
+### Contact
+
+- [Telegram](https://t.me/juliancwirko)
+- [Twitter](https://twitter.com/JulianCwirko)
 
 ### License
 

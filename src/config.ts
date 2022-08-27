@@ -53,7 +53,7 @@ export const setLocalRolesFnName =
   customConfig?.config?.nftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
 
 export const mintTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 13000000;
+  customConfig?.config?.nftMinterSc?.mintBaseGasLimit || 12500000;
 
 export const nftMinterTokenSellingPrice =
   customConfig?.config?.nftMinterSc?.tokenSellingPrice;
@@ -62,7 +62,7 @@ export const mintFunctionName =
   customConfig?.config?.nftMinterSc?.mintFnName || 'mint';
 
 export const giveawayTxBaseGasLimit =
-  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 10500000;
+  customConfig?.config?.nftMinterSc?.giveawayBaseGasLimit || 12000000;
 
 export const giveawayFunctionName =
   customConfig?.config?.nftMinterSc?.giveawayFnName || 'giveaway';
@@ -206,10 +206,10 @@ export const isDropActiveFunctionName =
   customConfig?.config?.nftMinterSc?.isDropActiveFnName || 'isDropActive';
 
 export const tokensPerOneTx =
-  customConfig?.config?.nftMinterSc?.tokensPerOneTx || 90;
+  customConfig?.config?.nftMinterSc?.tokensPerOneTx || 95;
 
 export const tokensPerOneGiveawayTx =
-  customConfig?.config?.nftMinterSc?.tokensPerOneGiveawayTx || 110;
+  customConfig?.config?.nftMinterSc?.tokensPerOneGiveawayTx || 99;
 
 export const isMintingPausedFunctionName =
   customConfig?.config?.nftMinterSc?.isMintingPausedFnName || 'isMintingPaused';
@@ -304,7 +304,7 @@ export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
 export const amountOfTokensLabel = `Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneTx} because of the max gas limit per transaction:\n`;
 
 export const giveawayAddressLabel = `Provide the list of addresses.\nSeparate them with comma (","):\n`;
-export const giveawayTokensAmount = `Provide how many tokens per one address you want to give away.\nCheck limits on the Smart Contract\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneGiveawayTx} in total because of the max gas limit per transaction:\n`;
+export const giveawayTokensAmount = `Provide how many tokens per one address you want to give away. Max ${tokensPerOneGiveawayTx} in total because of the max gas limit per transaction:\n`;
 
 export const dropTokensAmountLabel =
   'Provide the amount of the tokens for the drop:\n';
