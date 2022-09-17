@@ -281,8 +281,10 @@ export const collectionTokenNameLabel =
   'Enter the name for the collection token (ex. MyName123). \n(3-20 characters, alphanumeric only)\n';
 export const collectionTokenTickerLabel =
   'Enter the ticker for the collection token (ex. MYNAME). \n(3-10 characters, alphanumeric and uppercase only)\n';
+export const nftTokenNameNumberLabel =
+  "Do you want to remove the edition number from the name? (example: 'name #1' when there is 1.json and 1.png)";
 export const nftTokenNameLabel =
-  "Enter the name for NFTs. If not provided, the name of the collection will be used. \nEach name will additionally get a unique number, so don't add the numbers here. (Optional)\n";
+  'Enter the name for NFTs. If not provided, the name of the collection will be used. (Optional)\n';
 export const deployNftMinterImgCidLabel =
   'Provide the base assets files IPFS CID:\n';
 export const deployNftMinterMetaCidLabel =

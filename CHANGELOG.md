@@ -1,3 +1,7 @@
+### [1.16.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.16.0) (2022-09-18)
+- you can now remove the number (edition index) from the NFT name
+- bump smart contract version
+
 ### [1.15.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.15.2) (2022-09-17)
 - `elven-tools distribute-to-owners` command got a multiplier option. It is now possible to send different amounts of the tokens based on the number of NFTs owned by the address. There will be an additional prompt when using the CLI.
 

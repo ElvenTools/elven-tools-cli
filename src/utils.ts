@@ -278,6 +278,7 @@ export const getIssueTransaction = (
   value: number, // mandatory 0.05 EGLD
   tokenName: string,
   tokenTicker: string,
+  noNftTokenNameNumber: boolean,
   nftTokenName?: string
 ) => {
   return contract.call({
@@ -285,6 +286,7 @@ export const getIssueTransaction = (
     args: [
       BytesValue.fromUTF8(tokenName.trim()),
       BytesValue.fromUTF8(tokenTicker.trim()),
+      new BooleanValue(noNftTokenNameNumber),
       ...(nftTokenName ? [BytesValue.fromUTF8(nftTokenName.trim())] : []),
     ],
     value: TokenPayment.egldFromAmount(value),

@@ -84,6 +84,7 @@ import {
   getTotalSupplyOfCurrentDropFunctionName,
   giveawayFileRelativePath,
   tokensPerOneGiveawayTx,
+  nftTokenNameNumberLabel,
 } from './config';
 import { exit } from 'process';
 
@@ -123,6 +124,15 @@ const issueCollectionToken = async () => {
       },
     },
     {
+      type: 'select',
+      name: 'noNftTokenNameNumber',
+      message: nftTokenNameNumberLabel,
+      choices: [
+        { title: 'No', value: false },
+        { title: 'Yes', value: true },
+      ],
+    },
+    {
       type: 'text',
       name: 'nftTokenName',
       message: nftTokenNameLabel,
@@ -132,9 +142,8 @@ const issueCollectionToken = async () => {
   const spinner = ora('Processing the transaction...');
 
   try {
-    const { tokenName, tokenTicker, nftTokenName } = await prompts(
-      promptQuestions
-    );
+    const { tokenName, tokenTicker, nftTokenName, noNftTokenNameNumber } =
+      await prompts(promptQuestions);
 
     if (!tokenName || !tokenTicker) {
       console.log('You have to provide the token name and ticker value!');
@@ -151,6 +160,7 @@ const issueCollectionToken = async () => {
       issueNftMinterValue,
       tokenName,
       tokenTicker,
+      noNftTokenNameNumber,
       nftTokenName
     );
 
