@@ -16,17 +16,9 @@ import {
 import { publicEndpointSetup } from './setup';
 import { apiProvider, chain, distributeToOwnersCallsPerSecond } from './config';
 
-const spinner = ora('Processing, please wait...');
-
-const throttle = pThrottle({
-  limit: distributeToOwnersCallsPerSecond,
-  interval: 1000,
-});
-
-const validAddresses = (addresses: string[]) => {
-  return addresses.every(
-    (address) => Boolean(address) && address.length === 62
-  );
+type Owner = {
+  owner: string;
+  tokensCount: number;
 };
 
 enum TokenType {
@@ -35,6 +27,20 @@ enum TokenType {
   SFT = 'SFT',
   MetaESDT = 'Meta ESDT',
 }
+
+const spinner = ora('Processing, please wait...');
+
+const throttle = pThrottle({
+  limit: distributeToOwnersCallsPerSecond,
+  interval: 1000,
+});
+
+const validAddresses = (owners: Owner[]) => {
+  const addresses = owners.map((item) => item.owner);
+  return addresses.every(
+    (address) => Boolean(address) && address.length === 62
+  );
+};
 
 const promptQuestions: PromptObject[] = [
   {
@@ -82,11 +88,23 @@ const promptQuestions: PromptObject[] = [
         ? true
         : `Please provide a number, should be a proper EGLD amount, bigger than 0`,
   },
+  {
+    type: 'select',
+    name: 'multiply',
+    message:
+      'You can multiply the amount to distribute by the number of NFTs tokens owned. Do you want to do that?',
+    choices: [
+      { title: 'No', value: false },
+      { title: 'Yes', value: true },
+    ],
+  },
 ];
 
 export const distributeToOwners = async () => {
   try {
-    const { amount, tokenType, token } = await prompts(promptQuestions);
+    const { amount, tokenType, token, multiply } = await prompts(
+      promptQuestions
+    );
 
     if (!amount) {
       console.log('You have to provide the amount per address!');
@@ -102,14 +120,12 @@ export const distributeToOwners = async () => {
 
     const { signer, userAccount, provider } = await publicEndpointSetup();
 
-    const owners = getFileContents('nft-collection-owners.json', {
+    const owners: Owner[] = getFileContents('nft-collection-owners.json', {
       noExitOnError: true,
     });
 
     if (owners) {
-      const onlyAddresses = owners.map((item: { owner: string }) => item.owner);
-
-      if (!validAddresses(onlyAddresses)) {
+      if (!validAddresses(owners)) {
         console.log(
           'One or more addresses are not valid! Check if they are valid Elrond bech32 addresses.'
         );
@@ -184,13 +200,21 @@ export const distributeToOwners = async () => {
         }
       }
 
-      const throttled = throttle((owner: string) => {
-        if (!owner) return;
+      let multipliedAmount: string = amount;
+
+      const throttled = throttle((ownerObj: Owner) => {
+        if (!ownerObj) return;
+
+        if (multiply) {
+          multipliedAmount = (
+            Number(amount) * Number(ownerObj.tokensCount)
+          ).toString();
+        }
 
         if (tokenType === TokenType.EGLD) {
           const statusPromise = distributeEgldSingleAddress(
-            amount,
-            owner,
+            multipliedAmount,
+            ownerObj.owner,
             userAccount,
             signer,
             provider
@@ -201,8 +225,8 @@ export const distributeToOwners = async () => {
 
         if (tokenType === TokenType.ESDT && numDecimals) {
           const statusPromise = distributeEsdtSingleAddress(
-            amount,
-            owner,
+            multipliedAmount,
+            ownerObj.owner,
             userAccount,
             signer,
             provider,
@@ -220,8 +244,8 @@ export const distributeToOwners = async () => {
           nonce
         ) {
           const statusPromise = distributeMetaEsdtSingleAddress(
-            amount,
-            owner,
+            multipliedAmount,
+            ownerObj.owner,
             userAccount,
             signer,
             provider,
@@ -235,8 +259,8 @@ export const distributeToOwners = async () => {
 
         if (tokenType === TokenType.SFT && collectionTicker && nonce) {
           const statusPromise = distributeSftSingleAddress(
-            amount,
-            owner,
+            multipliedAmount,
+            ownerObj.owner,
             userAccount,
             signer,
             provider,
@@ -248,7 +272,7 @@ export const distributeToOwners = async () => {
         }
       });
 
-      for (const owner of onlyAddresses) {
+      for (const owner of owners) {
         await throttled(owner);
       }
 

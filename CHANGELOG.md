@@ -1,3 +1,6 @@
+### [1.15.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.15.2) (2022-09-17)
+- `elven-tools distribute-to-owners` command got a multiplier option. It is now possible to send different amounts of the tokens based on the number of NFTs owned by the address. There will be an additional prompt when using the CLI.
+
 ### [1.15.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.15.1) (2022-08-27)
 - gas limit adjustment - there are differences between the devnet and testnet
 

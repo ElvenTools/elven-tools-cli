@@ -11,9 +11,9 @@ The CLI tool helps to:
 - deploy the NFT minter Smart Contract on the Elrond blockchain
 - setup and interact with the NFT minter Smart Contract on the Elrond blockchain
 - provides a couple of helper tools for getting the data from API
-  - get collection owners
+  - get collection owners => [docs](https://www.elven.tools/docs/recipes.html#how-to-get-owners-addresses-using-the-collection-ticker)
   - filter and export the data
-  - distribute EGLD, ESDT, SFT and Meta ESDT to the NFT owners of a collection
+  - distribute EGLD, ESDT, SFT and Meta ESDT to the NFT owners of a collection => [docs](https://www.elven.tools/docs/recipes.html#how-to-distribute-tokens-to-nft-owners)
 
 For now it is designed to deploy the contract: [elven-nft-minter-sc](https://github.com/ElvenTools/elven-nft-minter-sc). There will be more in the future.
 
@@ -67,7 +67,6 @@ Please post issues and ideas [here](https://github.com/ElvenTools/elven-tools-cl
 
 ### Contact
 
-- [Telegram](https://t.me/juliancwirko)
 - [Twitter](https://twitter.com/JulianCwirko)
 
 ### License
