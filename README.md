@@ -3,6 +3,7 @@
 - Docs: [www.elven.tools](https://www.elven.tools)
 - Elven Tools Twitter: [www.twitter.com/ElvenTools](https://twitter.com/ElvenTools)
 - Quick jumpstart: [www.elven.tools/docs/jump-start.html](https://www.elven.tools/docs/jump-start.html)
+- Recipes: [www.elven.tools/docs/recipes.html](https://www.elven.tools/docs/recipes.html)
 - Intro video: [youtu.be/Jou5jn8PFz8](https://youtu.be/Jou5jn8PFz8)
 
 ### What is it?
