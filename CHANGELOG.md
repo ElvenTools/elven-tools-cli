@@ -1,3 +1,6 @@
+### [1.16.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.16.1) (2022-10-05)
+- bump dapp template version 
+
 ### [1.16.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.16.0) (2022-09-18)
 - you can now remove the number (edition index) from the NFT name
 - bump smart contract version
