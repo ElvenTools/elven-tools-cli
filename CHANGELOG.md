@@ -1,3 +1,8 @@
+### [1.16.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.16.2) (2023-01-06)
+- bump dapp template version
+- bump smart contract version
+- bump dependencies versions
+
 ### [1.16.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.16.1) (2022-10-05)
 - bump dapp template version 
 

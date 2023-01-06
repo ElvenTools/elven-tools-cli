@@ -127,7 +127,7 @@ export const distributeToOwners = async () => {
     if (owners) {
       if (!validAddresses(owners)) {
         console.log(
-          'One or more addresses are not valid! Check if they are valid Elrond bech32 addresses.'
+          'One or more addresses are not valid! Check if they are valid MultiversX bech32 addresses.'
         );
         exit(9);
       }

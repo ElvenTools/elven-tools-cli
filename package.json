@@ -5,12 +5,12 @@
   },
   "type": "module",
   "types": "build/types",
-  "version": "1.16.1",
+  "version": "1.16.2",
   "elvenTools": {
-    "smartContractVersionTagName": "v1.10.0",
-    "minterDappVersionTagName": "v3.2.0"
+    "smartContractVersionTagName": "v1.11.0",
+    "minterDappVersionTagName": "v4.0.1"
   },
-  "description": "Interacting with custom NFT related Smart Contracts on the Elrond blockchain",
+  "description": "Interacting with custom NFT related Smart Contracts on the MultiversX (Elrond) blockchain",
   "main": "build/index.js",
   "bin": {
     "elven-tools": "./build/index.js"
@@ -24,13 +24,14 @@
   },
   "author": "Julian Ćwirko <julian.io>",
   "license": "MIT",
-  "homepage": "https://github.com/ElvenTools/elven-tools-cli",
+  "homepage": "https://www.elven.tools",
   "repository": {
     "type": "git",
     "url": "https://github.com/ElvenTools/elven-tools-cli"
   },
   "keywords": [
     "elrond",
+    "multiversx",
     "blockchain",
     "sdk",
     "javascript",
@@ -38,34 +39,33 @@
     "cli"
   ],
   "devDependencies": {
-    "@types/cross-spawn": "^6.0.2",
-    "@types/download": "8.0.1",
-    "@types/ledgerhq__hw-transport": "^4.21.4",
-    "@types/node": "^18.6.4",
-    "@types/prompt": "^1.1.2",
-    "@types/prompts": "^2.0.14",
-    "@typescript-eslint/eslint-plugin": "^5.32.0",
-    "@typescript-eslint/parser": "^5.32.0",
-    "esbuild": "^0.14.53",
-    "eslint": "^8.21.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.7.1",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.7.4"
+    "@types/cross-spawn": "6.0.2",
+    "@types/download": "8.0.2",
+    "@types/ledgerhq__hw-transport": "4.21.4",
+    "@types/node": "18.11.18",
+    "@types/prompts": "2.4.2",
+    "@typescript-eslint/eslint-plugin": "5.48.0",
+    "@typescript-eslint/parser": "5.48.0",
+    "esbuild": "0.16.14",
+    "eslint": "8.31.0",
+    "eslint-config-prettier": "8.6.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "prettier": "2.8.1",
+    "rimraf": "3.0.2",
+    "typescript": "4.9.4"
   },
   "dependencies": {
-    "@elrondnetwork/erdjs": "11.0.0",
-    "@elrondnetwork/erdjs-network-providers": "1.0.0",
-    "@elrondnetwork/erdjs-walletcore": "2.0.0",
-    "axios": "^0.27.2",
-    "bignumber.js": "9.0.2",
-    "cosmiconfig": "^7.0.1",
-    "cross-fetch": "^3.1.5",
+    "@elrondnetwork/erdjs": "11.1.2",
+    "@elrondnetwork/erdjs-network-providers": "1.2.0",
+    "@elrondnetwork/erdjs-walletcore": "2.1.0",
+    "axios": "1.2.2",
+    "bignumber.js": "9.1.1",
+    "cosmiconfig": "8.0.0",
+    "cross-fetch": "3.1.5",
     "cross-spawn": "7.0.3",
     "download": "github:XhmikosR/download#dev",
     "ora": "6.1.2",
     "p-throttle": "5.0.0",
-    "prompts": "^2.4.2"
+    "prompts": "2.4.2"
   }
 }
