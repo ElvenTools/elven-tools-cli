@@ -24,13 +24,13 @@ import {
   TransactionWatcher,
   ESDTTransferPayloadBuilder,
   ESDTNFTTransferPayloadBuilder,
-} from '@elrondnetwork/erdjs';
+} from '@multiversx/sdk-core';
 import axios, { AxiosResponse } from 'axios';
-import { parseUserKey, UserSigner } from '@elrondnetwork/erdjs-walletcore';
+import { parseUserKey, UserSigner } from '@multiversx/sdk-wallet';
 import {
   ApiNetworkProvider,
   ProxyNetworkProvider,
-} from '@elrondnetwork/erdjs-network-providers';
+} from '@multiversx/sdk-network-providers';
 import prompts, { PromptObject } from 'prompts';
 import BigNumber from 'bignumber.js';
 import ora from 'ora';
@@ -63,7 +63,7 @@ import {
   setNewPriceFunctionName,
   shuffleFunctionName,
   getMintedPerAddressTotalFunctionName,
-  elrondExplorer,
+  multiversxExplorer,
   changeBaseCidsFunctionName,
   setNewTokensLimitPerAddressFunctionName,
   claimScFundsFunctionName,
@@ -471,7 +471,7 @@ export const commonTxOperations = async (
 
   console.log(`\nTransaction status: ${txStatus}`);
   console.log(
-    `Transaction link: ${elrondExplorer[chain]}/transactions/${txHash}\n`
+    `Transaction link: ${multiversxExplorer[chain]}/transactions/${txHash}\n`
   );
 };
 

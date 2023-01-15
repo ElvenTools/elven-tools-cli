@@ -15,7 +15,7 @@ import {
   deployNftMinterProvenanceHashLabel,
   deployNftMinterTokensLimitPerAddressLabel,
   deployNftMinterImgExtLabel,
-  elrondExplorer,
+  multiversxExplorer,
   chain,
   nftSCupgradableLabel,
   nftSCreadableLabel,
@@ -30,7 +30,7 @@ import {
   baseDir,
   areYouSureAnswer,
 } from './utils';
-import { TransactionWatcher, SmartContract } from '@elrondnetwork/erdjs';
+import { TransactionWatcher, SmartContract } from '@multiversx/sdk-core';
 
 const deployNftMinter = async () => {
   // Check if there is an old output file
@@ -247,7 +247,7 @@ const deployNftMinter = async () => {
 
     console.log(`\nDeployment transaction executed: ${txStatus}`);
     console.log(
-      `Deployment tx: ${elrondExplorer[chain]}/transactions/${txHash}\n`
+      `Deployment tx: ${multiversxExplorer[chain]}/transactions/${txHash}\n`
     );
 
     console.log(`Smart Contract address: ${smartContractAddress}\n`);

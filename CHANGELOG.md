@@ -1,3 +1,9 @@
+### [1.17.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.0) (2023-01-15)
+- rebrand to multiversx (continuation)
+    - npm packages are replaced
+    - public api/explorer endpoints are replaced
+- update dependencies
+
 ### [1.16.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.16.2) (2023-01-06)
 - bump dapp template version
 - bump smart contract version
@@ -40,7 +46,7 @@
 - bump smart contract verion
 
 ### [1.13.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.13.0) (2022-07-30)
-- added more file formats when deploying ([supported](https://docs.elrond.com/developers/nft-tokens/#supported-media-types) by Elrond services)
+- added more file formats when deploying ([supported](https://docs.multiversx.com/tokens/nft-tokens) by MultiversX services)
 - bump dependencies
 
 ### [1.12.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.12.3) (2022-07-21)
@@ -66,7 +72,7 @@
 - changes in the configuration structure
 - proper names for network providers
 - when you use the gateway instead of API, you would need to provide the `gatewayProviderEndpoint`. You can also provide a custom API endpoint by `apiProviderEndpoint.`
-- by default, the CLI will still use the public API (api.elrond.com, devnet-api.elrond.com, testnet-api.elrond.com)
+- by default, the CLI will still use the public API (api.multiversx.com, devnet-api.multiversx.com, testnet-api.multiversx.com)
 
 ### [1.10.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.10.0) (2022-06-18)
 - adjustments in the CLI regarding SC updates, there is no more initial `shuffle` required, and `populateIndexes` was removed at all

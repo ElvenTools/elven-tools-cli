@@ -249,9 +249,9 @@ export const apiProviderEndpoint = customConfig?.config?.apiProviderEndpoint;
 // Default will be devnet, based on chain value, if the local is chosen you can change the proxy host
 export const apiProvider: { [key: string]: string } = {
   local: apiProviderEndpoint || 'http://localhost:7950',
-  testnet: apiProviderEndpoint || 'https://testnet-api.elrond.com',
-  devnet: apiProviderEndpoint || 'https://devnet-api.elrond.com',
-  mainnet: apiProviderEndpoint || 'https://api.elrond.com',
+  testnet: apiProviderEndpoint || 'https://testnet-api.multiversx.com',
+  devnet: apiProviderEndpoint || 'https://devnet-api.multiversx.com',
+  mainnet: apiProviderEndpoint || 'https://api.multiversx.com',
 };
 
 export const gatewayProviderEndpoint =
@@ -259,9 +259,9 @@ export const gatewayProviderEndpoint =
 
 export const gatewayProvider: { [key: string]: string } = {
   local: gatewayProviderEndpoint || 'http://localhost:7950',
-  testnet: gatewayProviderEndpoint || 'https://testnet-gateway.elrond.com',
-  devnet: gatewayProviderEndpoint || 'https://devnet-gateway.elrond.com',
-  mainnet: gatewayProviderEndpoint || 'https://gateway.elrond.com',
+  testnet: gatewayProviderEndpoint || 'https://testnet-gateway.multiversx.com',
+  devnet: gatewayProviderEndpoint || 'https://devnet-gateway.multiversx.com',
+  mainnet: gatewayProviderEndpoint || 'https://gateway.multiversx.com',
 };
 
 export const shortChainId: { [key: string]: string } = {
@@ -270,10 +270,10 @@ export const shortChainId: { [key: string]: string } = {
   mainnet: '1',
 };
 
-export const elrondExplorer: { [key: string]: string } = {
-  devnet: 'https://devnet-explorer.elrond.com',
-  testnet: 'https://testnet-explorer.elrond.com',
-  mainnet: 'https://explorer.elrond.com',
+export const multiversxExplorer: { [key: string]: string } = {
+  devnet: 'https://devnet-explorer.multiversx.com',
+  testnet: 'https://testnet-explorer.multiversx.com',
+  mainnet: 'https://explorer.multiversx.com',
 };
 
 export const derivePemSeedQuestion = 'Enter mnemonic (seed phrase)\n';

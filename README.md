@@ -9,8 +9,8 @@
 ### What is it?
 
 The CLI tool helps to:
-- deploy the NFT minter Smart Contract on the Elrond blockchain
-- setup and interact with the NFT minter Smart Contract on the Elrond blockchain
+- deploy the NFT minter Smart Contract on the MultiversX blockchain
+- setup and interact with the NFT minter Smart Contract on the MultiversX blockchain
 - provides a couple of helper tools for getting the data from API
   - get collection owners => [docs](https://www.elven.tools/docs/recipes.html#how-to-get-owners-addresses-using-the-collection-ticker)
   - filter and export the data
@@ -57,9 +57,9 @@ Here are ready-to-use recipes and more information on real-life use cases: [Elve
 
 ### You may also like
 
-- [elven.js](https://github.com/juliancwirko/elven.js) - simplified wrapper over erdjs, designed to work as a plug-n-play solution for browser based use cases. No build steps and frameworks, just one file to rule it all! Check usage examples!
+- [elven.js](https://github.com/juliancwirko/elven.js) - simplified wrapper over JS sdk-core, designed to work as a plug-n-play solution for browser based use cases. No build steps and frameworks, just one file to rule it all! Check usage examples!
 - [NFT Art Maker](https://github.com/juliancwirko/nft-art-maker) - generates images and metadata files and packs them into CAR files, all from provided PNG layers.
-- [Buildo Begins](https://github.com/ElrondDevGuild/buildo-begins) - CLI toolset for interacting with the Elrond blockchain, APIs and smart contracts
+- [Buildo Begins](https://github.com/xdevguild/buildo-begins) - CLI toolset for interacting with the MultiversX blockchain, APIs and smart contracts
 - [Export collection owners to CSV](https://github.com/ElvenTools/elven-tools-collection-owners-csv)
 
 ### Issues and ideas

@@ -1,4 +1,4 @@
-import { Address } from '@elrondnetwork/erdjs';
+import { Address } from '@multiversx/sdk-core';
 import fetch from 'cross-fetch';
 import { Buffer } from 'buffer';
 import fs from 'fs';
