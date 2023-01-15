@@ -1,3 +1,6 @@
+### [1.17.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.1) (2023-01-15)
+- bump the Dapp template version
+
 ### [1.17.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.0) (2023-01-15)
 - rebrand to multiversx (continuation)
     - npm packages are replaced
