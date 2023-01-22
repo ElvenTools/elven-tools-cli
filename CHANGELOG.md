@@ -1,3 +1,7 @@
+### [1.17.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.2) (2023-01-22)
+- bump the minter smart contract version
+- bump dependencies versions
+
 ### [1.17.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.1) (2023-01-15)
 - bump the Dapp template version
 
