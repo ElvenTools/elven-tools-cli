@@ -5,10 +5,10 @@
   },
   "type": "module",
   "types": "build/types",
-  "version": "1.17.2",
+  "version": "1.17.3",
   "elvenTools": {
     "smartContractVersionTagName": "v1.12.0",
-    "minterDappVersionTagName": "v4.1.0"
+    "minterDappVersionTagName": "v4.2.0"
   },
   "description": "Interacting with custom NFT related Smart Contracts on the MultiversX (Elrond) blockchain",
   "main": "build/index.js",
