@@ -56,7 +56,7 @@ const getMetadataFileName = (attributes: string) => {
 };
 
 export const collectionNftOwners = async () => {
-  let tokensNumber = '';
+  let tokensNumber = '0';
 
   const promptsQuestions: PromptObject[] = [
     {
@@ -87,28 +87,33 @@ export const collectionNftOwners = async () => {
     );
 
     if (!collectionTicker) {
-      console.log(
-        'You have to provide CIDs, amount of tokens and selling price!'
-      );
+      console.log('You have to provide a collection ticker!');
       exit(9);
     }
 
     const addressesArr: SingleApiResponseItem[][] = [];
 
-    // It must be the api, not gateway
-    const response = await fetch(
-      `${apiProvider[chain]}/collections/${collectionTicker}/nfts/count`
-    );
+    try {
+      // It must be the api, not gateway
+      const response = await fetch(
+        `${apiProvider[chain]}/collections/${collectionTicker}/nfts/count`
+      );
 
-    tokensNumber = await response.text();
-
-    console.log(`There are ${tokensNumber} tokens in that collection.`);
-
-    if (Number(tokensNumber) === 0) {
+      tokensNumber = await response.text();
+    } catch (e) {
+      const err = e as Error;
       console.log(
-        '\nThere are no tokens. Please check if you configured the proper chain. By default, it will be the devnet. You can change it using the .elventoolsrc configuration file.\n'
+        `Something went wrong. Can't fetch the tokens count: ${err?.message}`
+      );
+    }
+
+    if (!Number(tokensNumber)) {
+      console.log(
+        '\nThere are no tokens in that collection. Please check if you configured the proper chain. By default, it will be the devnet. You can change it using the .elventoolsrc configuration file.\n'
       );
       exit(9);
+    } else {
+      console.log(`There are ${tokensNumber} tokens in that collection.`);
     }
 
     spinner.start();
