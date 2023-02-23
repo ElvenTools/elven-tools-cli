@@ -1,3 +1,7 @@
+### [1.17.5](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.5) (2023-02-24)
+- bump dapp version
+- update dependencies
+
 ### [1.17.4](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.4) (2023-02-09)
 - better error handling in `elven-tools collection-nft-owners`
 
