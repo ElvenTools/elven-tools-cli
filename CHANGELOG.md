@@ -1,4 +1,8 @@
-### [1.17.5](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.5) (2023-02-24)
+### [1.17.6](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.6) (2023-03-04)
+- bump dapp version
+- update dependencies
+
+## [1.17.5](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.5) (2023-02-24)
 - bump dapp version
 - update dependencies
 
