@@ -146,7 +146,7 @@ const issueCollectionToken = async () => {
       await prompts(promptQuestions);
 
     if (!tokenName || !tokenTicker) {
-      console.log('You have to provide the token name and ticker value!');
+      console.log('You have to provide a token name and ticker value!');
       exit(9);
     }
 
@@ -206,7 +206,7 @@ const mint = async () => {
       validate: (value) =>
         value && value > 0 && value <= tokensPerOneTx
           ? true
-          : `Required a number greater than 0 and lower than ${tokensPerOneTx} because of the max gas limits!`,
+          : `Requires a number greater than 0 and lower than ${tokensPerOneTx} because of the maximum gas limits!`,
     },
   ];
 
@@ -240,7 +240,7 @@ const giveaway = async () => {
       validate: (value) =>
         value && value > 0 && value <= tokensPerOneGiveawayTx
           ? true
-          : `Required a number greater than 0 and lower than ${tokensPerOneGiveawayTx} because of the max gas limits!`,
+          : `Requires a number greater than 0 and lower than ${tokensPerOneGiveawayTx} because of the maximum gas limits!`,
     },
   ];
 
@@ -250,7 +250,7 @@ const giveaway = async () => {
       name: 'giveawayAddressList',
       message: giveawayAddressLabel,
       validate: (value) =>
-        value && value.length > 0 ? true : `Required at least one address!`,
+        value && value.length > 0 ? true : `Reguires at least one address!`,
     },
     ...amountPrompt,
   ];
@@ -290,7 +290,7 @@ const giveaway = async () => {
 
     if (amount * addresses.length > tokensPerOneGiveawayTx) {
       console.log(
-        `Total number of tokens to mint is to big (addresses x amountPerAddress). The maximum is: ${tokensPerOneTx}`
+        `Total number of tokens to mint is too big (addresses x amountPerAddress). The maximum is: ${tokensPerOneTx}`
       );
       exit(9);
     }
@@ -410,7 +410,7 @@ const setNewPrice = async () => {
       name: 'newPrice',
       message: deployNftMinterSellingPriceLabel,
       validate: (value) =>
-        !Number(value) || Number(value) <= 0 ? 'Required and min 0!' : true,
+        !Number(value) || Number(value) <= 0 ? 'Requires a minimum of 0!' : true,
     },
   ];
 
@@ -656,7 +656,7 @@ const populateAllowlist = async () => {
       name: 'addressesList',
       message: addressesListLabel,
       validate: (value) =>
-        value && value.length > 0 ? true : `Required at least one address!`,
+        value && value.length > 0 ? true : `Reguires at least one address!`,
     },
   ];
 
@@ -674,7 +674,7 @@ const populateAllowlist = async () => {
     if (allowlistFile) {
       console.log(' ');
       console.log(
-        `Populating addresses from the file: allowlist.json (max ${allowlistBatchSize} addresses per file/transaction).`
+        `Populating addresses from the file: allowlist.json (maximum ${allowlistBatchSize} addresses per file/transaction).`
       );
       console.log(' ');
       await areYouSureAnswer();
@@ -691,7 +691,7 @@ const populateAllowlist = async () => {
 
     if (Array.isArray(addresses) && addresses.length > allowlistBatchSize) {
       console.log(
-        `The amount of addresses is more than ${allowlistBatchSize}. Please split it into batches with a max of ${allowlistBatchSize} addresses per transaction.`
+        `The amount of addresses is more than ${allowlistBatchSize}. Please split it into batches with a maximum of ${allowlistBatchSize} addresses per transaction.`
       );
       exit(9);
     }
