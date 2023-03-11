@@ -19,9 +19,12 @@ esbuild
       'bignumber.js',
       'cross-fetch',
       'p-throttle',
-      'download',
       'cross-spawn',
       'axios',
+      'p-event',
+      'decompress',
+      'get-stream',
+      'got',
     ],
   })
   .catch(() => process.exit(1));

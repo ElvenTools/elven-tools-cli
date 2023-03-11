@@ -1,3 +1,9 @@
+### [1.18.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.18.0) (2023-03-11)
+- update dependencies
+- fix package.json config
+- minor improvements
+- removed not maintained download library
+
 ### [1.17.6](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.17.6) (2023-03-04)
 - bump dapp version
 - update dependencies

@@ -1,5 +1,5 @@
 import prompts, { PromptObject } from 'prompts';
-import download from 'download';
+import { downloadAndExtract } from './utils';
 import spawn from 'cross-spawn';
 import { exit } from 'process';
 import { dappInitDirectoryNameLabel, dappZipFileUrl } from './config';
@@ -32,10 +32,15 @@ export const initDapp = async () => {
       exit(9);
     }
 
-    download(dappZipFileUrl, `${process.cwd()}/${dappDirectoryName}`, {
-      extract: true,
-      strip: 1,
-    })
+    downloadAndExtract(
+      dappZipFileUrl,
+      `${process.cwd()}/${dappDirectoryName}`,
+      {
+        extract: true,
+        strip: 1,
+        filename: dappZipFileUrl.split('/').slice(-1)[0],
+      }
+    )
       .then(() => {
         process.chdir(dappDirectoryName);
         spawn.sync('npm', ['install'], { stdio: 'inherit' });
@@ -48,6 +53,7 @@ export const initDapp = async () => {
         console.log('\n');
       })
       .catch((err: any) => {
+        console.log(err);
         if (err)
           console.log(
             `Can't download the ${dappZipFileUrl} (${err.statusCode}:${err.statusMessage})`
