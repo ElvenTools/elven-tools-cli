@@ -25,12 +25,12 @@ export const nftMinterScAddress =
 
 // Base gas limit required for the deployment
 export const deployNftMinterGasLimit =
-  customConfig?.config?.nftMinterSc?.deployGasLimit || 120000000;
+  customConfig?.config?.nftMinterSc?.deployGasLimit || 80000000;
 
 // The tag from the SC's GitHub repository, it can be release tag like v0.2.0 or branch name like 'main' or 'development'
 export const deployNftMinterScVersion =
   customConfig?.config?.nftMinterSc?.version ||
-  packageJson.elvenTools.smartContractVersionTagName;
+  packageJson.elvenTools.nftSmartContractVersionTagName;
 
 // Gas limit required for the collection token issuance
 export const issueNftMinterGasLimit =
@@ -45,11 +45,11 @@ export const assignRolesNftMinterGasLimit =
   customConfig?.config?.nftMinterSc?.assignRolesGasLimit || 80000000;
 
 // Issue collection token function name on the SC
-export const issueTokenFnName =
+export const issueNftTokenFnName =
   customConfig?.config?.nftMinterSc?.issueTokenFnName || 'issueToken';
 
 // Function name for setting the roles for collection token on the SC
-export const setLocalRolesFnName =
+export const setNftLocalRolesFnName =
   customConfig?.config?.nftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
 
 export const mintTxBaseGasLimit =
@@ -222,6 +222,44 @@ export const getTotalSupplyOfCurrentDropFunctionName =
   'getTotalSupplyOfCurrentDrop';
 
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
+// SFT minter smart contract
+// ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
+
+// This is useful when you have already deployed the smart contract and you want to interact
+// Otherwise, after deployment using this tool, it will be saved in the temp file for further usage
+export const sftMinterScAddress =
+  customConfig?.config?.sftMinterSc?.deploySftMinterSC;
+
+// Base gas limit required for the deployment
+export const deploySftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.deployGasLimit || 30000000;
+
+// The tag from the SC's GitHub repository, it can be release tag like v0.2.0 or branch name like 'main' or 'development'
+export const deploySftMinterScVersion =
+  customConfig?.config?.sftMinterSc?.version ||
+  packageJson.elvenTools.sftSmartContractVersionTagName;
+
+// Issue collection token function name on the SC
+export const issueSftTokenFnName =
+  customConfig?.config?.sftMinterSc?.issueTokenFnName || 'issueToken';
+
+// Value required for the collection token issuance  (1 = 1 EGLD)
+export const issueSftMinterValue =
+  customConfig?.config?.sftMinterSc?.issueValue || 0.05;
+
+// Gas limit required for the collection token issuance
+export const issueSftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.issueCollectionTokenGasLimit || 60000000;
+
+// Function name for setting the roles for collection token on the SC
+export const setSftLocalRolesFnName =
+  customConfig?.config?.sftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
+
+// Gas limit required for the collection token roles assignment
+export const assignRolesSftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.assignRolesGasLimit || 60000000;
+
+// ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Collection NFT owners
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 
@@ -350,9 +388,17 @@ export const deployNftMinterSCabiRelativeFilePath =
 export const deployNftMinterSCwasmRelativeFilePath =
   'sc/nft-minter/elven-nft-minter.wasm';
 
+export const deploySftMinterSCabiRelativeFilePath =
+  'sc/sft-minter/elven-tools-sft-minter.abi.json';
+export const deploySftMinterSCwasmRelativeFilePath =
+  'sc/sft-minter/elven-tools-sft-minter.wasm';
+
 // Urls to the smart contract repo, when there are no local files
 export const deployNftMinterSCabiFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-nft-minter-sc/${deployNftMinterScVersion}/output/elven-nft-minter.abi.json`;
 export const deployNftMinterSCwasmFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-nft-minter-sc/${deployNftMinterScVersion}/output/elven-nft-minter.wasm`;
+
+export const deploySftMinterSCabiFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-tools-sft-minter-sc/${deploySftMinterScVersion}/output/elven-tools-sft-minter.abi.json`;
+export const deploySftMinterSCwasmFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-tools-sft-minter-sc/${deploySftMinterScVersion}/output/elven-tools-sft-minter.wasm`;
 
 // Urls to the Dapp repo
 export const dappZipFileUrl = `https://github.com/ElvenTools/elven-tools-dapp/archive/refs/tags/${minterDappVersionTagName}.zip`;

@@ -3,6 +3,10 @@ import {
   deployNftMinterSCabiFileUrl,
   deployNftMinterSCwasmRelativeFilePath,
   deployNftMinterSCwasmFileUrl,
+  deploySftMinterSCabiRelativeFilePath,
+  deploySftMinterSCabiFileUrl,
+  deploySftMinterSCwasmRelativeFilePath,
+  deploySftMinterSCwasmFileUrl,
   pemKeyFileName,
 } from './config';
 import {
@@ -33,15 +37,43 @@ export const publicEndpointSetup = async () => {
   };
 };
 
-export const setup = async (smartContractAddress?: string) => {
+export const setupNftSc = async (smartContractAddress?: string) => {
   // PEM wallet key file
   const abiFile = await getAbi(
     deployNftMinterSCabiRelativeFilePath,
     deployNftMinterSCabiFileUrl
   );
+
   const scWasmCode = await getScWasmCode(
     deployNftMinterSCwasmRelativeFilePath,
     deployNftMinterSCwasmFileUrl
+  );
+
+  // Smart contract instance - SC responsible for minting
+  const smartContract = createSmartContractInstance(
+    abiFile,
+    smartContractAddress
+  );
+
+  const publicSetup = await publicEndpointSetup();
+
+  return {
+    scWasmCode,
+    smartContract,
+    ...publicSetup,
+  };
+};
+
+export const setupSftSc = async (smartContractAddress?: string) => {
+  // PEM wallet key file
+  const abiFile = await getAbi(
+    deploySftMinterSCabiRelativeFilePath,
+    deploySftMinterSCabiFileUrl
+  );
+
+  const scWasmCode = await getScWasmCode(
+    deploySftMinterSCwasmRelativeFilePath,
+    deploySftMinterSCwasmFileUrl
   );
 
   // Smart contract instance - SC responsible for minting

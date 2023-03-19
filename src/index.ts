@@ -5,6 +5,7 @@ import { deploy } from './deploy';
 import { collectionNftOwners } from './collection-nft-owners';
 import { derivePem } from './derive-pem';
 import { nftMinter } from './nft-minter-fns';
+import { sftMinter } from './sft-minter-fns';
 import { initDapp } from './init-dapp';
 import packageJson from '../package.json';
 import { distributeToOwners } from './distribute-to-owners';
@@ -13,6 +14,7 @@ const COMMANDS = {
   deploy: 'deploy',
   derivePem: 'derive-pem',
   nftMinter: 'nft-minter',
+  sftMinter: 'sft-minter',
   collectionNftOwners: 'collection-nft-owners',
   distributeToOwners: 'distribute-to-owners',
   initDapp: 'init-dapp',
@@ -58,6 +60,9 @@ switch (command) {
     break;
   case COMMANDS.nftMinter:
     nftMinter(args ? args[3] : undefined);
+    break;
+  case COMMANDS.sftMinter:
+    sftMinter(args ? args[3] : undefined);
     break;
   case COMMANDS.collectionNftOwners:
     collectionNftOwners();

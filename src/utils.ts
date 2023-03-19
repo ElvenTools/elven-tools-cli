@@ -54,9 +54,12 @@ import {
   chain,
   shortChainId,
   outputFileName,
-  issueTokenFnName,
-  setLocalRolesFnName,
+  issueNftTokenFnName,
+  issueSftTokenFnName,
+  setNftLocalRolesFnName,
+  setSftLocalRolesFnName,
   nftMinterScAddress,
+  sftMinterScAddress,
   nftMinterTokenSellingPrice,
   mintFunctionName,
   giveawayFunctionName,
@@ -187,7 +190,7 @@ export const getScWasmCode = async (filePath: string, url: string) => {
   }
 };
 
-export const getDeployTransaction = (
+export const getDeployNftTransaction = (
   code: Code,
   contract: SmartContract,
   gasLimit: number,
@@ -228,14 +231,35 @@ export const getDeployTransaction = (
   });
 };
 
+export const getDeploySftTransaction = (
+  code: Code,
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.deploy({
+    code,
+    codeMetadata: new CodeMetadata(true, false, false, true),
+    gasLimit: gasLimit,
+    initArguments: [],
+    chainID: shortChainId[chain],
+  });
+};
+
+// TODO: this should be unified and the best integrated with config file
 export const updateOutputFile = ({
-  scAddress,
-  sellingPrice,
-  tokenId,
+  nftScAddress,
+  sftScAddress,
+  nftSellingPrice,
+  sftSellingPrice,
+  nftTokenId,
+  sftTokenId,
 }: {
-  scAddress?: IAddress;
-  sellingPrice?: string;
-  tokenId?: string;
+  nftScAddress?: IAddress;
+  sftScAddress?: IAddress;
+  nftSellingPrice?: string;
+  sftSellingPrice?: string;
+  nftTokenId?: string;
+  sftTokenId?: string;
 }) => {
   const outputFilePath = `${baseDir}/${outputFileName}`;
   try {
@@ -243,14 +267,22 @@ export const updateOutputFile = ({
     const configFile = readFileSync(outputFilePath, { encoding: 'utf8' });
     const newConfigFile = {
       ...JSON.parse(configFile),
-      ...(scAddress ? { nftMinterScAddress: scAddress.bech32() } : {}),
-      ...(sellingPrice
+      ...(nftScAddress ? { nftMinterScAddress: nftScAddress.bech32() } : {}),
+      ...(nftSellingPrice
         ? {
             nftMinterScCollectionSellingPrice:
-              TokenPayment.egldFromAmount(sellingPrice).toString(),
+              TokenPayment.egldFromAmount(nftSellingPrice).toString(),
           }
         : {}),
-      ...(tokenId ? { nftMinterCollectionToken: tokenId } : {}),
+      ...(nftTokenId ? { nftMinterCollectionToken: nftTokenId } : {}),
+      ...(sftScAddress ? { sftMinterScAddress: sftScAddress.bech32() } : {}),
+      ...(sftSellingPrice
+        ? {
+            sftMinterScCollectionSellingPrice:
+              TokenPayment.egldFromAmount(sftSellingPrice).toString(),
+          }
+        : {}),
+      ...(sftTokenId ? { sftMinterCollectionToken: sftTokenId } : {}),
     };
     return writeFileSync(
       outputFilePath,
@@ -261,14 +293,26 @@ export const updateOutputFile = ({
       outputFilePath,
       JSON.stringify(
         {
-          ...(scAddress ? { nftMinterScAddress: scAddress.bech32() } : {}),
-          ...(sellingPrice
+          ...(nftScAddress
+            ? { nftMinterScAddress: nftScAddress.bech32() }
+            : {}),
+          ...(nftSellingPrice
             ? {
                 nftMinterScCollectionSellingPrice:
-                  TokenPayment.egldFromAmount(sellingPrice).toString(),
+                  TokenPayment.egldFromAmount(nftSellingPrice).toString(),
               }
             : {}),
-          ...(tokenId ? { nftMinterCollectionToken: tokenId } : {}),
+          ...(nftTokenId ? { nftMinterCollectionToken: nftTokenId } : {}),
+          ...(sftScAddress
+            ? { sftMinterScAddress: sftScAddress.bech32() }
+            : {}),
+          ...(sftSellingPrice
+            ? {
+                sftMinterScCollectionSellingPrice:
+                  TokenPayment.egldFromAmount(sftSellingPrice).toString(),
+              }
+            : {}),
+          ...(sftTokenId ? { sftMinterCollectionToken: sftTokenId } : {}),
         },
         null,
         2
@@ -277,7 +321,7 @@ export const updateOutputFile = ({
   }
 };
 
-export const getIssueTransaction = (
+export const getNftIssueTransaction = (
   contract: SmartContract,
   gasLimit: number,
   value: number, // mandatory 0.05 EGLD
@@ -287,7 +331,7 @@ export const getIssueTransaction = (
   nftTokenName?: string
 ) => {
   return contract.call({
-    func: new ContractFunction(issueTokenFnName),
+    func: new ContractFunction(issueNftTokenFnName),
     args: [
       BytesValue.fromUTF8(tokenName.trim()),
       BytesValue.fromUTF8(tokenTicker.trim()),
@@ -300,7 +344,26 @@ export const getIssueTransaction = (
   });
 };
 
-export const getTheSCAddressFromOutputOrConfig = () => {
+export const getSftIssueTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  value: number, // mandatory 0.05 EGLD
+  tokenName: string,
+  tokenTicker: string
+) => {
+  return contract.call({
+    func: new ContractFunction(issueSftTokenFnName),
+    args: [
+      BytesValue.fromUTF8(tokenName.trim()),
+      BytesValue.fromUTF8(tokenTicker.trim()),
+    ],
+    value: TokenPayment.egldFromAmount(value),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
+  });
+};
+
+export const getNftSCAddressFromOutputOrConfig = () => {
   const output = getFileContents(outputFileName, { noExitOnError: true });
   const smartContractAddress = nftMinterScAddress || output?.nftMinterScAddress;
 
@@ -313,12 +376,36 @@ export const getTheSCAddressFromOutputOrConfig = () => {
   return smartContractAddress;
 };
 
-export const getAssignRolesTransaction = (
+export const getSftSCAddressFromOutputOrConfig = () => {
+  const output = getFileContents(outputFileName, { noExitOnError: true });
+  const smartContractAddress = sftMinterScAddress || output?.sftMinterScAddress;
+
+  if (!smartContractAddress) {
+    console.log(
+      "Smart Contract address isn't provided. Please deploy it or add the address to the configuration if it is already deployed."
+    );
+    exit(9);
+  }
+  return smartContractAddress;
+};
+
+export const getNftAssignRolesTransaction = (
   contract: SmartContract,
   gasLimit: number
 ) => {
   return contract.call({
-    func: new ContractFunction(setLocalRolesFnName),
+    func: new ContractFunction(setNftLocalRolesFnName),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
+  });
+};
+
+export const getSftAssignRolesTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(setSftLocalRolesFnName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
   });
@@ -583,14 +670,18 @@ export const commonScQuery = async ({
   resultType,
   resultModifier,
   args,
+  isNft = true,
 }: {
   functionName: string;
   resultType: 'number' | 'string' | 'boolean';
   resultLabel?: string;
   resultModifier?: (result: boolean | string | number) => string;
   args?: TypedValue[];
+  isNft?: boolean;
 }) => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = isNft
+    ? getNftSCAddressFromOutputOrConfig()
+    : getSftSCAddressFromOutputOrConfig();
   const spinner = ora('Processing query...');
   try {
     const provider = getNetworkProvider();
