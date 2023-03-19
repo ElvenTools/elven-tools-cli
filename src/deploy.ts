@@ -9,9 +9,9 @@ import {
   deployNftMinterImgCidLabel,
   deployNftMinterMetaCidLabel,
   deployNftMinterAmountOfTokensLabel,
-  deployNftMinterSellingPriceLabel,
-  deployNftMinterRoyaltiesLabel,
-  deployNftMinterTagsLabel,
+  minterSellingPriceLabel,
+  minterRoyaltiesLabel,
+  minterTagsLabel,
   deployNftMinterProvenanceHashLabel,
   deployNftMinterTokensLimitPerAddressLabel,
   deployNftMinterImgExtLabel,
@@ -137,7 +137,7 @@ const deployNftMinter = async () => {
     {
       type: 'text',
       name: 'deployNftMinterSellingPrice',
-      message: deployNftMinterSellingPriceLabel,
+      message: minterSellingPriceLabel,
       validate: (value) =>
         !Number(value) || Number(value) <= 0 ? 'Required and min 0!' : true,
     },
@@ -150,7 +150,7 @@ const deployNftMinter = async () => {
     {
       type: 'number',
       name: 'deployNftMinterRoyalties',
-      message: deployNftMinterRoyaltiesLabel,
+      message: minterRoyaltiesLabel,
       min: 0,
       max: 100,
       float: true,
@@ -163,7 +163,7 @@ const deployNftMinter = async () => {
     {
       type: 'text',
       name: 'deployNftMinterTags',
-      message: deployNftMinterTagsLabel,
+      message: minterTagsLabel,
     },
     {
       type: 'text',

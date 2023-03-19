@@ -259,6 +259,14 @@ export const setSftLocalRolesFnName =
 export const assignRolesSftMinterGasLimit =
   customConfig?.config?.sftMinterSc?.assignRolesGasLimit || 60000000;
 
+// Gas limit required for the SFT create function
+export const createSftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.createGasLimit || 20000000;
+
+// Create token function name on the SC
+export const createSftTokenFnName =
+  customConfig?.config?.sftMinterSc?.createTokenFnName || 'createToken';
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Collection NFT owners
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
@@ -329,19 +337,27 @@ export const deployNftMinterMetaCidLabel =
   'Provide the base metadata files IPFS CID:\n';
 export const deployNftMinterAmountOfTokensLabel =
   'Provide amount of tokens in collection:\n';
-export const deployNftMinterSellingPriceLabel =
+export const minterSellingPriceLabel =
   'Provide the selling price (ex. 0.5 for 0.5 EGLD):\n';
-export const deployNftMinterRoyaltiesLabel =
-  'Provide the royalties value (ex. 5.5 for 5.5%) [optional]:\n';
-export const deployNftMinterTagsLabel =
-  'Provide tags (ex. tag1,tag2,tag3) [optional]:\n';
+export const minterRoyaltiesLabel =
+  'Provide the royalties value (ex. 5.5 for 5.5%):\n';
+export const minterTagsLabel = 'Provide tags (ex. tag1,tag2,tag3):\n';
 export const deployNftMinterProvenanceHashLabel =
   'Provide the provenance hash (sha256 hash of all images) [optional]:\n';
 export const deployNftMinterTokensLimitPerAddressLabel =
   'Total tokens limit per one address per whole collection (the best is to keep it as low as possible):\n';
 export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
-
+export const sftTokenDisplayName =
+  'Provide token display name (Alphanumeric characters only):\n';
+export const metadataIpfsCIDLabel =
+  'Provide the the metadata file CID from IPFS:\n';
+export const metadataIpfsFileNameLabel =
+  'Provide the the metadata file name uploaded using IPFS (ex: metadata.json):\n';
+export const initialSFTSupplyLabel =
+  'Provide the initial SFT supply (amount of tokens):\n';
 export const amountOfTokensLabel = `Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneTx} because of the max gas limit per transaction:\n`;
+export const listOfSftUrisLabel =
+  'Provide assets URIS. Whole URIs from IPFS. To your images, music, video files.\nSeparate them with comma (","):\n';
 
 export const giveawayAddressLabel = `Provide the list of addresses.\nSeparate them with comma (","):\n`;
 export const giveawayTokensAmount = `Provide how many tokens per one address you want to give away. Max ${tokensPerOneGiveawayTx} in total because of the max gas limit per transaction:\n`;

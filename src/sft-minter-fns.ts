@@ -7,6 +7,7 @@ import {
   commonTxOperations,
   areYouSureAnswer,
   getSftAssignRolesTransaction,
+  getSftCreateTransaction,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -15,6 +16,15 @@ import {
   issueSftMinterValue,
   issueSftMinterGasLimit,
   assignRolesSftMinterGasLimit,
+  minterSellingPriceLabel,
+  metadataIpfsCIDLabel,
+  metadataIpfsFileNameLabel,
+  initialSFTSupplyLabel,
+  minterRoyaltiesLabel,
+  minterTagsLabel,
+  listOfSftUrisLabel,
+  createSftMinterGasLimit,
+  sftTokenDisplayName,
 } from './config';
 
 // Issue a collection token + add required roles
@@ -111,6 +121,107 @@ const setLocalRoles = async () => {
   }
 };
 
+const create = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'tokenDisaplayName',
+      message: sftTokenDisplayName,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'text',
+      name: 'tokenSellingPrice',
+      message: minterSellingPriceLabel,
+      validate: (value) =>
+        !Number(value) || Number(value) <= 0 ? 'Required and min 0!' : true,
+    },
+    {
+      type: 'text',
+      name: 'metadataIpfsCID',
+      message: metadataIpfsCIDLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'text',
+      name: 'metadataIpfsFileName',
+      message: metadataIpfsFileNameLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'number',
+      name: 'initialAmountOfTokens',
+      message: initialSFTSupplyLabel,
+      min: 1,
+      validate: (value) => (!value || value < 1 ? 'Required and min 1!' : true),
+    },
+    {
+      type: 'number',
+      name: 'royalties',
+      message: minterRoyaltiesLabel,
+      min: 0,
+      max: 100,
+      float: true,
+      round: 2,
+      validate: (value) =>
+        (value >= 0 && value <= 100) || !value
+          ? true
+          : 'Should be a number in range 0-100',
+    },
+    {
+      type: 'text',
+      name: 'tags',
+      message: minterTagsLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'list',
+      name: 'uris',
+      message: listOfSftUrisLabel,
+      validate: (value) =>
+        value && value.length > 0 ? true : `Requires at least one address!`,
+    },
+  ];
+
+  try {
+    const {
+      tokenDisaplayName,
+      tokenSellingPrice,
+      metadataIpfsCID,
+      metadataIpfsFileName,
+      initialAmountOfTokens,
+      royalties,
+      tags,
+      uris,
+    } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setupSftSc(
+      smartContractAddress
+    );
+
+    const assignRolesTx = getSftCreateTransaction(
+      smartContract,
+      createSftMinterGasLimit,
+      tokenDisaplayName,
+      tokenSellingPrice,
+      metadataIpfsCID,
+      metadataIpfsFileName,
+      initialAmountOfTokens,
+      royalties,
+      tags,
+      uris
+    );
+
+    await commonTxOperations(assignRolesTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
 export const sftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
@@ -143,8 +254,8 @@ export const sftMinter = async (subcommand?: string) => {
     case COMMANDS.setLocalRoles:
       setLocalRoles();
       break;
-    // case COMMANDS.create:
-    //   create();
-    //   break;
+    case COMMANDS.create:
+      create();
+      break;
   }
 };

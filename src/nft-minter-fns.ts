@@ -49,7 +49,7 @@ import {
   setUnsetDropTxGasLimit,
   pauseUnpauseTxGasLimit,
   setNewPriceGasLimit,
-  deployNftMinterSellingPriceLabel,
+  minterSellingPriceLabel,
   shuffleGasLimit,
   getTotalTokensLeftFunctionName,
   getProvenanceHashFunctionName,
@@ -412,7 +412,7 @@ const setNewPrice = async () => {
     {
       type: 'text',
       name: 'newPrice',
-      message: deployNftMinterSellingPriceLabel,
+      message: minterSellingPriceLabel,
       validate: (value) =>
         !Number(value) || Number(value) <= 0
           ? 'Requires a minimum of 0!'

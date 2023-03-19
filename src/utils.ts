@@ -82,6 +82,7 @@ import {
   disableAllowlistFunctionName,
   clearAllowlistFunctionName,
   removeAllowlistFunctionName,
+  createSftTokenFnName,
 } from './config';
 
 export const baseDir = cwd();
@@ -1057,6 +1058,38 @@ export const distributeSftSingleAddress = async (
       txStatus: 'failed',
     };
   }
+};
+
+export const getSftCreateTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  tokenDisaplayName: string,
+  tokenSellingPrice: string,
+  metadataIpfsCID: string,
+  metadataIpfsFileName: string,
+  initialAmountOfTokens: number,
+  royalties: number,
+  tags: string,
+  uris: string[]
+) => {
+  return contract.call({
+    func: new ContractFunction(createSftTokenFnName),
+    args: [
+      BytesValue.fromUTF8(tokenDisaplayName.trim()),
+      new BigUIntValue(
+        TokenPayment.egldFromAmount(tokenSellingPrice.trim()).valueOf()
+      ),
+      BytesValue.fromUTF8(metadataIpfsCID.trim()),
+      BytesValue.fromUTF8(metadataIpfsFileName.trim()),
+      new BigUIntValue(new BigNumber(initialAmountOfTokens).valueOf()),
+      new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0).valueOf()),
+      BytesValue.fromUTF8(tags.trim()),
+      ...uris.map((uri) => BytesValue.fromUTF8(uri.trim())),
+    ],
+    value: 0,
+    gasLimit,
+    chainID: shortChainId[chain],
+  });
 };
 
 // Based on not maintained: https://github.com/kevva/download (simplified)
