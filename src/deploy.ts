@@ -41,7 +41,6 @@ const deployNftMinter = async () => {
   if (outputFile) {
     outputFile.nftMinterScAddress = '';
     outputFile.nftMinterScCollectionSellingPrice = '';
-    outputFile.nftMinterCollectionToken = '';
     fs.writeFileSync(
       `${baseDir}/${outputFileName}`,
       JSON.stringify(outputFile),
@@ -277,7 +276,6 @@ export const deploySftMinter = async () => {
   if (outputFile) {
     outputFile.sftMinterScAddress = '';
     outputFile.sftMinterScCollectionSellingPrice = '';
-    outputFile.sftMinterCollectionToken = '';
     fs.writeFileSync(
       `${baseDir}/${outputFileName}`,
       JSON.stringify(outputFile),

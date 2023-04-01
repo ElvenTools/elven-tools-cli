@@ -252,15 +252,11 @@ export const updateOutputFile = ({
   sftScAddress,
   nftSellingPrice,
   sftSellingPrice,
-  nftTokenId,
-  sftTokenId,
 }: {
   nftScAddress?: IAddress;
   sftScAddress?: IAddress;
   nftSellingPrice?: string;
   sftSellingPrice?: string;
-  nftTokenId?: string;
-  sftTokenId?: string;
 }) => {
   const outputFilePath = `${baseDir}/${outputFileName}`;
   try {
@@ -275,7 +271,6 @@ export const updateOutputFile = ({
               TokenPayment.egldFromAmount(nftSellingPrice).toString(),
           }
         : {}),
-      ...(nftTokenId ? { nftMinterCollectionToken: nftTokenId } : {}),
       ...(sftScAddress ? { sftMinterScAddress: sftScAddress.bech32() } : {}),
       ...(sftSellingPrice
         ? {
@@ -283,7 +278,6 @@ export const updateOutputFile = ({
               TokenPayment.egldFromAmount(sftSellingPrice).toString(),
           }
         : {}),
-      ...(sftTokenId ? { sftMinterCollectionToken: sftTokenId } : {}),
     };
     return writeFileSync(
       outputFilePath,
@@ -303,7 +297,6 @@ export const updateOutputFile = ({
                   TokenPayment.egldFromAmount(nftSellingPrice).toString(),
               }
             : {}),
-          ...(nftTokenId ? { nftMinterCollectionToken: nftTokenId } : {}),
           ...(sftScAddress
             ? { sftMinterScAddress: sftScAddress.bech32() }
             : {}),
@@ -313,7 +306,6 @@ export const updateOutputFile = ({
                   TokenPayment.egldFromAmount(sftSellingPrice).toString(),
               }
             : {}),
-          ...(sftTokenId ? { sftMinterCollectionToken: sftTokenId } : {}),
         },
         null,
         2
@@ -1068,6 +1060,7 @@ export const getSftCreateTransaction = (
   metadataIpfsCID: string,
   metadataIpfsFileName: string,
   initialAmountOfTokens: number,
+  maxTokensPerAddress: number,
   royalties: number,
   tags: string,
   uris: string[]
@@ -1082,6 +1075,7 @@ export const getSftCreateTransaction = (
       BytesValue.fromUTF8(metadataIpfsCID.trim()),
       BytesValue.fromUTF8(metadataIpfsFileName.trim()),
       new BigUIntValue(new BigNumber(initialAmountOfTokens).valueOf()),
+      new BigUIntValue(new BigNumber(maxTokensPerAddress).valueOf()),
       new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0).valueOf()),
       BytesValue.fromUTF8(tags.trim()),
       ...uris.map((uri) => BytesValue.fromUTF8(uri.trim())),

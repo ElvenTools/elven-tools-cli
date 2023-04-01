@@ -358,6 +358,8 @@ export const initialSFTSupplyLabel =
 export const amountOfTokensLabel = `Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneTx} because of the max gas limit per transaction:\n`;
 export const listOfSftUrisLabel =
   'Provide assets URIS. Whole URIs from IPFS. To your images, music, video files.\nSeparate them with comma (","):\n';
+export const maxTokensPerAddress =
+  'Provide the max tokens to buy per address:\n';
 
 export const giveawayAddressLabel = `Provide the list of addresses.\nSeparate them with comma (","):\n`;
 export const giveawayTokensAmount = `Provide how many tokens per one address you want to give away. Max ${tokensPerOneGiveawayTx} in total because of the max gas limit per transaction:\n`;

@@ -8,6 +8,7 @@ import {
   areYouSureAnswer,
   getSftAssignRolesTransaction,
   getSftCreateTransaction,
+  updateOutputFile,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -25,6 +26,7 @@ import {
   listOfSftUrisLabel,
   createSftMinterGasLimit,
   sftTokenDisplayName,
+  maxTokensPerAddress,
 } from './config';
 
 // Issue a collection token + add required roles
@@ -159,6 +161,13 @@ const create = async () => {
     },
     {
       type: 'number',
+      name: 'maxTokensPerAddress',
+      message: maxTokensPerAddress,
+      min: 1,
+      validate: (value) => (!value || value < 1 ? 'Required and min 1!' : true),
+    },
+    {
+      type: 'number',
       name: 'royalties',
       message: minterRoyaltiesLabel,
       min: 0,
@@ -195,6 +204,7 @@ const create = async () => {
       royalties,
       tags,
       uris,
+      maxTokensPerAddress,
     } = await prompts(promptQuestions);
 
     await areYouSureAnswer();
@@ -211,12 +221,15 @@ const create = async () => {
       metadataIpfsCID,
       metadataIpfsFileName,
       initialAmountOfTokens,
+      maxTokensPerAddress,
       royalties,
       tags,
       uris
     );
 
     await commonTxOperations(assignRolesTx, userAccount, signer, provider);
+
+    updateOutputFile({ sftSellingPrice: tokenSellingPrice });
   } catch (e) {
     console.log((e as Error)?.message);
   }
