@@ -277,7 +277,7 @@ export const buySftTokenFnName =
 
 // Price of the amount of 1
 export const sftMinterTokenSellingPrice =
-  customConfig?.config?.nftMinterSc?.tokenSellingPrice;
+  customConfig?.config?.sftMinterSc?.tokenSellingPrice;
 
 // Get token display name function name on the SC
 export const getTokenDisplayNameFunctionName =

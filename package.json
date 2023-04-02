@@ -3,7 +3,7 @@
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
-  "version": "1.19.0",
+  "version": "1.19.1",
   "elvenTools": {
     "nftSmartContractVersionTagName": "v1.12.0",
     "sftSmartContractVersionTagName": "v0.1.0",
