@@ -9,6 +9,9 @@ import {
   getSftAssignRolesTransaction,
   getSftCreateTransaction,
   updateOutputFile,
+  getBuySftTransaction,
+  getClaimDevRewardsTransaction,
+  getClaimScFundsTransaction,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -27,6 +30,10 @@ import {
   createSftMinterGasLimit,
   sftTokenDisplayName,
   maxTokensPerAddress,
+  sftTokenNonceLabel,
+  amountToBuyLabel,
+  buySftMinterGasLimit,
+  claimScFundsTxGasLimit,
 } from './config';
 
 // Issue a collection token + add required roles
@@ -235,11 +242,91 @@ const create = async () => {
   }
 };
 
+const claimDevRewards = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+  try {
+    const { smartContract, userAccount, signer, provider } = await setupSftSc(
+      smartContractAddress
+    );
+
+    const claimDevRewardsTx = getClaimDevRewardsTransaction(
+      smartContract,
+      userAccount
+    );
+
+    await commonTxOperations(claimDevRewardsTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const claimScFunds = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+  try {
+    const { smartContract, userAccount, signer, provider } = await setupSftSc(
+      smartContractAddress
+    );
+
+    const claimScFundsTx = getClaimScFundsTransaction(
+      smartContract,
+      claimScFundsTxGasLimit
+    );
+
+    await commonTxOperations(claimScFundsTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+export const buy = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'tokenNonce',
+      message: sftTokenNonceLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'number',
+      name: 'amountToBuy',
+      message: amountToBuyLabel,
+      min: 1,
+      validate: (value) => (!value || value < 1 ? 'Required and min 1!' : true),
+    },
+  ];
+
+  try {
+    const { tokenNonce, amountToBuy } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setupSftSc(
+      smartContractAddress
+    );
+
+    const assignRolesTx = getBuySftTransaction(
+      smartContract,
+      buySftMinterGasLimit,
+      tokenNonce,
+      amountToBuy
+    );
+
+    await commonTxOperations(assignRolesTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
 export const sftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
     setLocalRoles: 'set-roles',
     create: 'create',
+    clainDevRewards: 'claim-dev-rewards',
+    claimScFunds: 'claim-sc-funds',
+    buy: 'buy',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -269,6 +356,15 @@ export const sftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.create:
       create();
+      break;
+    case COMMANDS.clainDevRewards:
+      claimDevRewards();
+      break;
+    case COMMANDS.claimScFunds:
+      claimScFunds();
+      break;
+    case COMMANDS.buy:
+      buy();
       break;
   }
 };

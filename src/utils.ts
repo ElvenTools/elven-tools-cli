@@ -9,6 +9,7 @@ import {
   BytesValue,
   TokenPayment,
   U32Value,
+  U64Value,
   BigUIntValue,
   AddressValue,
   Transaction,
@@ -83,6 +84,8 @@ import {
   clearAllowlistFunctionName,
   removeAllowlistFunctionName,
   createSftTokenFnName,
+  buySftTokenFnName,
+  sftMinterTokenSellingPrice,
 } from './config';
 
 export const baseDir = cwd();
@@ -1084,6 +1087,35 @@ export const getSftCreateTransaction = (
     gasLimit,
     chainID: shortChainId[chain],
   });
+};
+
+export const getBuySftTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  tokenNonce: string,
+  amountToBuy: number
+) => {
+  const nonceBigNumber = new BigNumber(tokenNonce, 16);
+  const tokens = amountToBuy || 1;
+  const output = getFileContents(outputFileName, { noExitOnError: true });
+  const tokenSellingPrice =
+    sftMinterTokenSellingPrice || output?.sftMinterScCollectionSellingPrice;
+
+  if (!tokenSellingPrice) {
+    console.log(
+      "Price per token isn't provided. Please add it to the config file."
+    );
+    exit(9);
+  } else {
+    const totalPayment = new BigNumber(tokenSellingPrice).times(tokens);
+    return contract.call({
+      func: new ContractFunction(buySftTokenFnName),
+      args: [new U32Value(amountToBuy), new U64Value(nonceBigNumber)],
+      value: totalPayment,
+      gasLimit,
+      chainID: shortChainId[chain],
+    });
+  }
 };
 
 // Based on not maintained: https://github.com/kevva/download (simplified)

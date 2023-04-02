@@ -232,7 +232,7 @@ export const sftMinterScAddress =
 
 // Base gas limit required for the deployment
 export const deploySftMinterGasLimit =
-  customConfig?.config?.sftMinterSc?.deployGasLimit || 30000000;
+  customConfig?.config?.sftMinterSc?.deployGasLimit || 40000000;
 
 // The tag from the SC's GitHub repository, it can be release tag like v0.2.0 or branch name like 'main' or 'development'
 export const deploySftMinterScVersion =
@@ -266,6 +266,18 @@ export const createSftMinterGasLimit =
 // Create token function name on the SC
 export const createSftTokenFnName =
   customConfig?.config?.sftMinterSc?.createTokenFnName || 'createToken';
+
+// Gas limit required for the SFT buy function
+export const buySftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.buyGasLimit || 20000000;
+
+// Buy token amount function name on the SC
+export const buySftTokenFnName =
+  customConfig?.config?.sftMinterSc?.buyTokenAmountFnName || 'buy';
+
+// Price of the amount of 1
+export const sftMinterTokenSellingPrice =
+  customConfig?.config?.nftMinterSc?.tokenSellingPrice;
 
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Collection NFT owners
@@ -360,6 +372,9 @@ export const listOfSftUrisLabel =
   'Provide assets URIS. Whole URIs from IPFS. To your images, music, video files.\nSeparate them with comma (","):\n';
 export const maxTokensPerAddress =
   'Provide the max tokens to buy per address:\n';
+export const sftTokenNonceLabel =
+  'Provide token nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n';
+export const amountToBuyLabel = 'Provide the amount of SFT to buy:\n';
 
 export const giveawayAddressLabel = `Provide the list of addresses.\nSeparate them with comma (","):\n`;
 export const giveawayTokensAmount = `Provide how many tokens per one address you want to give away. Max ${tokensPerOneGiveawayTx} in total because of the max gas limit per transaction:\n`;
