@@ -9,6 +9,7 @@ import {
   BytesValue,
   TokenPayment,
   U32Value,
+  U64Value,
   BigUIntValue,
   AddressValue,
   Transaction,
@@ -54,9 +55,12 @@ import {
   chain,
   shortChainId,
   outputFileName,
-  issueTokenFnName,
-  setLocalRolesFnName,
+  issueNftTokenFnName,
+  issueSftTokenFnName,
+  setNftLocalRolesFnName,
+  setSftLocalRolesFnName,
   nftMinterScAddress,
+  sftMinterScAddress,
   nftMinterTokenSellingPrice,
   mintFunctionName,
   giveawayFunctionName,
@@ -79,6 +83,12 @@ import {
   disableAllowlistFunctionName,
   clearAllowlistFunctionName,
   removeAllowlistFunctionName,
+  createSftTokenFnName,
+  buySftTokenFnName,
+  sftMinterTokenSellingPrice,
+  getTokenDisplayNameFunctionName,
+  getPriceFunctionName,
+  getMaxAmountPerAddressFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -187,7 +197,7 @@ export const getScWasmCode = async (filePath: string, url: string) => {
   }
 };
 
-export const getDeployTransaction = (
+export const getDeployNftTransaction = (
   code: Code,
   contract: SmartContract,
   gasLimit: number,
@@ -228,14 +238,31 @@ export const getDeployTransaction = (
   });
 };
 
+export const getDeploySftTransaction = (
+  code: Code,
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.deploy({
+    code,
+    codeMetadata: new CodeMetadata(true, false, false, true),
+    gasLimit: gasLimit,
+    initArguments: [],
+    chainID: shortChainId[chain],
+  });
+};
+
+// TODO: this should be unified and the best integrated with config file
 export const updateOutputFile = ({
-  scAddress,
-  sellingPrice,
-  tokenId,
+  nftScAddress,
+  sftScAddress,
+  nftSellingPrice,
+  sftSellingPrice,
 }: {
-  scAddress?: IAddress;
-  sellingPrice?: string;
-  tokenId?: string;
+  nftScAddress?: IAddress;
+  sftScAddress?: IAddress;
+  nftSellingPrice?: string;
+  sftSellingPrice?: string;
 }) => {
   const outputFilePath = `${baseDir}/${outputFileName}`;
   try {
@@ -243,14 +270,20 @@ export const updateOutputFile = ({
     const configFile = readFileSync(outputFilePath, { encoding: 'utf8' });
     const newConfigFile = {
       ...JSON.parse(configFile),
-      ...(scAddress ? { nftMinterScAddress: scAddress.bech32() } : {}),
-      ...(sellingPrice
+      ...(nftScAddress ? { nftMinterScAddress: nftScAddress.bech32() } : {}),
+      ...(nftSellingPrice
         ? {
             nftMinterScCollectionSellingPrice:
-              TokenPayment.egldFromAmount(sellingPrice).toString(),
+              TokenPayment.egldFromAmount(nftSellingPrice).toString(),
           }
         : {}),
-      ...(tokenId ? { nftMinterCollectionToken: tokenId } : {}),
+      ...(sftScAddress ? { sftMinterScAddress: sftScAddress.bech32() } : {}),
+      ...(sftSellingPrice
+        ? {
+            sftMinterScCollectionSellingPrice:
+              TokenPayment.egldFromAmount(sftSellingPrice).toString(),
+          }
+        : {}),
     };
     return writeFileSync(
       outputFilePath,
@@ -261,14 +294,24 @@ export const updateOutputFile = ({
       outputFilePath,
       JSON.stringify(
         {
-          ...(scAddress ? { nftMinterScAddress: scAddress.bech32() } : {}),
-          ...(sellingPrice
+          ...(nftScAddress
+            ? { nftMinterScAddress: nftScAddress.bech32() }
+            : {}),
+          ...(nftSellingPrice
             ? {
                 nftMinterScCollectionSellingPrice:
-                  TokenPayment.egldFromAmount(sellingPrice).toString(),
+                  TokenPayment.egldFromAmount(nftSellingPrice).toString(),
               }
             : {}),
-          ...(tokenId ? { nftMinterCollectionToken: tokenId } : {}),
+          ...(sftScAddress
+            ? { sftMinterScAddress: sftScAddress.bech32() }
+            : {}),
+          ...(sftSellingPrice
+            ? {
+                sftMinterScCollectionSellingPrice:
+                  TokenPayment.egldFromAmount(sftSellingPrice).toString(),
+              }
+            : {}),
         },
         null,
         2
@@ -277,7 +320,7 @@ export const updateOutputFile = ({
   }
 };
 
-export const getIssueTransaction = (
+export const getNftIssueTransaction = (
   contract: SmartContract,
   gasLimit: number,
   value: number, // mandatory 0.05 EGLD
@@ -287,7 +330,7 @@ export const getIssueTransaction = (
   nftTokenName?: string
 ) => {
   return contract.call({
-    func: new ContractFunction(issueTokenFnName),
+    func: new ContractFunction(issueNftTokenFnName),
     args: [
       BytesValue.fromUTF8(tokenName.trim()),
       BytesValue.fromUTF8(tokenTicker.trim()),
@@ -300,7 +343,26 @@ export const getIssueTransaction = (
   });
 };
 
-export const getTheSCAddressFromOutputOrConfig = () => {
+export const getSftIssueTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  value: number, // mandatory 0.05 EGLD
+  tokenName: string,
+  tokenTicker: string
+) => {
+  return contract.call({
+    func: new ContractFunction(issueSftTokenFnName),
+    args: [
+      BytesValue.fromUTF8(tokenName.trim()),
+      BytesValue.fromUTF8(tokenTicker.trim()),
+    ],
+    value: TokenPayment.egldFromAmount(value),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
+  });
+};
+
+export const getNftSCAddressFromOutputOrConfig = () => {
   const output = getFileContents(outputFileName, { noExitOnError: true });
   const smartContractAddress = nftMinterScAddress || output?.nftMinterScAddress;
 
@@ -313,12 +375,36 @@ export const getTheSCAddressFromOutputOrConfig = () => {
   return smartContractAddress;
 };
 
-export const getAssignRolesTransaction = (
+export const getSftSCAddressFromOutputOrConfig = () => {
+  const output = getFileContents(outputFileName, { noExitOnError: true });
+  const smartContractAddress = sftMinterScAddress || output?.sftMinterScAddress;
+
+  if (!smartContractAddress) {
+    console.log(
+      "Smart Contract address isn't provided. Please deploy it or add the address to the configuration if it is already deployed."
+    );
+    exit(9);
+  }
+  return smartContractAddress;
+};
+
+export const getNftAssignRolesTransaction = (
   contract: SmartContract,
   gasLimit: number
 ) => {
   return contract.call({
-    func: new ContractFunction(setLocalRolesFnName),
+    func: new ContractFunction(setNftLocalRolesFnName),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
+  });
+};
+
+export const getSftAssignRolesTransaction = (
+  contract: SmartContract,
+  gasLimit: number
+) => {
+  return contract.call({
+    func: new ContractFunction(setSftLocalRolesFnName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
   });
@@ -583,14 +669,18 @@ export const commonScQuery = async ({
   resultType,
   resultModifier,
   args,
+  isNft = true,
 }: {
   functionName: string;
   resultType: 'number' | 'string' | 'boolean';
   resultLabel?: string;
   resultModifier?: (result: boolean | string | number) => string;
   args?: TypedValue[];
+  isNft?: boolean;
 }) => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = isNft
+    ? getNftSCAddressFromOutputOrConfig()
+    : getSftSCAddressFromOutputOrConfig();
   const spinner = ora('Processing query...');
   try {
     const provider = getNetworkProvider();
@@ -966,6 +1056,102 @@ export const distributeSftSingleAddress = async (
       txStatus: 'failed',
     };
   }
+};
+
+export const getSftCreateTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  tokenDisaplayName: string,
+  tokenSellingPrice: string,
+  metadataIpfsCID: string,
+  metadataIpfsFileName: string,
+  initialAmountOfTokens: number,
+  maxTokensPerAddress: number,
+  royalties: number,
+  tags: string,
+  uris: string[]
+) => {
+  return contract.call({
+    func: new ContractFunction(createSftTokenFnName),
+    args: [
+      BytesValue.fromUTF8(tokenDisaplayName.trim()),
+      new BigUIntValue(
+        TokenPayment.egldFromAmount(tokenSellingPrice.trim()).valueOf()
+      ),
+      BytesValue.fromUTF8(metadataIpfsCID.trim()),
+      BytesValue.fromUTF8(metadataIpfsFileName.trim()),
+      new BigUIntValue(new BigNumber(initialAmountOfTokens).valueOf()),
+      new BigUIntValue(new BigNumber(maxTokensPerAddress).valueOf()),
+      new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0).valueOf()),
+      BytesValue.fromUTF8(tags.trim()),
+      ...uris.map((uri) => BytesValue.fromUTF8(uri.trim())),
+    ],
+    value: 0,
+    gasLimit,
+    chainID: shortChainId[chain],
+  });
+};
+
+export const getBuySftTransaction = (
+  contract: SmartContract,
+  gasLimit: number,
+  tokenNonce: string,
+  amountToBuy: number
+) => {
+  const nonceBigNumber = new BigNumber(tokenNonce, 16);
+  const tokens = amountToBuy || 1;
+  const output = getFileContents(outputFileName, { noExitOnError: true });
+  const tokenSellingPrice =
+    sftMinterTokenSellingPrice || output?.sftMinterScCollectionSellingPrice;
+
+  if (!tokenSellingPrice) {
+    console.log(
+      "Price per token isn't provided. Please add it to the config file."
+    );
+    exit(9);
+  } else {
+    const totalPayment = new BigNumber(tokenSellingPrice).times(tokens);
+    return contract.call({
+      func: new ContractFunction(buySftTokenFnName),
+      args: [new U32Value(amountToBuy), new U64Value(nonceBigNumber)],
+      value: totalPayment,
+      gasLimit,
+      chainID: shortChainId[chain],
+    });
+  }
+};
+
+export const getSftTokenDisplayNameQuery = (nonce: string) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  commonScQuery({
+    functionName: getTokenDisplayNameFunctionName,
+    resultLabel: 'Token display name:',
+    resultType: 'string',
+    args: [new U64Value(nonceBigNumber)],
+    isNft: false,
+  });
+};
+
+export const getSftPriceQuery = (nonce: string) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  commonScQuery({
+    functionName: getPriceFunctionName,
+    resultLabel: 'Price per amount 1:',
+    resultType: 'number',
+    args: [new U64Value(nonceBigNumber)],
+    isNft: false,
+  });
+};
+
+export const getSftMaxAmountPerAddress = (nonce: string) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  commonScQuery({
+    functionName: getMaxAmountPerAddressFunctionName,
+    resultLabel: 'Max SFT amount per address:',
+    resultType: 'number',
+    args: [new U64Value(nonceBigNumber)],
+    isNft: false,
+  });
 };
 
 // Based on not maintained: https://github.com/kevva/download (simplified)

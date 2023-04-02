@@ -1,11 +1,11 @@
-import { setup, publicEndpointSetup } from './setup';
+import { setupNftSc, publicEndpointSetup } from './setup';
 import ora from 'ora';
 import prompts, { PromptObject } from 'prompts';
 import {
-  getIssueTransaction,
+  getNftIssueTransaction,
   updateOutputFile,
-  getTheSCAddressFromOutputOrConfig,
-  getAssignRolesTransaction,
+  getNftSCAddressFromOutputOrConfig,
+  getNftAssignRolesTransaction,
   getMintTransaction,
   getGiveawayTransaction,
   getSetDropTransaction,
@@ -49,7 +49,7 @@ import {
   setUnsetDropTxGasLimit,
   pauseUnpauseTxGasLimit,
   setNewPriceGasLimit,
-  deployNftMinterSellingPriceLabel,
+  minterSellingPriceLabel,
   shuffleGasLimit,
   getTotalTokensLeftFunctionName,
   getProvenanceHashFunctionName,
@@ -90,7 +90,7 @@ import { exit } from 'process';
 
 // Issue a collection token + add required roles
 const issueCollectionToken = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
 
   const promptQuestions: PromptObject[] = [
     {
@@ -145,16 +145,18 @@ const issueCollectionToken = async () => {
     const { tokenName, tokenTicker, nftTokenName, noNftTokenNameNumber } =
       await prompts(promptQuestions);
 
+    await areYouSureAnswer();
+
     if (!tokenName || !tokenTicker) {
       console.log('You have to provide a token name and ticker value!');
       exit(9);
     }
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
-    const issueCollectionTokenTx = getIssueTransaction(
+    const issueCollectionTokenTx = getNftIssueTransaction(
       smartContract,
       issueNftMinterGasLimit,
       issueNftMinterValue,
@@ -178,13 +180,15 @@ const issueCollectionToken = async () => {
 
 // For now only nft create role, it will be improvement after SC improvements
 const setLocalRoles = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
-    const { smartContract, userAccount, signer, provider } = await setup(
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
-    const assignRolesTx = getAssignRolesTransaction(
+    const assignRolesTx = getNftAssignRolesTransaction(
       smartContract,
       assignRolesNftMinterGasLimit
     );
@@ -196,7 +200,7 @@ const setLocalRoles = async () => {
 };
 
 const mint = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
 
   const promptQuestions: PromptObject[] = [
     {
@@ -230,7 +234,7 @@ const mint = async () => {
 };
 
 const giveaway = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
 
   const amountPrompt: PromptObject[] = [
     {
@@ -256,7 +260,7 @@ const giveaway = async () => {
   ];
 
   try {
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -323,12 +327,12 @@ const setDrop = async () => {
     },
   ];
 
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
     const { dropTokensAmount, dropTokensLimitPerAddressPerDrop } =
       await prompts(promptQuestions);
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -346,9 +350,9 @@ const setDrop = async () => {
 };
 
 const unsetDrop = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -364,11 +368,11 @@ const unsetDrop = async () => {
 };
 
 const pauseMinting = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -384,11 +388,11 @@ const pauseMinting = async () => {
 };
 
 const startMinting = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -408,19 +412,21 @@ const setNewPrice = async () => {
     {
       type: 'text',
       name: 'newPrice',
-      message: deployNftMinterSellingPriceLabel,
+      message: minterSellingPriceLabel,
       validate: (value) =>
-        !Number(value) || Number(value) <= 0 ? 'Requires a minimum of 0!' : true,
+        !Number(value) || Number(value) <= 0
+          ? 'Requires a minimum of 0!'
+          : true,
     },
   ];
 
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
     const { newPrice } = await prompts(promptQuestions);
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -432,16 +438,16 @@ const setNewPrice = async () => {
 
     await commonTxOperations(changePriceTx, userAccount, signer, provider);
 
-    updateOutputFile({ sellingPrice: newPrice });
+    updateOutputFile({ nftSellingPrice: newPrice });
   } catch (e) {
     console.log((e as Error)?.message);
   }
 };
 
 const claimDevRewards = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -457,7 +463,7 @@ const claimDevRewards = async () => {
 };
 
 const shuffle = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
     const { userAccount, signer, provider } = await publicEndpointSetup();
 
@@ -488,7 +494,7 @@ const changeBaseCids = async () => {
     },
   ];
 
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
     const { nftMinterImgCid, nftMinterMetaCid } = await prompts(
       promptQuestions
@@ -496,7 +502,7 @@ const changeBaseCids = async () => {
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -523,13 +529,13 @@ const setNewTokensLimitPerAddress = async () => {
     },
   ];
 
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
     const { nftMinterTokensLimitPerAddress } = await prompts(promptQuestions);
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -552,11 +558,11 @@ const setNewTokensLimitPerAddress = async () => {
 };
 
 const enableAllowlist = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -572,11 +578,11 @@ const enableAllowlist = async () => {
 };
 
 const disableAllowlist = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -628,9 +634,9 @@ const getMintedPerAddressPerDrop = async () => {
 };
 
 const claimScFunds = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
   try {
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -648,7 +654,7 @@ const claimScFunds = async () => {
 // Calls the allowlist endpoint on the smart contract
 // Can be called multiple times
 const populateAllowlist = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
 
   const promptQuestions: PromptObject[] = [
     {
@@ -661,7 +667,7 @@ const populateAllowlist = async () => {
   ];
 
   try {
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -709,12 +715,12 @@ const populateAllowlist = async () => {
 };
 
 const clearAllowlist = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
 
   try {
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 
@@ -737,7 +743,7 @@ const clearAllowlist = async () => {
 };
 
 const removeAllowlistAddress = async () => {
-  const smartContractAddress = getTheSCAddressFromOutputOrConfig();
+  const smartContractAddress = getNftSCAddressFromOutputOrConfig();
 
   const promptQuestions: PromptObject[] = [
     {
@@ -753,7 +759,7 @@ const removeAllowlistAddress = async () => {
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setup(
+    const { smartContract, userAccount, signer, provider } = await setupNftSc(
       smartContractAddress
     );
 

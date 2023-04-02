@@ -1,20 +1,21 @@
 import { exit } from 'process';
-import { unlinkSync } from 'fs';
+import fs from 'fs';
 import ora from 'ora';
 import prompts, { PromptObject } from 'prompts';
-import { setup } from './setup';
+import { setupNftSc, setupSftSc } from './setup';
 import {
   deployNftMinterGasLimit,
   outputFileName,
   deployNftMinterImgCidLabel,
   deployNftMinterMetaCidLabel,
   deployNftMinterAmountOfTokensLabel,
-  deployNftMinterSellingPriceLabel,
-  deployNftMinterRoyaltiesLabel,
-  deployNftMinterTagsLabel,
+  minterSellingPriceLabel,
+  minterRoyaltiesLabel,
+  minterTagsLabel,
   deployNftMinterProvenanceHashLabel,
   deployNftMinterTokensLimitPerAddressLabel,
   deployNftMinterImgExtLabel,
+  deploySftMinterGasLimit,
   multiversxExplorer,
   chain,
   nftSCupgradableLabel,
@@ -24,7 +25,8 @@ import {
   deployMetadataInAssetsLabel,
 } from './config';
 import {
-  getDeployTransaction,
+  getDeployNftTransaction,
+  getDeploySftTransaction,
   updateOutputFile,
   getFileContents,
   baseDir,
@@ -37,7 +39,13 @@ const deployNftMinter = async () => {
   const outputFile = getFileContents(outputFileName, { noExitOnError: true });
 
   if (outputFile) {
-    unlinkSync(`${baseDir}/${outputFileName}`);
+    outputFile.nftMinterScAddress = '';
+    outputFile.nftMinterScCollectionSellingPrice = '';
+    fs.writeFileSync(
+      `${baseDir}/${outputFileName}`,
+      JSON.stringify(outputFile),
+      'utf8'
+    );
   }
 
   const promptsQuestions: PromptObject[] = [
@@ -128,7 +136,7 @@ const deployNftMinter = async () => {
     {
       type: 'text',
       name: 'deployNftMinterSellingPrice',
-      message: deployNftMinterSellingPriceLabel,
+      message: minterSellingPriceLabel,
       validate: (value) =>
         !Number(value) || Number(value) <= 0 ? 'Required and min 0!' : true,
     },
@@ -141,7 +149,7 @@ const deployNftMinter = async () => {
     {
       type: 'number',
       name: 'deployNftMinterRoyalties',
-      message: deployNftMinterRoyaltiesLabel,
+      message: minterRoyaltiesLabel,
       min: 0,
       max: 100,
       float: true,
@@ -154,7 +162,7 @@ const deployNftMinter = async () => {
     {
       type: 'text',
       name: 'deployNftMinterTags',
-      message: deployNftMinterTagsLabel,
+      message: minterTagsLabel,
     },
     {
       type: 'text',
@@ -167,7 +175,7 @@ const deployNftMinter = async () => {
 
   try {
     const { scWasmCode, smartContract, userAccount, signer, provider } =
-      await setup();
+      await setupNftSc();
 
     const {
       deployNftMinterImgCid,
@@ -200,7 +208,7 @@ const deployNftMinter = async () => {
       exit(9);
     }
 
-    const deployTransaction = getDeployTransaction(
+    const deployTransaction = getDeployNftTransaction(
       scWasmCode,
       smartContract,
       deployNftMinterGasLimit,
@@ -252,8 +260,76 @@ const deployNftMinter = async () => {
 
     console.log(`Smart Contract address: ${smartContractAddress}\n`);
     updateOutputFile({
-      scAddress: smartContractAddress,
-      sellingPrice: deployNftMinterSellingPrice,
+      nftScAddress: smartContractAddress,
+      nftSellingPrice: deployNftMinterSellingPrice,
+    });
+  } catch (e) {
+    spinner.stop();
+    console.log((e as Error)?.message);
+  }
+};
+
+export const deploySftMinter = async () => {
+  // Check if there is an old output file
+  const outputFile = getFileContents(outputFileName, { noExitOnError: true });
+
+  if (outputFile) {
+    outputFile.sftMinterScAddress = '';
+    outputFile.sftMinterScCollectionSellingPrice = '';
+    fs.writeFileSync(
+      `${baseDir}/${outputFileName}`,
+      JSON.stringify(outputFile),
+      'utf8'
+    );
+  }
+
+  const spinner = ora('Processing the transaction...');
+
+  try {
+    const { scWasmCode, smartContract, userAccount, signer, provider } =
+      await setupSftSc();
+
+    await areYouSureAnswer();
+
+    const deployTransaction = getDeploySftTransaction(
+      scWasmCode,
+      smartContract,
+      deploySftMinterGasLimit
+    );
+
+    deployTransaction.setNonce(userAccount.nonce);
+    userAccount.incrementNonce();
+    signer.sign(deployTransaction);
+
+    spinner.start();
+
+    const smartContractAddress = SmartContract.computeAddress(
+      deployTransaction.getSender(),
+      deployTransaction.getNonce()
+    );
+
+    smartContract.setAddress(smartContractAddress);
+
+    await provider.sendTransaction(deployTransaction);
+
+    const watcher = new TransactionWatcher(provider);
+    const transactionOnNetwork = await watcher.awaitCompleted(
+      deployTransaction
+    );
+
+    const txStatus = transactionOnNetwork.status;
+    const txHash = transactionOnNetwork.hash;
+
+    spinner.stop();
+
+    console.log(`\nDeployment transaction executed: ${txStatus}`);
+    console.log(
+      `Deployment tx: ${multiversxExplorer[chain]}/transactions/${txHash}\n`
+    );
+
+    console.log(`Smart Contract address: ${smartContractAddress}\n`);
+    updateOutputFile({
+      sftScAddress: smartContractAddress,
     });
   } catch (e) {
     spinner.stop();
@@ -264,6 +340,7 @@ const deployNftMinter = async () => {
 export const deploy = async (subcommand?: string) => {
   const COMMANDS = {
     nftMinter: 'nft-minter',
+    sftMinter: 'sft-minter',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -286,5 +363,8 @@ export const deploy = async (subcommand?: string) => {
 
   if (subcommand === COMMANDS.nftMinter) {
     deployNftMinter();
+  }
+  if (subcommand === COMMANDS.sftMinter) {
+    deploySftMinter();
   }
 };

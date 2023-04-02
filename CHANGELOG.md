@@ -1,3 +1,8 @@
+### [1.19.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.19.0) (2023-04-02)
+- added management for new SFT smart contract
+- a couple of additions in configuration structure (check docs)
+- update dependencies
+
 ### [1.18.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.18.0) (2023-03-11)
 - update dependencies
 - fix package.json config

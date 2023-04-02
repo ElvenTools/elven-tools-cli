@@ -25,12 +25,12 @@ export const nftMinterScAddress =
 
 // Base gas limit required for the deployment
 export const deployNftMinterGasLimit =
-  customConfig?.config?.nftMinterSc?.deployGasLimit || 120000000;
+  customConfig?.config?.nftMinterSc?.deployGasLimit || 80000000;
 
 // The tag from the SC's GitHub repository, it can be release tag like v0.2.0 or branch name like 'main' or 'development'
 export const deployNftMinterScVersion =
   customConfig?.config?.nftMinterSc?.version ||
-  packageJson.elvenTools.smartContractVersionTagName;
+  packageJson.elvenTools.nftSmartContractVersionTagName;
 
 // Gas limit required for the collection token issuance
 export const issueNftMinterGasLimit =
@@ -45,11 +45,11 @@ export const assignRolesNftMinterGasLimit =
   customConfig?.config?.nftMinterSc?.assignRolesGasLimit || 80000000;
 
 // Issue collection token function name on the SC
-export const issueTokenFnName =
+export const issueNftTokenFnName =
   customConfig?.config?.nftMinterSc?.issueTokenFnName || 'issueToken';
 
 // Function name for setting the roles for collection token on the SC
-export const setLocalRolesFnName =
+export const setNftLocalRolesFnName =
   customConfig?.config?.nftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
 
 export const mintTxBaseGasLimit =
@@ -222,6 +222,88 @@ export const getTotalSupplyOfCurrentDropFunctionName =
   'getTotalSupplyOfCurrentDrop';
 
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
+// SFT minter smart contract
+// ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
+
+// This is useful when you have already deployed the smart contract and you want to interact
+// Otherwise, after deployment using this tool, it will be saved in the temp file for further usage
+export const sftMinterScAddress =
+  customConfig?.config?.sftMinterSc?.deploySftMinterSC;
+
+// Base gas limit required for the deployment
+export const deploySftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.deployGasLimit || 40000000;
+
+// The tag from the SC's GitHub repository, it can be release tag like v0.2.0 or branch name like 'main' or 'development'
+export const deploySftMinterScVersion =
+  customConfig?.config?.sftMinterSc?.version ||
+  packageJson.elvenTools.sftSmartContractVersionTagName;
+
+// Issue collection token function name on the SC
+export const issueSftTokenFnName =
+  customConfig?.config?.sftMinterSc?.issueTokenFnName || 'issueToken';
+
+// Value required for the collection token issuance  (1 = 1 EGLD)
+export const issueSftMinterValue =
+  customConfig?.config?.sftMinterSc?.issueValue || 0.05;
+
+// Gas limit required for the collection token issuance
+export const issueSftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.issueCollectionTokenGasLimit || 60000000;
+
+// Function name for setting the roles for collection token on the SC
+export const setSftLocalRolesFnName =
+  customConfig?.config?.sftMinterSc?.setLocalRolesFnName || 'setLocalRoles';
+
+// Gas limit required for the collection token roles assignment
+export const assignRolesSftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.assignRolesGasLimit || 60000000;
+
+// Gas limit required for the SFT create function
+export const createSftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.createGasLimit || 20000000;
+
+// Create token function name on the SC
+export const createSftTokenFnName =
+  customConfig?.config?.sftMinterSc?.createTokenFnName || 'createToken';
+
+// Gas limit required for the SFT buy function
+export const buySftMinterGasLimit =
+  customConfig?.config?.sftMinterSc?.buyGasLimit || 20000000;
+
+// Buy token amount function name on the SC
+export const buySftTokenFnName =
+  customConfig?.config?.sftMinterSc?.buyTokenAmountFnName || 'buy';
+
+// Price of the amount of 1
+export const sftMinterTokenSellingPrice =
+  customConfig?.config?.nftMinterSc?.tokenSellingPrice;
+
+// Get token display name function name on the SC
+export const getTokenDisplayNameFunctionName =
+  customConfig?.config?.sftMinterSc?.getTokenDisplayFnName ||
+  'getTokenDisplayName';
+
+// Get price per amount 1 function name on the SC
+export const getPriceFunctionName =
+  customConfig?.config?.sftMinterSc?.getPriceFnName || 'getPrice';
+
+// Get max amount per one address function name on the SC
+export const getMaxAmountPerAddressFunctionName =
+  customConfig?.config?.sftMinterSc?.getMaxAmountPerAddressFnName ||
+  'getMaxAmountPerAddress';
+
+// Get collection token name
+export const getSftCollectionTokenNameFunctionName =
+  customConfig?.config?.sftMinterSc?.getCollectionTokenNameFnName ||
+  'getCollectionTokenName';
+
+// Get collection token id
+export const getSftCollectionTokenIdFunctionName =
+  customConfig?.config?.sftMinterSc?.getSftCollectionTokenIdFnName ||
+  'getCollectionTokenId';
+
+// ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Collection NFT owners
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 
@@ -291,19 +373,32 @@ export const deployNftMinterMetaCidLabel =
   'Provide the base metadata files IPFS CID:\n';
 export const deployNftMinterAmountOfTokensLabel =
   'Provide amount of tokens in collection:\n';
-export const deployNftMinterSellingPriceLabel =
+export const minterSellingPriceLabel =
   'Provide the selling price (ex. 0.5 for 0.5 EGLD):\n';
-export const deployNftMinterRoyaltiesLabel =
-  'Provide the royalties value (ex. 5.5 for 5.5%) [optional]:\n';
-export const deployNftMinterTagsLabel =
-  'Provide tags (ex. tag1,tag2,tag3) [optional]:\n';
+export const minterRoyaltiesLabel =
+  'Provide the royalties value (ex. 5.5 for 5.5%):\n';
+export const minterTagsLabel = 'Provide tags (ex. tag1,tag2,tag3):\n';
 export const deployNftMinterProvenanceHashLabel =
   'Provide the provenance hash (sha256 hash of all images) [optional]:\n';
 export const deployNftMinterTokensLimitPerAddressLabel =
   'Total tokens limit per one address per whole collection (the best is to keep it as low as possible):\n';
 export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
-
+export const sftTokenDisplayName =
+  'Provide token display name (Alphanumeric characters only):\n';
+export const metadataIpfsCIDLabel =
+  'Provide the the metadata file CID from IPFS:\n';
+export const metadataIpfsFileNameLabel =
+  'Provide the the metadata file name uploaded using IPFS (ex: metadata.json):\n';
+export const initialSFTSupplyLabel =
+  'Provide the initial SFT supply (amount of tokens):\n';
 export const amountOfTokensLabel = `Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneTx} because of the max gas limit per transaction:\n`;
+export const listOfSftUrisLabel =
+  'Provide assets URIS. Whole URIs from IPFS. To your images, music, video files.\nSeparate them with comma (","):\n';
+export const maxTokensPerAddress =
+  'Provide the max tokens to buy per address:\n';
+export const sftTokenNonceLabel =
+  'Provide token nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n';
+export const amountToBuyLabel = 'Provide the amount of SFT to buy:\n';
 
 export const giveawayAddressLabel = `Provide the list of addresses.\nSeparate them with comma (","):\n`;
 export const giveawayTokensAmount = `Provide how many tokens per one address you want to give away. Max ${tokensPerOneGiveawayTx} in total because of the max gas limit per transaction:\n`;
@@ -350,9 +445,17 @@ export const deployNftMinterSCabiRelativeFilePath =
 export const deployNftMinterSCwasmRelativeFilePath =
   'sc/nft-minter/elven-nft-minter.wasm';
 
+export const deploySftMinterSCabiRelativeFilePath =
+  'sc/sft-minter/elven-tools-sft-minter.abi.json';
+export const deploySftMinterSCwasmRelativeFilePath =
+  'sc/sft-minter/elven-tools-sft-minter.wasm';
+
 // Urls to the smart contract repo, when there are no local files
 export const deployNftMinterSCabiFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-nft-minter-sc/${deployNftMinterScVersion}/output/elven-nft-minter.abi.json`;
 export const deployNftMinterSCwasmFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-nft-minter-sc/${deployNftMinterScVersion}/output/elven-nft-minter.wasm`;
+
+export const deploySftMinterSCabiFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-tools-sft-minter-sc/${deploySftMinterScVersion}/output/elven-tools-sft-minter.abi.json`;
+export const deploySftMinterSCwasmFileUrl = `https://raw.githubusercontent.com/ElvenTools/elven-tools-sft-minter-sc/${deploySftMinterScVersion}/output/elven-tools-sft-minter.wasm`;
 
 // Urls to the Dapp repo
 export const dappZipFileUrl = `https://github.com/ElvenTools/elven-tools-dapp/archive/refs/tags/${minterDappVersionTagName}.zip`;
