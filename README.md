@@ -4,23 +4,26 @@
 - Elven Tools Twitter: [www.twitter.com/ElvenTools](https://twitter.com/ElvenTools)
 - Quick jumpstart: [www.elven.tools/docs/jump-start.html](https://www.elven.tools/docs/jump-start.html)
 - Recipes: [www.elven.tools/docs/recipes.html](https://www.elven.tools/docs/recipes.html)
-- Intro video: [youtu.be/Jou5jn8PFz8](https://youtu.be/Jou5jn8PFz8)
+- Intro NFT video: [youtu.be/Jou5jn8PFz8](https://youtu.be/Jou5jn8PFz8)
+- Intro SFT video: [youtu.be/rMF3ItijHUA](https://youtu.be/rMF3ItijHUA)
 
 ### What is it?
 
 The CLI tool helps to:
-- deploy the NFT minter Smart Contract on the MultiversX blockchain
-- setup and interact with the NFT minter Smart Contract on the MultiversX blockchain
+- deploy the NFT and SFT minter smart contract on the MultiversX blockchain
+- setup and interact with the NFT and SFT minter smart contract on the MultiversX blockchain
 - provides a couple of helper tools for getting the data from API
   - get collection owners => [docs](https://www.elven.tools/docs/recipes.html#how-to-get-owners-addresses-using-the-collection-ticker)
   - filter and export the data
   - distribute EGLD, ESDT, SFT and Meta ESDT to the NFT owners of a collection => [docs](https://www.elven.tools/docs/recipes.html#how-to-distribute-tokens-to-nft-owners)
 
-For now it is designed to deploy the contract: [elven-nft-minter-sc](https://github.com/ElvenTools/elven-nft-minter-sc). There will be more in the future.
+For now it is designed to deploy contracts:
+- [elven-tools-nft-minter-sc](https://github.com/ElvenTools/elven-nft-minter-sc),
+- [elven-tools-sft-minter-sc](https://github.com/ElvenTools/elven-tools-sft-minter-sc)
 
-Be aware that the Smart Contract doesn't have any audits. It has complete functionality for the first version, but it still needs some improvements. Test it first on the devnet/testnet.
+Be aware that smart contracts doesn't have any audits. They has complete functionality for the first versions, but they still needs some improvements. Test them first on the devnet/testnet.
 
-**You can use [elven-tools-dapp](https://github.com/ElvenTools/elven-tools-dapp) as your frontend dapp for minting process! (NextJS based app with all 4 auth providers included, and React hooks for interaction)** (Learn more about it here: [How to start with the Dapp](https://www.elven.tools/docs/how-to-start-with-the-dapp.html)).
+**You can use [elven-tools-dapp](https://github.com/ElvenTools/elven-tools-dapp) as your frontend dapp for minting process! (NextJS based app with all 4 auth providers included, and React hooks for interaction)** (Learn more about it here: [How to start with the Dapp](https://www.elven.tools/docs/how-to-start-with-the-dapp.html)) For now, by default it supports only NFT smart contract, but it will handle both in the future.
 
 ### Tracking the progress
 
@@ -41,7 +44,7 @@ Check out the TL;DR and longer description here: [Jump start](https://www.elven.
 
 ### Check out possible workflows
 
-Examples of how you can configure your Smart Contract in a couple of scenarios and how to use the CLI to do this faster and more efficient: [www.elven.tools/docs/elven-tools-workflows.html](https://www.elven.tools/docs/elven-tools-workflows.html)
+For NFT: Examples of how you can configure your Smart Contract in a couple of scenarios and how to use the CLI to do this faster and more efficient: [www.elven.tools/docs/elven-tools-workflows.html](https://www.elven.tools/docs/elven-tools-workflows.html)
 
 ### All Commands
 
@@ -58,6 +61,7 @@ Here are ready-to-use recipes and more information on real-life use cases: [Elve
 ### You may also like
 
 - [elven.js](https://github.com/juliancwirko/elven.js) - simplified wrapper over JS sdk-core, designed to work as a plug-n-play solution for browser based use cases. No build steps and frameworks, just one file to rule it all! Check usage examples!
+- [useElven](https://www.useelven.com) - React hooks for MultiversX
 - [NFT Art Maker](https://github.com/juliancwirko/nft-art-maker) - generates images and metadata files and packs them into CAR files, all from provided PNG layers.
 - [Buildo Begins](https://github.com/xdevguild/buildo-begins) - CLI toolset for interacting with the MultiversX blockchain, APIs and smart contracts
 - [Export collection owners to CSV](https://github.com/ElvenTools/elven-tools-collection-owners-csv)
