@@ -12,6 +12,10 @@ import {
   getBuySftTransaction,
   getClaimDevRewardsTransaction,
   getClaimScFundsTransaction,
+  getSftTokenDisplayNameQuery,
+  getSftPriceQuery,
+  getSftMaxAmountPerAddress,
+  commonScQuery,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -34,6 +38,8 @@ import {
   amountToBuyLabel,
   buySftMinterGasLimit,
   claimScFundsTxGasLimit,
+  getSftCollectionTokenNameFunctionName,
+  getSftCollectionTokenIdFunctionName,
 } from './config';
 
 // Issue a collection token + add required roles
@@ -319,6 +325,63 @@ export const buy = async () => {
   }
 };
 
+const getTokenDisplayName = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'nonce',
+      message:
+        'Provide the nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n',
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
+
+  try {
+    const { nonce } = await prompts(promptQuestions);
+    getSftTokenDisplayNameQuery(nonce);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const getPrice = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'nonce',
+      message:
+        'Provide the nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n',
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
+
+  try {
+    const { nonce } = await prompts(promptQuestions);
+    getSftPriceQuery(nonce);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const getMaxAmountPerAddress = async () => {
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'nonce',
+      message:
+        'Provide the nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n',
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+  ];
+
+  try {
+    const { nonce } = await prompts(promptQuestions);
+    getSftMaxAmountPerAddress(nonce);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
 export const sftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
@@ -327,6 +390,11 @@ export const sftMinter = async (subcommand?: string) => {
     clainDevRewards: 'claim-dev-rewards',
     claimScFunds: 'claim-sc-funds',
     buy: 'buy',
+    getCollectionTokenName: 'get-collection-token-name',
+    getCollectionTokenId: 'get-collection-token-id',
+    getTokenDisplayName: 'get-token-display-name',
+    getPrice: 'get-price',
+    getMaxAmountPerAddress: 'get-max-amount-per-address',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -365,6 +433,31 @@ export const sftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.buy:
       buy();
+      break;
+    case COMMANDS.getCollectionTokenName:
+      commonScQuery({
+        functionName: getSftCollectionTokenNameFunctionName,
+        resultLabel: 'Collection token name:',
+        resultType: 'string',
+        isNft: false,
+      });
+      break;
+    case COMMANDS.getCollectionTokenId:
+      commonScQuery({
+        functionName: getSftCollectionTokenIdFunctionName,
+        resultLabel: 'Collection token id:',
+        resultType: 'string',
+        isNft: false,
+      });
+      break;
+    case COMMANDS.getTokenDisplayName:
+      getTokenDisplayName();
+      break;
+    case COMMANDS.getPrice:
+      getPrice();
+      break;
+    case COMMANDS.getMaxAmountPerAddress:
+      getMaxAmountPerAddress();
       break;
   }
 };

@@ -279,6 +279,30 @@ export const buySftTokenFnName =
 export const sftMinterTokenSellingPrice =
   customConfig?.config?.nftMinterSc?.tokenSellingPrice;
 
+// Get token display name function name on the SC
+export const getTokenDisplayNameFunctionName =
+  customConfig?.config?.sftMinterSc?.getTokenDisplayFnName ||
+  'getTokenDisplayName';
+
+// Get price per amount 1 function name on the SC
+export const getPriceFunctionName =
+  customConfig?.config?.sftMinterSc?.getPriceFnName || 'getPrice';
+
+// Get max amount per one address function name on the SC
+export const getMaxAmountPerAddressFunctionName =
+  customConfig?.config?.sftMinterSc?.getMaxAmountPerAddressFnName ||
+  'getMaxAmountPerAddress';
+
+// Get collection token name
+export const getSftCollectionTokenNameFunctionName =
+  customConfig?.config?.sftMinterSc?.getCollectionTokenNameFnName ||
+  'getCollectionTokenName';
+
+// Get collection token id
+export const getSftCollectionTokenIdFunctionName =
+  customConfig?.config?.sftMinterSc?.getSftCollectionTokenIdFnName ||
+  'getCollectionTokenId';
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Collection NFT owners
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡

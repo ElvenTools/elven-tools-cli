@@ -86,6 +86,9 @@ import {
   createSftTokenFnName,
   buySftTokenFnName,
   sftMinterTokenSellingPrice,
+  getTokenDisplayNameFunctionName,
+  getPriceFunctionName,
+  getMaxAmountPerAddressFunctionName,
 } from './config';
 
 export const baseDir = cwd();
@@ -1116,6 +1119,39 @@ export const getBuySftTransaction = (
       chainID: shortChainId[chain],
     });
   }
+};
+
+export const getSftTokenDisplayNameQuery = (nonce: string) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  commonScQuery({
+    functionName: getTokenDisplayNameFunctionName,
+    resultLabel: 'Token display name:',
+    resultType: 'string',
+    args: [new U64Value(nonceBigNumber)],
+    isNft: false,
+  });
+};
+
+export const getSftPriceQuery = (nonce: string) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  commonScQuery({
+    functionName: getPriceFunctionName,
+    resultLabel: 'Price per amount 1:',
+    resultType: 'number',
+    args: [new U64Value(nonceBigNumber)],
+    isNft: false,
+  });
+};
+
+export const getSftMaxAmountPerAddress = (nonce: string) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  commonScQuery({
+    functionName: getMaxAmountPerAddressFunctionName,
+    resultLabel: 'Max SFT amount per address:',
+    resultType: 'number',
+    args: [new U64Value(nonceBigNumber)],
+    isNft: false,
+  });
 };
 
 // Based on not maintained: https://github.com/kevva/download (simplified)
