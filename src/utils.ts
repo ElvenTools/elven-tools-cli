@@ -1,13 +1,12 @@
 import {
   SmartContract,
   Account,
-  SmartContractAbi,
   Code,
   AbiRegistry,
   Address,
   ContractFunction,
   BytesValue,
-  TokenPayment,
+  TokenTransfer,
   U32Value,
   U64Value,
   BigUIntValue,
@@ -23,8 +22,9 @@ import {
   AddressType,
   IAddress,
   TransactionWatcher,
-  ESDTTransferPayloadBuilder,
-  ESDTNFTTransferPayloadBuilder,
+  TransferTransactionsFactory,
+  GasEstimator,
+  ITransactionOnNetwork,
 } from '@multiversx/sdk-core';
 import decompress from 'decompress';
 import getStream from 'get-stream';
@@ -90,6 +90,7 @@ import {
   getPriceFunctionName,
   getMaxAmountPerAddressFunctionName,
 } from './config';
+import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
 export const baseDir = cwd();
 
@@ -142,7 +143,7 @@ export const getNetworkProvider = () => {
 };
 
 export const createSmartContractInstance = (
-  abi?: SmartContractAbi,
+  abi?: AbiRegistry,
   address?: string
 ) => {
   const contract = new SmartContract({
@@ -169,13 +170,10 @@ export const getAbi = async (filePath: string, url: string) => {
     const jsonContent: string = await promises.readFile(filePath, {
       encoding: 'utf8',
     });
-    const json = JSON.parse(jsonContent);
-    const abiRegistry = AbiRegistry.create(json);
-    return new SmartContractAbi(abiRegistry);
+    return AbiRegistry.create(JSON.parse(jsonContent));
   } catch {
     const response: AxiosResponse = await axios.get(url);
-    const abiRegistry = AbiRegistry.create(response.data);
-    return new SmartContractAbi(abiRegistry);
+    return AbiRegistry.create(response.data);
   }
 };
 
@@ -198,6 +196,7 @@ export const getScWasmCode = async (filePath: string, url: string) => {
 };
 
 export const getDeployNftTransaction = (
+  deployer: UserAddress,
   code: Code,
   contract: SmartContract,
   gasLimit: number,
@@ -227,18 +226,20 @@ export const getDeployNftTransaction = (
       new U32Value(tokensLimitPerAddress),
       new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0)),
       new BigUIntValue(
-        TokenPayment.egldFromAmount(sellingPrice.trim()).valueOf()
+        TokenTransfer.egldFromAmount(sellingPrice.trim()).valueOf()
       ),
       BytesValue.fromUTF8(fileExtension.trim()),
       BytesValue.fromUTF8(tags?.trim() || ''),
       BytesValue.fromUTF8(provenanceHash?.trim() || ''),
       new BooleanValue(metadataInAssets),
     ],
+    deployer,
     chainID: shortChainId[chain],
   });
 };
 
 export const getDeploySftTransaction = (
+  deployer: UserAddress,
   code: Code,
   contract: SmartContract,
   gasLimit: number
@@ -249,6 +250,7 @@ export const getDeploySftTransaction = (
     gasLimit: gasLimit,
     initArguments: [],
     chainID: shortChainId[chain],
+    deployer,
   });
 };
 
@@ -274,14 +276,14 @@ export const updateOutputFile = ({
       ...(nftSellingPrice
         ? {
             nftMinterScCollectionSellingPrice:
-              TokenPayment.egldFromAmount(nftSellingPrice).toString(),
+              TokenTransfer.egldFromAmount(nftSellingPrice).toString(),
           }
         : {}),
       ...(sftScAddress ? { sftMinterScAddress: sftScAddress.bech32() } : {}),
       ...(sftSellingPrice
         ? {
             sftMinterScCollectionSellingPrice:
-              TokenPayment.egldFromAmount(sftSellingPrice).toString(),
+              TokenTransfer.egldFromAmount(sftSellingPrice).toString(),
           }
         : {}),
     };
@@ -300,7 +302,7 @@ export const updateOutputFile = ({
           ...(nftSellingPrice
             ? {
                 nftMinterScCollectionSellingPrice:
-                  TokenPayment.egldFromAmount(nftSellingPrice).toString(),
+                  TokenTransfer.egldFromAmount(nftSellingPrice).toString(),
               }
             : {}),
           ...(sftScAddress
@@ -309,7 +311,7 @@ export const updateOutputFile = ({
           ...(sftSellingPrice
             ? {
                 sftMinterScCollectionSellingPrice:
-                  TokenPayment.egldFromAmount(sftSellingPrice).toString(),
+                  TokenTransfer.egldFromAmount(sftSellingPrice).toString(),
               }
             : {}),
         },
@@ -321,6 +323,7 @@ export const updateOutputFile = ({
 };
 
 export const getNftIssueTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
   value: number, // mandatory 0.05 EGLD
@@ -337,13 +340,15 @@ export const getNftIssueTransaction = (
       new BooleanValue(noNftTokenNameNumber),
       ...(nftTokenName ? [BytesValue.fromUTF8(nftTokenName.trim())] : []),
     ],
-    value: TokenPayment.egldFromAmount(value),
+    value: TokenTransfer.egldFromAmount(value),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getSftIssueTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
   value: number, // mandatory 0.05 EGLD
@@ -356,9 +361,10 @@ export const getSftIssueTransaction = (
       BytesValue.fromUTF8(tokenName.trim()),
       BytesValue.fromUTF8(tokenTicker.trim()),
     ],
-    value: TokenPayment.egldFromAmount(value),
+    value: TokenTransfer.egldFromAmount(value),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
@@ -389,6 +395,7 @@ export const getSftSCAddressFromOutputOrConfig = () => {
 };
 
 export const getNftAssignRolesTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number
 ) => {
@@ -396,10 +403,12 @@ export const getNftAssignRolesTransaction = (
     func: new ContractFunction(setNftLocalRolesFnName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getSftAssignRolesTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number
 ) => {
@@ -407,10 +416,12 @@ export const getSftAssignRolesTransaction = (
     func: new ContractFunction(setSftLocalRolesFnName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getMintTransaction = (
+  caller: UserAddress,
   contractAddress: string,
   baseGasLimit: number,
   tokensAmount: number
@@ -435,12 +446,14 @@ export const getMintTransaction = (
       gasLimit: baseGasLimit + (baseGasLimit / 2) * (tokensAmount - 1),
       chainID: shortChainId[chain],
       args: [new U32Value(tokens)],
-      value: TokenPayment.egldFromBigInteger(totalPayment),
+      value: TokenTransfer.egldFromBigInteger(totalPayment),
+      caller,
     });
   }
 };
 
 export const getGiveawayTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   baseGasLimit: number,
   addresses: string[],
@@ -460,10 +473,12 @@ export const getGiveawayTransaction = (
     gasLimit: baseGasLimit + (baseGasLimit / 2) * (mintsCount - 1),
     chainID: shortChainId[chain],
     args: [getList(), new U32Value(tokens)],
+    caller,
   });
 };
 
 export const getSetDropTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
   tokensAmount: number,
@@ -479,10 +494,12 @@ export const getSetDropTransaction = (
         ? [new U32Value(tokensLimitPerAddressPerDrop)]
         : []),
     ],
+    caller,
   });
 };
 
 export const getUnsetDropTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number
 ) => {
@@ -490,10 +507,12 @@ export const getUnsetDropTransaction = (
     func: new ContractFunction(unsetDropFunctionName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getPauseMintingTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number
 ) => {
@@ -501,10 +520,12 @@ export const getPauseMintingTransaction = (
     func: new ContractFunction(pauseMintingFunctionName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getUnpauseMintingTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number
 ) => {
@@ -512,10 +533,12 @@ export const getUnpauseMintingTransaction = (
     func: new ContractFunction(unpauseMintingFunctionName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getEnableAllowlistTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number
 ) => {
@@ -523,10 +546,12 @@ export const getEnableAllowlistTransaction = (
     func: new ContractFunction(enableAllowlistFunctionName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getDisableAllowlistTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number
 ) => {
@@ -534,6 +559,7 @@ export const getDisableAllowlistTransaction = (
     func: new ContractFunction(disableAllowlistFunctionName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
@@ -545,7 +571,10 @@ export const commonTxOperations = async (
 ) => {
   tx.setNonce(account.nonce);
   account.incrementNonce();
-  signer.sign(tx);
+
+  const serialized = tx.serializeForSigning();
+  const signature = await signer.sign(serialized);
+  tx.applySignature(signature);
 
   const spinner = ora('Processing the transaction...');
   spinner.start();
@@ -564,9 +593,12 @@ export const commonTxOperations = async (
   console.log(
     `Transaction link: ${multiversxExplorer[chain]}/transactions/${txHash}\n`
   );
+
+  return transactionOnNetwork;
 };
 
 export const getSetNewPriceTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
   newPrice: string
@@ -576,8 +608,9 @@ export const getSetNewPriceTransaction = (
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
     args: [
-      new BigUIntValue(TokenPayment.egldFromAmount(newPrice.trim()).valueOf()),
+      new BigUIntValue(TokenTransfer.egldFromAmount(newPrice.trim()).valueOf()),
     ],
+    caller,
   });
 };
 
@@ -613,11 +646,12 @@ export const getClaimDevRewardsTransaction = (
     chainID: shortChainId[chain],
     sender: userAccount.address,
     receiver: contract.getAddress(),
-    value: TokenPayment.egldFromAmount(0),
+    value: TokenTransfer.egldFromAmount(0),
   });
 };
 
 export const getShuffleTransaction = (
+  caller: UserAddress,
   contractAddress: string,
   gasLimit: number
 ) => {
@@ -627,6 +661,7 @@ export const getShuffleTransaction = (
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
     args: [],
+    caller,
   });
 };
 
@@ -750,6 +785,7 @@ export const getAllowlistAddressCheckQuery = (address: string) => {
 };
 
 export const getChangeBaseCidsTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
   imgBaseCid: string,
@@ -763,10 +799,12 @@ export const getChangeBaseCidsTransaction = (
       BytesValue.fromUTF8(imgBaseCid.trim()),
       BytesValue.fromUTF8(metadataBaseCid.trim()),
     ],
+    caller,
   });
 };
 
 export const getSetNewTokensLimitPerAddressTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
   tokensLimitPerAddress: number
@@ -776,10 +814,12 @@ export const getSetNewTokensLimitPerAddressTransaction = (
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
     args: [new U32Value(tokensLimitPerAddress)],
+    caller,
   });
 };
 
 export const getClaimScFundsTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number
 ) => {
@@ -787,10 +827,12 @@ export const getClaimScFundsTransaction = (
     func: new ContractFunction(claimScFundsFunctionName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getPopulateAllowlistTx = (
+  caller: UserAddress,
   contract: SmartContract,
   baseGasLimit: number,
   addresses: string[]
@@ -807,10 +849,12 @@ export const getPopulateAllowlistTx = (
     gasLimit: baseGasLimit + 1850000 * (addresses.length - 1),
     chainID: shortChainId[chain],
     args: [getList()],
+    caller,
   });
 };
 
 export const getClearAllowlistTx = (
+  caller: UserAddress,
   contract: SmartContract,
   baseGasLimit: number,
   itemsInAllowlist: number
@@ -819,10 +863,12 @@ export const getClearAllowlistTx = (
     func: new ContractFunction(clearAllowlistFunctionName),
     gasLimit: baseGasLimit + 445000 * (itemsInAllowlist - 1),
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getRemoveAllowlistAddressTx = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
   address: string
@@ -832,6 +878,7 @@ export const getRemoveAllowlistAddressTx = (
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
     args: [new AddressValue(new Address(address))],
+    caller,
   });
 };
 
@@ -843,7 +890,7 @@ export const distributeEgldSingleAddress = async (
   signer: UserSigner,
   provider: ApiNetworkProvider | ProxyNetworkProvider
 ) => {
-  const payment = TokenPayment.egldFromAmount(amount);
+  const payment = TokenTransfer.egldFromAmount(amount);
 
   const senderAddress = signer.getAddress();
 
@@ -863,7 +910,10 @@ export const distributeEgldSingleAddress = async (
 
   tx.setNonce(account.nonce);
   account.incrementNonce();
-  signer.sign(tx);
+
+  const serialized = tx.serializeForSigning();
+  const signature = await signer.sign(serialized);
+  tx.applySignature(signature);
 
   try {
     await provider.sendTransaction(tx);
@@ -898,14 +948,14 @@ export const distributeEsdtSingleAddress = async (
   token: string,
   numDecimals: number
 ) => {
-  const payment = TokenPayment.fungibleFromAmount(token, amount, numDecimals);
-  const data = new ESDTTransferPayloadBuilder().setPayment(payment).build();
+  const transfer = TokenTransfer.fungibleFromAmount(token, amount, numDecimals);
 
   const senderAddress = signer.getAddress();
 
-  const tx = new Transaction({
-    data,
-    gasLimit: 50000 + 1500 * data.length() + 300000,
+  const factory = new TransferTransactionsFactory(new GasEstimator());
+
+  const tx = factory.createESDTTransfer({
+    tokenTransfer: transfer,
     sender: senderAddress,
     receiver: new Address(address.trim()),
     chainID: shortChainId[chain],
@@ -913,7 +963,10 @@ export const distributeEsdtSingleAddress = async (
 
   tx.setNonce(account.nonce);
   account.incrementNonce();
-  signer.sign(tx);
+
+  const serialized = tx.serializeForSigning();
+  const signature = await signer.sign(serialized);
+  tx.applySignature(signature);
 
   try {
     await provider.sendTransaction(tx);
@@ -949,31 +1002,31 @@ export const distributeMetaEsdtSingleAddress = async (
   collectionTicker: string,
   nonce: number
 ) => {
-  const payment = TokenPayment.metaEsdtFromAmount(
+  const transfer = TokenTransfer.metaEsdtFromAmount(
     collectionTicker,
     nonce,
     amount,
     numDecimals
   );
-  const data = new ESDTNFTTransferPayloadBuilder()
-    .setPayment(payment)
-    .setDestination(new Address(address.trim()))
-    .build();
 
   const senderAddress = signer.getAddress();
 
-  const tx = new Transaction({
+  const factory = new TransferTransactionsFactory(new GasEstimator());
+
+  const tx = factory.createESDTNFTTransfer({
+    tokenTransfer: transfer,
     nonce,
-    data,
-    gasLimit: 50000 + 1500 * data.length() + 300000,
     sender: senderAddress,
-    receiver: senderAddress, // Same as sender address!
+    destination: new Address(address.trim()),
     chainID: shortChainId[chain],
   });
 
   tx.setNonce(account.nonce);
   account.incrementNonce();
-  signer.sign(tx);
+
+  const serialized = tx.serializeForSigning();
+  const signature = await signer.sign(serialized);
+  tx.applySignature(signature);
 
   try {
     await provider.sendTransaction(tx);
@@ -1008,31 +1061,30 @@ export const distributeSftSingleAddress = async (
   collectionTicker: string,
   nonce: number
 ) => {
-  const payment = TokenPayment.semiFungible(
+  const transfer = TokenTransfer.semiFungible(
     collectionTicker,
     nonce,
     Number(amount)
   );
 
-  const data = new ESDTNFTTransferPayloadBuilder()
-    .setPayment(payment)
-    .setDestination(new Address(address.trim()))
-    .build();
-
   const senderAddress = signer.getAddress();
 
-  const tx = new Transaction({
+  const factory = new TransferTransactionsFactory(new GasEstimator());
+
+  const tx = factory.createESDTNFTTransfer({
+    tokenTransfer: transfer,
     nonce,
-    data,
-    gasLimit: 50000 + 1500 * data.length() + 300000,
     sender: senderAddress,
-    receiver: senderAddress, // Same as sender address!
+    destination: new Address(address.trim()),
     chainID: shortChainId[chain],
   });
 
   tx.setNonce(account.nonce);
   account.incrementNonce();
-  signer.sign(tx);
+
+  const serialized = tx.serializeForSigning();
+  const signature = await signer.sign(serialized);
+  tx.applySignature(signature);
 
   try {
     await provider.sendTransaction(tx);
@@ -1059,6 +1111,7 @@ export const distributeSftSingleAddress = async (
 };
 
 export const getSftCreateTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
   tokenDisaplayName: string,
@@ -1076,7 +1129,7 @@ export const getSftCreateTransaction = (
     args: [
       BytesValue.fromUTF8(tokenDisaplayName.trim()),
       new BigUIntValue(
-        TokenPayment.egldFromAmount(tokenSellingPrice.trim()).valueOf()
+        TokenTransfer.egldFromAmount(tokenSellingPrice.trim()).valueOf()
       ),
       BytesValue.fromUTF8(metadataIpfsCID.trim()),
       BytesValue.fromUTF8(metadataIpfsFileName.trim()),
@@ -1089,10 +1142,12 @@ export const getSftCreateTransaction = (
     value: 0,
     gasLimit,
     chainID: shortChainId[chain],
+    caller,
   });
 };
 
 export const getBuySftTransaction = (
+  caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
   tokenNonce: string,
@@ -1117,6 +1172,7 @@ export const getBuySftTransaction = (
       value: totalPayment,
       gasLimit,
       chainID: shortChainId[chain],
+      caller,
     });
   }
 };
@@ -1194,4 +1250,16 @@ export const downloadAndExtract = (
     catch: promise.catch.bind(promise),
     ...stream,
   };
+};
+
+export const getTheCollectionIdAfterIssuing = (
+  transactionOnNetwork: ITransactionOnNetwork
+) => {
+  const resultItem = transactionOnNetwork.contractResults.items.find((item) =>
+    item.data.startsWith('@00')
+  );
+
+  const id = resultItem?.data?.split('@')?.[2];
+
+  return id ? Buffer.from(id, 'hex').toString('utf8') : undefined;
 };

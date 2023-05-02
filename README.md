@@ -10,9 +10,9 @@
 ### What is it?
 
 The CLI tool helps to:
-- deploy the NFT and SFT minter smart contract on the MultiversX blockchain
-- setup and interact with the NFT and SFT minter smart contract on the MultiversX blockchain
-- provides a couple of helper tools for getting the data from API
+- deploy the NFT and SFT minter smart contracts on the MultiversX blockchain
+- setup and interact with the NFT and SFT minter smart contracts on the MultiversX blockchain
+- provides a couple of helper tools for getting the data from API (NFTs)
   - get collection owners => [docs](https://www.elven.tools/docs/recipes.html#how-to-get-owners-addresses-using-the-collection-ticker)
   - filter and export the data
   - distribute EGLD, ESDT, SFT and Meta ESDT to the NFT owners of a collection => [docs](https://www.elven.tools/docs/recipes.html#how-to-distribute-tokens-to-nft-owners)
@@ -29,12 +29,14 @@ Be aware that smart contracts doesn't have any audits. They has complete functio
 
 - [Elven Tools CLI kanban](https://github.com/orgs/ElvenTools/projects/3)
 
-### How does it work? 
+### How does it work?
+
+The Elven Tools CLI is a Node.js command line tool. Your machine must have [Node.js](https://nodejs.org/en) installed.
 
 #### General how to:
 
-- `npm install elven-tools -g`
-- `elven-tools --version` or `elven-tools -v`
+- `npm install elven-tools -g` - install elven-tools cli tool
+- `elven-tools --version` or `elven-tools -v` - check current version
 - `elven-tools --help` or `elven-tools -h` - for getting the commands on the root level
 - `elven-tools nft-minter --help` or `elven-tools nft-minter -h` - for getting all the commands for the subcommand
 

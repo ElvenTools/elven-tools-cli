@@ -209,6 +209,7 @@ const deployNftMinter = async () => {
     }
 
     const deployTransaction = getDeployNftTransaction(
+      signer.getAddress(),
       scWasmCode,
       smartContract,
       deployNftMinterGasLimit,
@@ -230,7 +231,10 @@ const deployNftMinter = async () => {
 
     deployTransaction.setNonce(userAccount.nonce);
     userAccount.incrementNonce();
-    signer.sign(deployTransaction);
+
+    const serialized = deployTransaction.serializeForSigning();
+    const signature = await signer.sign(serialized);
+    deployTransaction.applySignature(signature);
 
     spinner.start();
 
@@ -292,6 +296,7 @@ export const deploySftMinter = async () => {
     await areYouSureAnswer();
 
     const deployTransaction = getDeploySftTransaction(
+      signer.getAddress(),
       scWasmCode,
       smartContract,
       deploySftMinterGasLimit
@@ -299,7 +304,10 @@ export const deploySftMinter = async () => {
 
     deployTransaction.setNonce(userAccount.nonce);
     userAccount.incrementNonce();
-    signer.sign(deployTransaction);
+
+    const serialized = deployTransaction.serializeForSigning();
+    const signature = await signer.sign(serialized);
+    deployTransaction.applySignature(signature);
 
     spinner.start();
 

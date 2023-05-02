@@ -1,3 +1,8 @@
+### [1.20.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.20.0) (2023-05-02)
+- update `sdk-core` and `sdk-wallet` and adjust the code
+- update other dependencies
+- return issued collection token id
+
 ### [1.19.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.19.1) (2023-04-02)
 - bugfix for wrong config entry
 

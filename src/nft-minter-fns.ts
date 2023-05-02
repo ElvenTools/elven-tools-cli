@@ -32,6 +32,7 @@ import {
   scQuery,
   parseQueryResultInt,
   getRemoveAllowlistAddressTx,
+  getTheCollectionIdAfterIssuing,
 } from './utils';
 import {
   issueNftMinterGasLimit,
@@ -157,6 +158,7 @@ const issueCollectionToken = async () => {
     );
 
     const issueCollectionTokenTx = getNftIssueTransaction(
+      signer.getAddress(),
       smartContract,
       issueNftMinterGasLimit,
       issueNftMinterValue,
@@ -166,11 +168,17 @@ const issueCollectionToken = async () => {
       nftTokenName
     );
 
-    await commonTxOperations(
+    const transactionOnNetwork = await commonTxOperations(
       issueCollectionTokenTx,
       userAccount,
       signer,
       provider
+    );
+
+    console.log(
+      `Issued collection token id: ${getTheCollectionIdAfterIssuing(
+        transactionOnNetwork
+      )}\n`
     );
   } catch (e) {
     spinner.stop();
@@ -189,6 +197,7 @@ const setLocalRoles = async () => {
     );
 
     const assignRolesTx = getNftAssignRolesTransaction(
+      signer.getAddress(),
       smartContract,
       assignRolesNftMinterGasLimit
     );
@@ -222,6 +231,7 @@ const mint = async () => {
     const { userAccount, signer, provider } = await publicEndpointSetup();
 
     const mintTx = getMintTransaction(
+      signer.getAddress(),
       smartContractAddress,
       mintTxBaseGasLimit,
       Number(tokensAmount)
@@ -300,6 +310,7 @@ const giveaway = async () => {
     }
 
     const giveawayTx = getGiveawayTransaction(
+      signer.getAddress(),
       smartContract,
       giveawayTxBaseGasLimit,
       addresses,
@@ -337,6 +348,7 @@ const setDrop = async () => {
     );
 
     const setDropTx = getSetDropTransaction(
+      signer.getAddress(),
       smartContract,
       setUnsetDropTxGasLimit,
       dropTokensAmount,
@@ -357,6 +369,7 @@ const unsetDrop = async () => {
     );
 
     const unsetDropTx = getUnsetDropTransaction(
+      signer.getAddress(),
       smartContract,
       setUnsetDropTxGasLimit
     );
@@ -377,6 +390,7 @@ const pauseMinting = async () => {
     );
 
     const pauseMintingTx = getPauseMintingTransaction(
+      signer.getAddress(),
       smartContract,
       pauseUnpauseTxGasLimit
     );
@@ -397,6 +411,7 @@ const startMinting = async () => {
     );
 
     const startMintingTx = getUnpauseMintingTransaction(
+      signer.getAddress(),
       smartContract,
       pauseUnpauseTxGasLimit
     );
@@ -431,6 +446,7 @@ const setNewPrice = async () => {
     );
 
     const changePriceTx = getSetNewPriceTransaction(
+      signer.getAddress(),
       smartContract,
       setNewPriceGasLimit,
       newPrice
@@ -468,6 +484,7 @@ const shuffle = async () => {
     const { userAccount, signer, provider } = await publicEndpointSetup();
 
     const shuffleTx = getShuffleTransaction(
+      signer.getAddress(),
       smartContractAddress,
       shuffleGasLimit
     );
@@ -507,6 +524,7 @@ const changeBaseCids = async () => {
     );
 
     const changeBaseCidsTx = getChangeBaseCidsTransaction(
+      signer.getAddress(),
       smartContract,
       changeBaseCidsGasLimit,
       nftMinterImgCid,
@@ -541,6 +559,7 @@ const setNewTokensLimitPerAddress = async () => {
 
     const setNewTokensLimitPerAddressTx =
       getSetNewTokensLimitPerAddressTransaction(
+        signer.getAddress(),
         smartContract,
         setNewTokensLimitPerAddressGasLimit,
         nftMinterTokensLimitPerAddress
@@ -567,6 +586,7 @@ const enableAllowlist = async () => {
     );
 
     const enableAllowlistTx = getEnableAllowlistTransaction(
+      signer.getAddress(),
       smartContract,
       enableDisableAllowlistGasLimit
     );
@@ -587,6 +607,7 @@ const disableAllowlist = async () => {
     );
 
     const disableAllowlistTx = getDisableAllowlistTransaction(
+      signer.getAddress(),
       smartContract,
       enableDisableAllowlistGasLimit
     );
@@ -641,6 +662,7 @@ const claimScFunds = async () => {
     );
 
     const claimScFundsTx = getClaimScFundsTransaction(
+      signer.getAddress(),
       smartContract,
       claimScFundsTxGasLimit
     );
@@ -703,6 +725,7 @@ const populateAllowlist = async () => {
     }
 
     const claimScFundsTx = getPopulateAllowlistTx(
+      signer.getAddress(),
       smartContract,
       populateAllowlistBaseGasLimit,
       addresses
@@ -731,6 +754,7 @@ const clearAllowlist = async () => {
     );
 
     const clearAllowlistTx = getClearAllowlistTx(
+      signer.getAddress(),
       smartContract,
       clearAllowlistBaseGasLimit,
       Number(parseQueryResultInt(itemsInAllowlistResponse))
@@ -764,6 +788,7 @@ const removeAllowlistAddress = async () => {
     );
 
     const removeAllowlistAddressTx = getRemoveAllowlistAddressTx(
+      signer.getAddress(),
       smartContract,
       removeAllowlistAddressLimit,
       address

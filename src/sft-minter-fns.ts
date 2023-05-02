@@ -16,6 +16,7 @@ import {
   getSftPriceQuery,
   getSftMaxAmountPerAddress,
   commonScQuery,
+  getTheCollectionIdAfterIssuing,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -96,6 +97,7 @@ const issueCollectionToken = async () => {
     );
 
     const issueCollectionTokenTx = getSftIssueTransaction(
+      signer.getAddress(),
       smartContract,
       issueSftMinterGasLimit,
       issueSftMinterValue,
@@ -103,11 +105,17 @@ const issueCollectionToken = async () => {
       tokenTicker
     );
 
-    await commonTxOperations(
+    const transactionOnNetwork = await commonTxOperations(
       issueCollectionTokenTx,
       userAccount,
       signer,
       provider
+    );
+
+    console.log(
+      `Issued collection token id: ${getTheCollectionIdAfterIssuing(
+        transactionOnNetwork
+      )}\n`
     );
   } catch (e) {
     spinner.stop();
@@ -126,6 +134,7 @@ const setLocalRoles = async () => {
     );
 
     const assignRolesTx = getSftAssignRolesTransaction(
+      signer.getAddress(),
       smartContract,
       assignRolesSftMinterGasLimit
     );
@@ -227,6 +236,7 @@ const create = async () => {
     );
 
     const assignRolesTx = getSftCreateTransaction(
+      signer.getAddress(),
       smartContract,
       createSftMinterGasLimit,
       tokenDisaplayName,
@@ -274,6 +284,7 @@ const claimScFunds = async () => {
     );
 
     const claimScFundsTx = getClaimScFundsTransaction(
+      signer.getAddress(),
       smartContract,
       claimScFundsTxGasLimit
     );
@@ -313,6 +324,7 @@ export const buy = async () => {
     );
 
     const assignRolesTx = getBuySftTransaction(
+      signer.getAddress(),
       smartContract,
       buySftMinterGasLimit,
       tokenNonce,
