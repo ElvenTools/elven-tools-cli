@@ -1,3 +1,6 @@
+### [1.20.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.20.1) (2023-05-07)
+- bump dapp version
+
 ### [1.20.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.20.0) (2023-05-02)
 - update `sdk-core` and `sdk-wallet` and adjust the code
 - update other dependencies
