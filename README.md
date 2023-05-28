@@ -40,6 +40,9 @@ The Elven Tools CLI is a Node.js command line tool. Your machine must have [Node
 - `elven-tools --help` or `elven-tools -h` - for getting the commands on the root level
 - `elven-tools nft-minter --help` or `elven-tools nft-minter -h` - for getting all the commands for the subcommand
 
+You can also use it with `npx` directly. For example:
+- `npx elven-tools deploy nft-minter`
+
 #### Steps for deploying and interacting with the Smart Contract:
 
 Check out the TL;DR and longer description here: [Jump start](https://www.elven.tools/docs/jump-start.html#tl%3Bdr)
