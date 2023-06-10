@@ -275,6 +275,14 @@ export const buySftMinterGasLimit =
 export const buySftTokenFnName =
   customConfig?.config?.sftMinterSc?.buyTokenAmountFnName || 'buy';
 
+// Set new price function name
+export const setSftNewPriceFunctionName =
+  customConfig?.config?.sftMinterSc?.setNewPriceFnName || 'setNewPrice';
+
+// Gas limit required for the SFT new price
+export const sftSetNewPriceGasLimit =
+  customConfig?.config?.sftMinterSc?.setNewPriceGasLimit || 4500000;
+
 // Price of the amount of 1
 export const sftMinterTokenSellingPrice =
   customConfig?.config?.sftMinterSc?.tokenSellingPrice;

@@ -17,6 +17,7 @@ import {
   getSftMaxAmountPerAddress,
   commonScQuery,
   getTheCollectionIdAfterIssuing,
+  getSftSetNewPriceTransaction,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -41,6 +42,7 @@ import {
   claimScFundsTxGasLimit,
   getSftCollectionTokenNameFunctionName,
   getSftCollectionTokenIdFunctionName,
+  sftSetNewPriceGasLimit,
 } from './config';
 
 // Issue a collection token + add required roles
@@ -337,6 +339,50 @@ export const buy = async () => {
   }
 };
 
+export const setNewPrice = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'text',
+      name: 'tokenNonce',
+      message: sftTokenNonceLabel,
+      validate: (value) => (!value ? 'Required!' : true),
+    },
+    {
+      type: 'text',
+      name: 'newPrice',
+      message: minterSellingPriceLabel,
+      validate: (value) =>
+        !Number(value) || Number(value) <= 0 ? 'Required and min 0!' : true,
+    },
+  ];
+
+  try {
+    const { tokenNonce, newPrice } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setupSftSc(
+      smartContractAddress
+    );
+
+    const assignRolesTx = getSftSetNewPriceTransaction(
+      signer.getAddress(),
+      smartContract,
+      sftSetNewPriceGasLimit,
+      tokenNonce,
+      newPrice
+    );
+
+    await commonTxOperations(assignRolesTx, userAccount, signer, provider);
+
+    updateOutputFile({ sftSellingPrice: newPrice });
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
 const getTokenDisplayName = async () => {
   const promptQuestions: PromptObject[] = [
     {
@@ -402,6 +448,7 @@ export const sftMinter = async (subcommand?: string) => {
     clainDevRewards: 'claim-dev-rewards',
     claimScFunds: 'claim-sc-funds',
     buy: 'buy',
+    setNewPrice: 'set-new-price',
     getCollectionTokenName: 'get-collection-token-name',
     getCollectionTokenId: 'get-collection-token-id',
     getTokenDisplayName: 'get-token-display-name',
@@ -445,6 +492,9 @@ export const sftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.buy:
       buy();
+      break;
+    case COMMANDS.setNewPrice:
+      setNewPrice();
       break;
     case COMMANDS.getCollectionTokenName:
       commonScQuery({

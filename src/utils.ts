@@ -89,6 +89,7 @@ import {
   getTokenDisplayNameFunctionName,
   getPriceFunctionName,
   getMaxAmountPerAddressFunctionName,
+  setSftNewPriceFunctionName,
 } from './config';
 import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
@@ -1175,6 +1176,26 @@ export const getBuySftTransaction = (
       caller,
     });
   }
+};
+
+export const getSftSetNewPriceTransaction = (
+  caller: UserAddress,
+  contract: SmartContract,
+  gasLimit: number,
+  nonce: string,
+  newPrice: string
+) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  return contract.call({
+    func: new ContractFunction(setSftNewPriceFunctionName),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
+    args: [
+      new U64Value(nonceBigNumber),
+      new BigUIntValue(TokenTransfer.egldFromAmount(newPrice.trim()).valueOf()),
+    ],
+    caller,
+  });
 };
 
 export const getSftTokenDisplayNameQuery = (nonce: string) => {

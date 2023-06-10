@@ -4,6 +4,7 @@ import esbuild from 'esbuild';
 esbuild
   .build({
     entryPoints: ['./src/index.ts'],
+    target: 'ES2015',
     bundle: true,
     minify: true,
     format: 'esm',

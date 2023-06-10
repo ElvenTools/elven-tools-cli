@@ -3,10 +3,10 @@
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
-  "version": "1.20.5",
+  "version": "1.21.0",
   "elvenTools": {
     "nftSmartContractVersionTagName": "v1.12.0",
-    "sftSmartContractVersionTagName": "v0.1.0",
+    "sftSmartContractVersionTagName": "v0.2.0",
     "minterDappVersionTagName": "v7.1.1"
   },
   "description": "Interacting with custom NFT related Smart Contracts on the MultiversX (Elrond) blockchain",
@@ -47,11 +47,11 @@
   "devDependencies": {
     "@types/cross-spawn": "6.0.2",
     "@types/decompress": "4.2.4",
-    "@types/node": "20.2.5",
+    "@types/node": "20.2.6",
     "@types/prompts": "2.4.4",
     "@typescript-eslint/eslint-plugin": "5.59.9",
     "@typescript-eslint/parser": "5.59.9",
-    "esbuild": "0.17.19",
+    "esbuild": "0.18.0",
     "eslint": "8.42.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-prettier": "4.2.1",
