@@ -1,3 +1,7 @@
+### [1.21.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.21.1) (2023-06-22)
+- bump dapp version
+- update dependencies
+
 ### [1.21.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.21.0) (2023-06-10)
 - add price change endpoint handling for SFT smart contract (`elven-tools sft-minter set-new-price`)
 

@@ -1,5 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 import esbuild from 'esbuild';
+
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const pkg = require('./package.json');
 
 esbuild
   .build({
@@ -10,22 +14,6 @@ esbuild
     format: 'esm',
     outdir: 'build',
     platform: 'node',
-    external: [
-      'cosmiconfig',
-      'prompts',
-      'ora',
-      '@multiversx/sdk-core',
-      '@multiversx/sdk-network-providers',
-      '@multiversx/sdk-wallet',
-      'bignumber.js',
-      'cross-fetch',
-      'p-throttle',
-      'cross-spawn',
-      'axios',
-      'p-event',
-      'decompress',
-      'get-stream',
-      'got',
-    ],
+    external: [...Object.keys(pkg.dependencies)],
   })
   .catch(() => process.exit(1));
