@@ -1,3 +1,6 @@
+### [1.22.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.22.0) (2023-08-03)
+- add new commands for new SFT endpoints: pause/start selling, change max tokens per address limit. Check [docs](https://www.elven.tools/docs/cli-commands#sft-minter-commands) for more info.
+
 ### [1.21.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.21.2) (2023-07-31)
 - bump dapp version
 - update dependencies

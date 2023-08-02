@@ -90,6 +90,11 @@ import {
   getPriceFunctionName,
   getMaxAmountPerAddressFunctionName,
   setSftNewPriceFunctionName,
+  getIsPausedFunctionName,
+  sftStartSellingFunctionName,
+  sftPauseSellingFunctionName,
+  getSftTokensPerAddressTotalFunctionName,
+  sftSetNewTokensLimitPerAddressFunctionName,
 } from './config';
 import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
@@ -1198,6 +1203,58 @@ export const getSftSetNewPriceTransaction = (
   });
 };
 
+export const getSftStartSellingTransaction = (
+  caller: UserAddress,
+  contract: SmartContract,
+  gasLimit: number,
+  nonce: string
+) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  return contract.call({
+    func: new ContractFunction(sftStartSellingFunctionName),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
+    args: [new U64Value(nonceBigNumber)],
+    caller,
+  });
+};
+
+export const getSftPauseSellingTransaction = (
+  caller: UserAddress,
+  contract: SmartContract,
+  gasLimit: number,
+  nonce: string
+) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  return contract.call({
+    func: new ContractFunction(sftPauseSellingFunctionName),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
+    args: [new U64Value(nonceBigNumber)],
+    caller,
+  });
+};
+
+export const getSftSetNewTokensLimitPerAddressTransaction = (
+  caller: UserAddress,
+  contract: SmartContract,
+  gasLimit: number,
+  nonce: string,
+  limit: string
+) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  return contract.call({
+    func: new ContractFunction(sftSetNewTokensLimitPerAddressFunctionName),
+    gasLimit: gasLimit,
+    chainID: shortChainId[chain],
+    args: [
+      new U64Value(nonceBigNumber),
+      new BigUIntValue(new BigNumber(limit).valueOf()),
+    ],
+    caller,
+  });
+};
+
 export const getSftTokenDisplayNameQuery = (nonce: string) => {
   const nonceBigNumber = new BigNumber(nonce, 16);
   commonScQuery({
@@ -1283,4 +1340,32 @@ export const getTheCollectionIdAfterIssuing = (
   const id = resultItem?.data?.split('@')?.[2];
 
   return id ? Buffer.from(id, 'hex').toString('utf8') : undefined;
+};
+
+export const getIsPausedState = (nonce: string) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  commonScQuery({
+    functionName: getIsPausedFunctionName,
+    resultLabel: `Buying tokens with nonce ${nonce} is paused: `,
+    resultType: 'boolean',
+    args: [new U64Value(nonceBigNumber)],
+    isNft: false,
+  });
+};
+
+export const getTokensPerAddressTotalQuery = (
+  nonce: string,
+  address: string
+) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  commonScQuery({
+    functionName: getSftTokensPerAddressTotalFunctionName,
+    resultLabel: `Total tokens with nonce ${nonce} per address ${address}: `,
+    resultType: 'number',
+    args: [
+      new U64Value(nonceBigNumber),
+      new AddressValue(new Address(address)),
+    ],
+    isNft: false,
+  });
 };
