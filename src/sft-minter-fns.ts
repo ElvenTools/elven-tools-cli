@@ -18,6 +18,11 @@ import {
   commonScQuery,
   getTheCollectionIdAfterIssuing,
   getSftSetNewPriceTransaction,
+  getIsPausedState,
+  getSftStartSellingTransaction,
+  getSftPauseSellingTransaction,
+  getAmountPerAddressTotalQuery,
+  getSftSetNewAmountLimitPerAddressTransaction,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -43,7 +48,22 @@ import {
   getSftCollectionTokenNameFunctionName,
   getSftCollectionTokenIdFunctionName,
   sftSetNewPriceGasLimit,
+  sftStartSellingGasLimit,
+  sftPauseSellingGasLimit,
+  provideAnAddressLabel,
+  newLimitPerAddressLabel,
+  sftNewAmountLimitPerAddressGasLimit,
 } from './config';
+
+const nonceOnlyPromptQuestion: PromptObject[] = [
+  {
+    type: 'text',
+    name: 'nonce',
+    message:
+      'Provide the nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n',
+    validate: (value) => (!value ? 'Required!' : true),
+  },
+];
 
 // Issue a collection token + add required roles
 const issueCollectionToken = async () => {
@@ -98,7 +118,7 @@ const issueCollectionToken = async () => {
       smartContractAddress
     );
 
-    const issueCollectionTokenTx = getSftIssueTransaction(
+    const tx = getSftIssueTransaction(
       signer.getAddress(),
       smartContract,
       issueSftMinterGasLimit,
@@ -108,7 +128,7 @@ const issueCollectionToken = async () => {
     );
 
     const transactionOnNetwork = await commonTxOperations(
-      issueCollectionTokenTx,
+      tx,
       userAccount,
       signer,
       provider
@@ -135,13 +155,13 @@ const setLocalRoles = async () => {
       smartContractAddress
     );
 
-    const assignRolesTx = getSftAssignRolesTransaction(
+    const tx = getSftAssignRolesTransaction(
       signer.getAddress(),
       smartContract,
       assignRolesSftMinterGasLimit
     );
 
-    await commonTxOperations(assignRolesTx, userAccount, signer, provider);
+    await commonTxOperations(tx, userAccount, signer, provider);
   } catch (e) {
     console.log((e as Error)?.message);
   }
@@ -237,7 +257,7 @@ const create = async () => {
       smartContractAddress
     );
 
-    const assignRolesTx = getSftCreateTransaction(
+    const tx = getSftCreateTransaction(
       signer.getAddress(),
       smartContract,
       createSftMinterGasLimit,
@@ -252,7 +272,7 @@ const create = async () => {
       uris
     );
 
-    await commonTxOperations(assignRolesTx, userAccount, signer, provider);
+    await commonTxOperations(tx, userAccount, signer, provider);
 
     updateOutputFile({ sftSellingPrice: tokenSellingPrice });
   } catch (e) {
@@ -267,12 +287,9 @@ const claimDevRewards = async () => {
       smartContractAddress
     );
 
-    const claimDevRewardsTx = getClaimDevRewardsTransaction(
-      smartContract,
-      userAccount
-    );
+    const tx = getClaimDevRewardsTransaction(smartContract, userAccount);
 
-    await commonTxOperations(claimDevRewardsTx, userAccount, signer, provider);
+    await commonTxOperations(tx, userAccount, signer, provider);
   } catch (e) {
     console.log((e as Error)?.message);
   }
@@ -285,13 +302,13 @@ const claimScFunds = async () => {
       smartContractAddress
     );
 
-    const claimScFundsTx = getClaimScFundsTransaction(
+    const tx = getClaimScFundsTransaction(
       signer.getAddress(),
       smartContract,
       claimScFundsTxGasLimit
     );
 
-    await commonTxOperations(claimScFundsTx, userAccount, signer, provider);
+    await commonTxOperations(tx, userAccount, signer, provider);
   } catch (e) {
     console.log((e as Error)?.message);
   }
@@ -325,7 +342,7 @@ export const buy = async () => {
       smartContractAddress
     );
 
-    const assignRolesTx = getBuySftTransaction(
+    const tx = getBuySftTransaction(
       signer.getAddress(),
       smartContract,
       buySftMinterGasLimit,
@@ -333,7 +350,7 @@ export const buy = async () => {
       amountToBuy
     );
 
-    await commonTxOperations(assignRolesTx, userAccount, signer, provider);
+    await commonTxOperations(tx, userAccount, signer, provider);
   } catch (e) {
     console.log((e as Error)?.message);
   }
@@ -367,7 +384,7 @@ export const setNewPrice = async () => {
       smartContractAddress
     );
 
-    const assignRolesTx = getSftSetNewPriceTransaction(
+    const tx = getSftSetNewPriceTransaction(
       signer.getAddress(),
       smartContract,
       sftSetNewPriceGasLimit,
@@ -375,7 +392,7 @@ export const setNewPrice = async () => {
       newPrice
     );
 
-    await commonTxOperations(assignRolesTx, userAccount, signer, provider);
+    await commonTxOperations(tx, userAccount, signer, provider);
 
     updateOutputFile({ sftSellingPrice: newPrice });
   } catch (e) {
@@ -383,19 +400,96 @@ export const setNewPrice = async () => {
   }
 };
 
-const getTokenDisplayName = async () => {
-  const promptQuestions: PromptObject[] = [
-    {
-      type: 'text',
-      name: 'nonce',
-      message:
-        'Provide the nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n',
-      validate: (value) => (!value ? 'Required!' : true),
-    },
-  ];
+const startSelling = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
 
   try {
-    const { nonce } = await prompts(promptQuestions);
+    const { nonce } = await prompts(nonceOnlyPromptQuestion);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setupSftSc(
+      smartContractAddress
+    );
+
+    const tx = getSftStartSellingTransaction(
+      signer.getAddress(),
+      smartContract,
+      sftStartSellingGasLimit,
+      nonce
+    );
+
+    await commonTxOperations(tx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const pauseSelling = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+
+  try {
+    const { nonce } = await prompts(nonceOnlyPromptQuestion);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setupSftSc(
+      smartContractAddress
+    );
+
+    const tx = getSftPauseSellingTransaction(
+      signer.getAddress(),
+      smartContract,
+      sftPauseSellingGasLimit,
+      nonce
+    );
+
+    await commonTxOperations(tx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const setNewAmountLimitPerAddress = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+
+  try {
+    const promptQuestions: PromptObject[] = [
+      ...nonceOnlyPromptQuestion,
+      {
+        type: 'text',
+        name: 'limit',
+        message: newLimitPerAddressLabel,
+        validate: (value) =>
+          !Number(value) || Number(value) <= 0 ? 'Required and min 0!' : true,
+      },
+    ];
+
+    const { nonce, limit } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } = await setupSftSc(
+      smartContractAddress
+    );
+
+    const tx = getSftSetNewAmountLimitPerAddressTransaction(
+      signer.getAddress(),
+      smartContract,
+      sftNewAmountLimitPerAddressGasLimit,
+      nonce,
+      limit
+    );
+
+    await commonTxOperations(tx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const getTokenDisplayName = async () => {
+  try {
+    const { nonce } = await prompts(nonceOnlyPromptQuestion);
     getSftTokenDisplayNameQuery(nonce);
   } catch (e) {
     console.log((e as Error)?.message);
@@ -403,18 +497,8 @@ const getTokenDisplayName = async () => {
 };
 
 const getPrice = async () => {
-  const promptQuestions: PromptObject[] = [
-    {
-      type: 'text',
-      name: 'nonce',
-      message:
-        'Provide the nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n',
-      validate: (value) => (!value ? 'Required!' : true),
-    },
-  ];
-
   try {
-    const { nonce } = await prompts(promptQuestions);
+    const { nonce } = await prompts(nonceOnlyPromptQuestion);
     getSftPriceQuery(nonce);
   } catch (e) {
     console.log((e as Error)?.message);
@@ -422,19 +506,37 @@ const getPrice = async () => {
 };
 
 const getMaxAmountPerAddress = async () => {
-  const promptQuestions: PromptObject[] = [
-    {
-      type: 'text',
-      name: 'nonce',
-      message:
-        'Provide the nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n',
-      validate: (value) => (!value ? 'Required!' : true),
-    },
-  ];
-
   try {
-    const { nonce } = await prompts(promptQuestions);
+    const { nonce } = await prompts(nonceOnlyPromptQuestion);
     getSftMaxAmountPerAddress(nonce);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const isPaused = async () => {
+  try {
+    const { nonce } = await prompts(nonceOnlyPromptQuestion);
+    getIsPausedState(nonce);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const getAmountPerAddressTotal = async () => {
+  try {
+    const promptQuestions: PromptObject[] = [
+      ...nonceOnlyPromptQuestion,
+      {
+        type: 'text',
+        name: 'address',
+        message: provideAnAddressLabel,
+        validate: (value) => (!value ? 'Required!' : true),
+      },
+    ];
+
+    const { nonce, address } = await prompts(promptQuestions);
+    getAmountPerAddressTotalQuery(nonce, address);
   } catch (e) {
     console.log((e as Error)?.message);
   }
@@ -449,11 +551,16 @@ export const sftMinter = async (subcommand?: string) => {
     claimScFunds: 'claim-sc-funds',
     buy: 'buy',
     setNewPrice: 'set-new-price',
+    startSelling: 'start-selling',
+    pauseSelling: 'pause-selling',
+    setNewAmountLimitPerAddress: 'set-new-amount-limit-per-address',
     getCollectionTokenName: 'get-collection-token-name',
     getCollectionTokenId: 'get-collection-token-id',
     getTokenDisplayName: 'get-token-display-name',
     getPrice: 'get-price',
     getMaxAmountPerAddress: 'get-max-amount-per-address',
+    isPaused: 'is-paused',
+    getAmountPerAddressTotal: 'get-amount-per-address-total',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -496,6 +603,15 @@ export const sftMinter = async (subcommand?: string) => {
     case COMMANDS.setNewPrice:
       setNewPrice();
       break;
+    case COMMANDS.startSelling:
+      startSelling();
+      break;
+    case COMMANDS.pauseSelling:
+      pauseSelling();
+      break;
+    case COMMANDS.setNewAmountLimitPerAddress:
+      setNewAmountLimitPerAddress();
+      break;
     case COMMANDS.getCollectionTokenName:
       commonScQuery({
         functionName: getSftCollectionTokenNameFunctionName,
@@ -520,6 +636,12 @@ export const sftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.getMaxAmountPerAddress:
       getMaxAmountPerAddress();
+      break;
+    case COMMANDS.getAmountPerAddressTotal:
+      getAmountPerAddressTotal();
+      break;
+    case COMMANDS.isPaused:
+      isPaused();
       break;
   }
 };

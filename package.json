@@ -3,13 +3,13 @@
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
-  "version": "1.21.2",
+  "version": "1.22.0",
   "elvenTools": {
     "nftSmartContractVersionTagName": "v1.12.0",
-    "sftSmartContractVersionTagName": "v0.2.0",
+    "sftSmartContractVersionTagName": "v0.3.0",
     "minterDappVersionTagName": "v7.3.0"
   },
-  "description": "Interacting with custom NFT related Smart Contracts on the MultiversX (Elrond) blockchain",
+  "description": "Interacting with custom NFT/SFT-related smart contracts on the MultiversX blockchain",
   "bin": {
     "elven-tools": "./build/index.js"
   },
@@ -36,13 +36,16 @@
     "url": "https://github.com/ElvenTools/elven-tools-cli"
   },
   "keywords": [
-    "elrond",
     "multiversx",
     "blockchain",
     "sdk",
     "javascript",
+    "typescript",
     "nft",
-    "cli"
+    "cli",
+    "transaction",
+    "interaction",
+    "elrond"
   ],
   "devDependencies": {
     "@types/cross-spawn": "6.0.2",
