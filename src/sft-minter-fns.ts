@@ -21,8 +21,8 @@ import {
   getIsPausedState,
   getSftStartSellingTransaction,
   getSftPauseSellingTransaction,
-  getTokensPerAddressTotalQuery,
-  getSftSetNewTokensLimitPerAddressTransaction,
+  getAmountPerAddressTotalQuery,
+  getSftSetNewAmountLimitPerAddressTransaction,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -51,8 +51,8 @@ import {
   sftStartSellingGasLimit,
   sftPauseSellingGasLimit,
   provideAnAddressLabel,
-  sftNewTokensLimitPerAddressGasLimit,
   newLimitPerAddressLabel,
+  sftNewAmountLimitPerAddressGasLimit,
 } from './config';
 
 const nonceOnlyPromptQuestion: PromptObject[] = [
@@ -450,7 +450,7 @@ const pauseSelling = async () => {
   }
 };
 
-const setNewTokensLimitPerAddress = async () => {
+const setNewAmountLimitPerAddress = async () => {
   const smartContractAddress = getSftSCAddressFromOutputOrConfig();
 
   try {
@@ -473,10 +473,10 @@ const setNewTokensLimitPerAddress = async () => {
       smartContractAddress
     );
 
-    const tx = getSftSetNewTokensLimitPerAddressTransaction(
+    const tx = getSftSetNewAmountLimitPerAddressTransaction(
       signer.getAddress(),
       smartContract,
-      sftNewTokensLimitPerAddressGasLimit,
+      sftNewAmountLimitPerAddressGasLimit,
       nonce,
       limit
     );
@@ -523,7 +523,7 @@ const isPaused = async () => {
   }
 };
 
-const getTokensPerAddressTotal = async () => {
+const getAmountPerAddressTotal = async () => {
   try {
     const promptQuestions: PromptObject[] = [
       ...nonceOnlyPromptQuestion,
@@ -536,7 +536,7 @@ const getTokensPerAddressTotal = async () => {
     ];
 
     const { nonce, address } = await prompts(promptQuestions);
-    getTokensPerAddressTotalQuery(nonce, address);
+    getAmountPerAddressTotalQuery(nonce, address);
   } catch (e) {
     console.log((e as Error)?.message);
   }
@@ -553,14 +553,14 @@ export const sftMinter = async (subcommand?: string) => {
     setNewPrice: 'set-new-price',
     startSelling: 'start-selling',
     pauseSelling: 'pause-selling',
-    setNewTokensLimitPerAddress: 'set-new-tokens-limit-per-address',
+    setNewAmountLimitPerAddress: 'set-new-amount-limit-per-address',
     getCollectionTokenName: 'get-collection-token-name',
     getCollectionTokenId: 'get-collection-token-id',
     getTokenDisplayName: 'get-token-display-name',
     getPrice: 'get-price',
     getMaxAmountPerAddress: 'get-max-amount-per-address',
     isPaused: 'is-paused',
-    getTokensPerAddressTotal: 'get-tokens-per-address-total',
+    getAmountPerAddressTotal: 'get-amount-per-address-total',
   };
 
   if (subcommand === '-h' || subcommand === '--help') {
@@ -609,8 +609,8 @@ export const sftMinter = async (subcommand?: string) => {
     case COMMANDS.pauseSelling:
       pauseSelling();
       break;
-    case COMMANDS.setNewTokensLimitPerAddress:
-      setNewTokensLimitPerAddress();
+    case COMMANDS.setNewAmountLimitPerAddress:
+      setNewAmountLimitPerAddress();
       break;
     case COMMANDS.getCollectionTokenName:
       commonScQuery({
@@ -637,8 +637,8 @@ export const sftMinter = async (subcommand?: string) => {
     case COMMANDS.getMaxAmountPerAddress:
       getMaxAmountPerAddress();
       break;
-    case COMMANDS.getTokensPerAddressTotal:
-      getTokensPerAddressTotal();
+    case COMMANDS.getAmountPerAddressTotal:
+      getAmountPerAddressTotal();
       break;
     case COMMANDS.isPaused:
       isPaused();

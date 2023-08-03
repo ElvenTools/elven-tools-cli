@@ -93,8 +93,8 @@ import {
   getIsPausedFunctionName,
   sftStartSellingFunctionName,
   sftPauseSellingFunctionName,
-  getSftTokensPerAddressTotalFunctionName,
-  sftSetNewTokensLimitPerAddressFunctionName,
+  getSftAmountPerAddressTotalFunctionName,
+  sftSetNewAmountLimitPerAddressFunctionName,
 } from './config';
 import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
@@ -1235,7 +1235,7 @@ export const getSftPauseSellingTransaction = (
   });
 };
 
-export const getSftSetNewTokensLimitPerAddressTransaction = (
+export const getSftSetNewAmountLimitPerAddressTransaction = (
   caller: UserAddress,
   contract: SmartContract,
   gasLimit: number,
@@ -1244,7 +1244,7 @@ export const getSftSetNewTokensLimitPerAddressTransaction = (
 ) => {
   const nonceBigNumber = new BigNumber(nonce, 16);
   return contract.call({
-    func: new ContractFunction(sftSetNewTokensLimitPerAddressFunctionName),
+    func: new ContractFunction(sftSetNewAmountLimitPerAddressFunctionName),
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
     args: [
@@ -1353,14 +1353,14 @@ export const getIsPausedState = (nonce: string) => {
   });
 };
 
-export const getTokensPerAddressTotalQuery = (
+export const getAmountPerAddressTotalQuery = (
   nonce: string,
   address: string
 ) => {
   const nonceBigNumber = new BigNumber(nonce, 16);
   commonScQuery({
-    functionName: getSftTokensPerAddressTotalFunctionName,
-    resultLabel: `Total tokens with nonce ${nonce} per address ${address}: `,
+    functionName: getSftAmountPerAddressTotalFunctionName,
+    resultLabel: `Total amount with nonce ${nonce} per address ${address}: `,
     resultType: 'number',
     args: [
       new U64Value(nonceBigNumber),

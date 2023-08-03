@@ -300,13 +300,13 @@ export const sftPauseSellingGasLimit =
   customConfig?.config?.sftMinterSc?.pauseSellingGasLimit || 3000000;
 
 // Change the limit of tokens per address
-export const sftSetNewTokensLimitPerAddressFunctionName =
-  customConfig?.config?.sftMinterSc?.setNewTokensLimitPerAddressFnName ||
-  'setNewTokensLimitPerAddress';
+export const sftSetNewAmountLimitPerAddressFunctionName =
+  customConfig?.config?.sftMinterSc?.setNewAmountLimitPerAddressFnName ||
+  'setNewAmountLimitPerAddress';
 
-// Gas limit required for changing the limit of tokens per address
-export const sftNewTokensLimitPerAddressGasLimit =
-  customConfig?.config?.sftMinterSc?.setNewTokensLimitPerAddressGasLimit ||
+// Gas limit required for changing the limit of amount ot particular token per address
+export const sftNewAmountLimitPerAddressGasLimit =
+  customConfig?.config?.sftMinterSc?.setNewAmountLimitPerAddressGasLimit ||
   3000000;
 
 // Price of the amount of 1
@@ -342,9 +342,9 @@ export const getIsPausedFunctionName =
   customConfig?.config?.sftMinterSc?.getIsPausedFnName || 'isPaused';
 
 // Check how much tokens are already bought by particular address
-export const getSftTokensPerAddressTotalFunctionName =
-  customConfig?.config?.sftMinterSc?.getTokensPerAddressTotalFnName ||
-  'getTokensPerAddressTotal';
+export const getSftAmountPerAddressTotalFunctionName =
+  customConfig?.config?.sftMinterSc?.getAmountPerAddressTotalFnName ||
+  'getAmountPerAddressTotal';
 
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Collection NFT owners
