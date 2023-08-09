@@ -1,3 +1,7 @@
+### [1.22.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.22.3) (2023-08-09)
+- bump NFT minter smart contract version
+- update dependencies
+
 ### [1.22.2](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.22.2) (2023-08-03)
 - update dependencies
 
