@@ -23,6 +23,8 @@ import {
   getSftPauseSellingTransaction,
   getAmountPerAddressTotalQuery,
   getSftSetNewAmountLimitPerAddressTransaction,
+  getSftMintTransaction,
+  getSftBurnTransaction,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -53,6 +55,10 @@ import {
   provideAnAddressLabel,
   newLimitPerAddressLabel,
   sftNewAmountLimitPerAddressGasLimit,
+  newAmountOfTokensLabel,
+  sftMintGasLimit,
+  sftBurnGasLimit,
+  amountOfTokensToBurnLabel,
 } from './config';
 
 const nonceOnlyPromptQuestion: PromptObject[] = [
@@ -114,9 +120,8 @@ const issueCollectionToken = async () => {
       exit(9);
     }
 
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getSftIssueTransaction(
       signer.getAddress(),
@@ -151,9 +156,8 @@ const setLocalRoles = async () => {
   try {
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getSftAssignRolesTransaction(
       signer.getAddress(),
@@ -253,9 +257,8 @@ const create = async () => {
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getSftCreateTransaction(
       signer.getAddress(),
@@ -283,9 +286,8 @@ const create = async () => {
 const claimDevRewards = async () => {
   const smartContractAddress = getSftSCAddressFromOutputOrConfig();
   try {
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getClaimDevRewardsTransaction(smartContract, userAccount);
 
@@ -298,9 +300,8 @@ const claimDevRewards = async () => {
 const claimScFunds = async () => {
   const smartContractAddress = getSftSCAddressFromOutputOrConfig();
   try {
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getClaimScFundsTransaction(
       signer.getAddress(),
@@ -338,9 +339,8 @@ export const buy = async () => {
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getBuySftTransaction(
       signer.getAddress(),
@@ -380,9 +380,8 @@ export const setNewPrice = async () => {
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getSftSetNewPriceTransaction(
       signer.getAddress(),
@@ -408,9 +407,8 @@ const startSelling = async () => {
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getSftStartSellingTransaction(
       signer.getAddress(),
@@ -433,9 +431,8 @@ const pauseSelling = async () => {
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getSftPauseSellingTransaction(
       signer.getAddress(),
@@ -469,9 +466,8 @@ const setNewAmountLimitPerAddress = async () => {
 
     await areYouSureAnswer();
 
-    const { smartContract, userAccount, signer, provider } = await setupSftSc(
-      smartContractAddress
-    );
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
 
     const tx = getSftSetNewAmountLimitPerAddressTransaction(
       signer.getAddress(),
@@ -479,6 +475,78 @@ const setNewAmountLimitPerAddress = async () => {
       sftNewAmountLimitPerAddressGasLimit,
       nonce,
       limit
+    );
+
+    await commonTxOperations(tx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const mint = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    ...nonceOnlyPromptQuestion,
+    {
+      type: 'number',
+      name: 'newAmountOfTokens',
+      message: newAmountOfTokensLabel,
+      min: 1,
+      validate: (value) => (!value || value < 1 ? 'Required and min 1!' : true),
+    },
+  ];
+
+  try {
+    const { nonce, newAmountOfTokens } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
+
+    const tx = getSftMintTransaction(
+      signer.getAddress(),
+      smartContract,
+      sftMintGasLimit,
+      nonce,
+      newAmountOfTokens
+    );
+
+    await commonTxOperations(tx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
+const burn = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    ...nonceOnlyPromptQuestion,
+    {
+      type: 'number',
+      name: 'amountOfTokensToBurn',
+      message: amountOfTokensToBurnLabel,
+      min: 1,
+      validate: (value) => (!value || value < 1 ? 'Required and min 1!' : true),
+    },
+  ];
+
+  try {
+    const { nonce, amountOfTokensToBurn } = await prompts(promptQuestions);
+
+    await areYouSureAnswer();
+
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
+
+    const tx = getSftBurnTransaction(
+      signer.getAddress(),
+      smartContract,
+      sftBurnGasLimit,
+      nonce,
+      amountOfTokensToBurn
     );
 
     await commonTxOperations(tx, userAccount, signer, provider);
@@ -553,6 +621,8 @@ export const sftMinter = async (subcommand?: string) => {
     setNewPrice: 'set-new-price',
     startSelling: 'start-selling',
     pauseSelling: 'pause-selling',
+    mint: 'mint',
+    burn: 'burn',
     setNewAmountLimitPerAddress: 'set-new-amount-limit-per-address',
     getCollectionTokenName: 'get-collection-token-name',
     getCollectionTokenId: 'get-collection-token-id',
@@ -642,6 +712,12 @@ export const sftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.isPaused:
       isPaused();
+      break;
+    case COMMANDS.mint:
+      mint();
+      break;
+    case COMMANDS.burn:
+      burn();
       break;
   }
 };

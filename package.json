@@ -3,10 +3,10 @@
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
   },
-  "version": "1.22.3",
+  "version": "1.23.0",
   "elvenTools": {
     "nftSmartContractVersionTagName": "v1.13.0",
-    "sftSmartContractVersionTagName": "v0.3.0",
+    "sftSmartContractVersionTagName": "v0.4.0",
     "minterDappVersionTagName": "v7.3.0"
   },
   "description": "Interacting with custom NFT/SFT-related smart contracts on the MultiversX blockchain",
@@ -48,27 +48,27 @@
     "elrond"
   ],
   "devDependencies": {
-    "@types/cross-spawn": "6.0.2",
+    "@types/cross-spawn": "6.0.3",
     "@types/decompress": "4.2.4",
-    "@types/node": "20.4.9",
+    "@types/node": "20.6.2",
     "@types/prompts": "2.4.4",
-    "@typescript-eslint/eslint-plugin": "6.3.0",
-    "@typescript-eslint/parser": "6.3.0",
-    "esbuild": "0.19.0",
-    "eslint": "8.46.0",
+    "@typescript-eslint/eslint-plugin": "6.7.0",
+    "@typescript-eslint/parser": "6.7.0",
+    "esbuild": "0.19.3",
+    "eslint": "8.49.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-prettier": "5.0.0",
-    "prettier": "3.0.1",
+    "prettier": "3.0.3",
     "rimraf": "5.0.1",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   },
   "dependencies": {
-    "@multiversx/sdk-core": "12.6.1",
-    "@multiversx/sdk-network-providers": "1.5.0",
+    "@multiversx/sdk-core": "12.8.0",
+    "@multiversx/sdk-network-providers": "2.0.0",
     "@multiversx/sdk-wallet": "4.2.0",
-    "axios": "1.4.0",
-    "bignumber.js": "9.1.1",
-    "cosmiconfig": "8.2.0",
+    "axios": "1.5.0",
+    "bignumber.js": "9.1.2",
+    "cosmiconfig": "8.3.6",
     "cross-fetch": "4.0.0",
     "cross-spawn": "7.0.3",
     "decompress": "4.2.1",

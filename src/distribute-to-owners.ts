@@ -102,9 +102,8 @@ const promptQuestions: PromptObject[] = [
 
 export const distributeToOwners = async () => {
   try {
-    const { amount, tokenType, token, multiply } = await prompts(
-      promptQuestions
-    );
+    const { amount, tokenType, token, multiply } =
+      await prompts(promptQuestions);
 
     if (!amount) {
       console.log('You have to provide the amount per address!');

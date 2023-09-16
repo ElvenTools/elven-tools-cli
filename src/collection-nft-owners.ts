@@ -82,9 +82,8 @@ export const collectionNftOwners = async () => {
   ];
 
   try {
-    const { collectionTicker, noSmartContracts, fileNamesList } = await prompts(
-      promptsQuestions
-    );
+    const { collectionTicker, noSmartContracts, fileNamesList } =
+      await prompts(promptsQuestions);
 
     if (!collectionTicker) {
       console.log('You have to provide a collection ticker!');

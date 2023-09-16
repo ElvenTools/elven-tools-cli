@@ -95,6 +95,8 @@ import {
   sftPauseSellingFunctionName,
   getSftAmountPerAddressTotalFunctionName,
   sftSetNewAmountLimitPerAddressFunctionName,
+  getSftMintFunctionName,
+  getSftBurnFunctionName,
 } from './config';
 import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
@@ -1251,6 +1253,40 @@ export const getSftSetNewAmountLimitPerAddressTransaction = (
       new U64Value(nonceBigNumber),
       new BigUIntValue(new BigNumber(limit).valueOf()),
     ],
+    caller,
+  });
+};
+
+export const getSftMintTransaction = (
+  caller: UserAddress,
+  contract: SmartContract,
+  gasLimit: number,
+  nonce: string,
+  amount: number
+) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  return contract.call({
+    func: new ContractFunction(getSftMintFunctionName),
+    gasLimit,
+    chainID: shortChainId[chain],
+    args: [new U64Value(nonceBigNumber), new BigUIntValue(amount)],
+    caller,
+  });
+};
+
+export const getSftBurnTransaction = (
+  caller: UserAddress,
+  contract: SmartContract,
+  gasLimit: number,
+  nonce: string,
+  amount: number
+) => {
+  const nonceBigNumber = new BigNumber(nonce, 16);
+  return contract.call({
+    func: new ContractFunction(getSftBurnFunctionName),
+    gasLimit,
+    chainID: shortChainId[chain],
+    args: [new U64Value(nonceBigNumber), new BigUIntValue(amount)],
     caller,
   });
 };

@@ -1,3 +1,7 @@
+### [1.23.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.23.0) (2023-09-16)
+- add mint and burn endpoints for SFT minter
+- update dependencies
+
 ### [1.22.3](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.22.3) (2023-08-09)
 - bump NFT minter smart contract version
 - update dependencies

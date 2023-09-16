@@ -248,9 +248,8 @@ const deployNftMinter = async () => {
     await provider.sendTransaction(deployTransaction);
 
     const watcher = new TransactionWatcher(provider);
-    const transactionOnNetwork = await watcher.awaitCompleted(
-      deployTransaction
-    );
+    const transactionOnNetwork =
+      await watcher.awaitCompleted(deployTransaction);
 
     const txStatus = transactionOnNetwork.status;
     const txHash = transactionOnNetwork.hash;
@@ -321,9 +320,8 @@ export const deploySftMinter = async () => {
     await provider.sendTransaction(deployTransaction);
 
     const watcher = new TransactionWatcher(provider);
-    const transactionOnNetwork = await watcher.awaitCompleted(
-      deployTransaction
-    );
+    const transactionOnNetwork =
+      await watcher.awaitCompleted(deployTransaction);
 
     const txStatus = transactionOnNetwork.status;
     const txHash = transactionOnNetwork.hash;
