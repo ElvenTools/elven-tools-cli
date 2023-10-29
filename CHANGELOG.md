@@ -1,3 +1,7 @@
+### [1.24.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.24.0) (2023-10-29)
+- update and replace dependencies
+- bump dapp version
+
 ### [1.23.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.23.0) (2023-09-16)
 - add mint and burn endpoints for SFT minter
 - update dependencies

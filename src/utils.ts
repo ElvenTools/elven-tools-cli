@@ -26,10 +26,6 @@ import {
   GasEstimator,
   ITransactionOnNetwork,
 } from '@multiversx/sdk-core';
-import decompress from 'decompress';
-import getStream from 'get-stream';
-import got, { ResponseType } from 'got';
-import { pEvent } from 'p-event';
 import axios, { AxiosResponse } from 'axios';
 import { parseUserKey, UserSigner } from '@multiversx/sdk-wallet';
 import {
@@ -46,7 +42,6 @@ import {
   writeFileSync,
   promises,
 } from 'fs';
-import path from 'path';
 import { exit, cwd } from 'process';
 import {
   apiProvider,
@@ -1322,48 +1317,6 @@ export const getSftMaxAmountPerAddress = (nonce: string) => {
     args: [new U64Value(nonceBigNumber)],
     isNft: false,
   });
-};
-
-// Based on not maintained: https://github.com/kevva/download (simplified)
-export const downloadAndExtract = (
-  uri: string,
-  output: string | null,
-  options: Record<string, unknown>
-) => {
-  const gotOptions = {
-    responseType: 'buffer' as unknown as ResponseType,
-    https: {
-      rejectUnauthorized: process.env.npm_config_strict_ssl !== 'false',
-    },
-  };
-
-  const stream = got.stream(uri, gotOptions);
-
-  const promise = pEvent(stream, 'response')
-    .then((res) => {
-      return Promise.all([
-        getStream(stream, { encoding: 'buffer' as BufferEncoding }),
-        res,
-      ]);
-    })
-    .then((result) => {
-      const [data] = result;
-
-      if (!output) {
-        return decompress(data, options);
-      }
-
-      const filename = options.filename;
-      const outputFilepath = path.join(output, filename as string);
-
-      return decompress(data, path.dirname(outputFilepath), options);
-    });
-
-  return {
-    then: promise.then.bind(promise),
-    catch: promise.catch.bind(promise),
-    ...stream,
-  };
 };
 
 export const getTheCollectionIdAfterIssuing = (
