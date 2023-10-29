@@ -1,3 +1,6 @@
+### [1.24.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.24.1) (2023-10-29)
+- cleanup the code
+
 ### [1.24.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.24.0) (2023-10-29)
 - update and replace dependencies
 - bump dapp version

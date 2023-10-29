@@ -23,8 +23,6 @@ const triggerDownloadAndExtract = async (
 
     const dirPath = `${process.cwd()}/${dappDirectoryName}`;
 
-    console.log('dirPath: ', dirPath);
-
     const zip = new AdmZip(response.data);
     const zipEntries = zip.getEntries();
 
@@ -37,13 +35,9 @@ const triggerDownloadAndExtract = async (
       const entryName = entry.entryName;
       const flattenedEntryName = entryName.replace(mainDirInZipName, '');
 
-      console.log('flattenedEntryName: ', flattenedEntryName);
-
       // If the entry is a directory, create it in the extraction directory
       if (entry.isDirectory) {
         const targetDir = path.join(dirPath, flattenedEntryName);
-
-        console.log('targetDir: ', targetDir);
 
         if (!fs.existsSync(targetDir)) {
           fs.mkdirSync(targetDir);
