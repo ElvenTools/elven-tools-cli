@@ -1,3 +1,8 @@
+### [1.25.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.25.0) (2023-11-26)
+- add functionality for defining collection token properties for SFTs
+- update dependencies
+- Node 18 is now the minimum version required
+
 ### [1.24.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.24.1) (2023-10-29)
 - cleanup the code
 

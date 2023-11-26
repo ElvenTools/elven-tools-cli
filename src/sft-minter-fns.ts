@@ -59,6 +59,7 @@ import {
   sftMintGasLimit,
   sftBurnGasLimit,
   amountOfTokensToBurnLabel,
+  sftCollectionProperties,
 } from './config';
 
 const nonceOnlyPromptQuestion: PromptObject[] = [
@@ -106,12 +107,32 @@ const issueCollectionToken = async () => {
         return true;
       },
     },
+    {
+      type: 'multiselect',
+      name: 'tokenProperties',
+      message: 'Please choose token properties.\n',
+      choices: [
+        {
+          title: 'CanAddSpecialRoles',
+          value: 'CanAddSpecialRoles',
+          description: 'It is mandatory to proceed',
+          selected: true,
+        },
+        ...sftCollectionProperties.variants
+          .map((property) => ({
+            title: property.name,
+            value: property.name,
+          }))
+          .filter((property) => property.value !== 'CanAddSpecialRoles'),
+      ],
+    },
   ];
 
   const spinner = ora('Processing the transaction...');
 
   try {
-    const { tokenName, tokenTicker } = await prompts(promptQuestions);
+    const { tokenName, tokenTicker, tokenProperties } =
+      await prompts(promptQuestions);
 
     await areYouSureAnswer();
 
@@ -129,7 +150,8 @@ const issueCollectionToken = async () => {
       issueSftMinterGasLimit,
       issueSftMinterValue,
       tokenName,
-      tokenTicker
+      tokenTicker,
+      tokenProperties
     );
 
     const transactionOnNetwork = await commonTxOperations(

@@ -25,6 +25,8 @@ import {
   TransferTransactionsFactory,
   GasEstimator,
   ITransactionOnNetwork,
+  EnumType,
+  EnumValue,
 } from '@multiversx/sdk-core';
 import axios, { AxiosResponse } from 'axios';
 import { parseUserKey, UserSigner } from '@multiversx/sdk-wallet';
@@ -92,6 +94,7 @@ import {
   sftSetNewAmountLimitPerAddressFunctionName,
   getSftMintFunctionName,
   getSftBurnFunctionName,
+  sftCollectionProperties,
 } from './config';
 import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
@@ -356,13 +359,20 @@ export const getSftIssueTransaction = (
   gasLimit: number,
   value: number, // mandatory 0.05 EGLD
   tokenName: string,
-  tokenTicker: string
+  tokenTicker: string,
+  tokenProperties: string[]
 ) => {
   return contract.call({
     func: new ContractFunction(issueSftTokenFnName),
     args: [
       BytesValue.fromUTF8(tokenName.trim()),
       BytesValue.fromUTF8(tokenTicker.trim()),
+      ...tokenProperties.map((tokenProperty) =>
+        EnumValue.fromName(
+          EnumType.fromJSON(sftCollectionProperties),
+          tokenProperty
+        )
+      ),
     ],
     value: TokenTransfer.egldFromAmount(value),
     gasLimit: gasLimit,

@@ -232,7 +232,7 @@ export const sftMinterScAddress =
 
 // Base gas limit required for the deployment
 export const deploySftMinterGasLimit =
-  customConfig?.config?.sftMinterSc?.deployGasLimit || 40000000;
+  customConfig?.config?.sftMinterSc?.deployGasLimit || 45000000;
 
 // The tag from the SC's GitHub repository, it can be release tag like v0.2.0 or branch name like 'main' or 'development'
 export const deploySftMinterScVersion =
@@ -524,3 +524,39 @@ export const allowlistFileRelativePath = 'allowlist.json';
 
 // Used for the addresses list for giveaway functionality, optionally you can also use the giveaway and enter addresses by hand
 export const giveawayFileRelativePath = 'giveaway.json';
+
+// Tokens properties
+export const sftCollectionProperties = {
+  name: 'SFTProperties',
+  variants: [
+    {
+      name: 'CanFreeze',
+      discriminant: 0,
+    },
+    {
+      name: 'CanWipe',
+      discriminant: 1,
+    },
+    {
+      name: 'CanPause',
+      discriminant: 2,
+    },
+    {
+      name: 'CanTransferCreateRole',
+      discriminant: 3,
+    },
+    {
+      name: 'CanChangeOwner',
+      discriminant: 4,
+    },
+    {
+      name: 'CanUpgrade',
+      discriminant: 5,
+    },
+    // The default property which is mandatory and already set to true on smart contract
+    {
+      name: 'CanAddSpecialRoles',
+      discriminant: 6,
+    },
+  ],
+};
