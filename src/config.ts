@@ -525,38 +525,45 @@ export const allowlistFileRelativePath = 'allowlist.json';
 // Used for the addresses list for giveaway functionality, optionally you can also use the giveaway and enter addresses by hand
 export const giveawayFileRelativePath = 'giveaway.json';
 
+const commonTokenProperties = [
+  {
+    name: 'CanFreeze',
+    discriminant: 0,
+  },
+  {
+    name: 'CanWipe',
+    discriminant: 1,
+  },
+  {
+    name: 'CanPause',
+    discriminant: 2,
+  },
+  {
+    name: 'CanTransferCreateRole',
+    discriminant: 3,
+  },
+  {
+    name: 'CanChangeOwner',
+    discriminant: 4,
+  },
+  {
+    name: 'CanUpgrade',
+    discriminant: 5,
+  },
+  // The default property which is mandatory and already set to true on smart contract
+  {
+    name: 'CanAddSpecialRoles',
+    discriminant: 6,
+  },
+];
+
 // Tokens properties
 export const sftCollectionProperties = {
   name: 'SFTProperties',
-  variants: [
-    {
-      name: 'CanFreeze',
-      discriminant: 0,
-    },
-    {
-      name: 'CanWipe',
-      discriminant: 1,
-    },
-    {
-      name: 'CanPause',
-      discriminant: 2,
-    },
-    {
-      name: 'CanTransferCreateRole',
-      discriminant: 3,
-    },
-    {
-      name: 'CanChangeOwner',
-      discriminant: 4,
-    },
-    {
-      name: 'CanUpgrade',
-      discriminant: 5,
-    },
-    // The default property which is mandatory and already set to true on smart contract
-    {
-      name: 'CanAddSpecialRoles',
-      discriminant: 6,
-    },
-  ],
+  variants: commonTokenProperties,
+};
+
+export const nftCollectionProperties = {
+  name: 'NFTProperties',
+  variants: commonTokenProperties,
 };

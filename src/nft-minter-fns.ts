@@ -86,6 +86,7 @@ import {
   giveawayFileRelativePath,
   tokensPerOneGiveawayTx,
   nftTokenNameNumberLabel,
+  nftCollectionProperties,
 } from './config';
 import { exit } from 'process';
 
@@ -138,13 +139,37 @@ const issueCollectionToken = async () => {
       name: 'nftTokenName',
       message: nftTokenNameLabel,
     },
+    {
+      type: 'multiselect',
+      name: 'tokenProperties',
+      message: 'Please choose token properties.\n',
+      choices: [
+        {
+          title: 'CanAddSpecialRoles',
+          value: 'CanAddSpecialRoles',
+          description: 'It is mandatory to proceed',
+          selected: true,
+        },
+        ...nftCollectionProperties.variants
+          .map((property) => ({
+            title: property.name,
+            value: property.name,
+          }))
+          .filter((property) => property.value !== 'CanAddSpecialRoles'),
+      ],
+    },
   ];
 
   const spinner = ora('Processing the transaction...');
 
   try {
-    const { tokenName, tokenTicker, nftTokenName, noNftTokenNameNumber } =
-      await prompts(promptQuestions);
+    const {
+      tokenName,
+      tokenTicker,
+      nftTokenName,
+      noNftTokenNameNumber,
+      tokenProperties,
+    } = await prompts(promptQuestions);
 
     await areYouSureAnswer();
 
@@ -164,7 +189,8 @@ const issueCollectionToken = async () => {
       tokenName,
       tokenTicker,
       noNftTokenNameNumber,
-      nftTokenName
+      nftTokenName || tokenName,
+      tokenProperties
     );
 
     const transactionOnNetwork = await commonTxOperations(

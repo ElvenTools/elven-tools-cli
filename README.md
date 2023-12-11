@@ -65,6 +65,7 @@ Here are ready-to-use recipes and more information on real-life use cases: [Elve
 
 ### You may also like
 
+- [Buildo.dev](https://www.buildo.dev) - Buildo.dev is a MultiversX app that helps with blockchain interactions, like issuing tokens and querying smart contracts.
 - [elven.js](https://github.com/elven-js/elven.js) - simplified wrapper over JS sdk-core, designed to work as a plug-n-play solution for browser based use cases. No build steps and frameworks, just one file to rule it all! Check usage examples!
 - [useElven](https://www.useelven.com) - React hooks for MultiversX
 - [NFT Art Maker](https://github.com/juliancwirko/nft-art-maker) - generates images and metadata files and packs them into CAR files, all from provided PNG layers.

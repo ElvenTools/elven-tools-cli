@@ -1,3 +1,8 @@
+### [1.26.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.26.0) (2023-12-11)
+- add functionality for defining collection token properties for NFTs
+- change the issue function, add properties multi select
+- update dependencies
+
 ### [1.25.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.25.0) (2023-11-26)
 - add functionality for defining collection token properties for SFTs
 - update dependencies

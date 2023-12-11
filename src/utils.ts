@@ -95,6 +95,7 @@ import {
   getSftMintFunctionName,
   getSftBurnFunctionName,
   sftCollectionProperties,
+  nftCollectionProperties,
 } from './config';
 import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
@@ -336,7 +337,8 @@ export const getNftIssueTransaction = (
   tokenName: string,
   tokenTicker: string,
   noNftTokenNameNumber: boolean,
-  nftTokenName?: string
+  nftTokenName: string,
+  tokenProperties: string[]
 ) => {
   return contract.call({
     func: new ContractFunction(issueNftTokenFnName),
@@ -344,7 +346,13 @@ export const getNftIssueTransaction = (
       BytesValue.fromUTF8(tokenName.trim()),
       BytesValue.fromUTF8(tokenTicker.trim()),
       new BooleanValue(noNftTokenNameNumber),
-      ...(nftTokenName ? [BytesValue.fromUTF8(nftTokenName.trim())] : []),
+      BytesValue.fromUTF8(nftTokenName.trim()),
+      ...tokenProperties.map((tokenProperty) =>
+        EnumValue.fromName(
+          EnumType.fromJSON(nftCollectionProperties),
+          tokenProperty
+        )
+      ),
     ],
     value: TokenTransfer.egldFromAmount(value),
     gasLimit: gasLimit,
