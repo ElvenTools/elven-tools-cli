@@ -96,6 +96,7 @@ import {
   getSftBurnFunctionName,
   sftCollectionProperties,
   nftCollectionProperties,
+  sftSpecialRoles,
 } from './config';
 import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
@@ -431,10 +432,16 @@ export const getNftAssignRolesTransaction = (
 export const getSftAssignRolesTransaction = (
   caller: UserAddress,
   contract: SmartContract,
-  gasLimit: number
+  gasLimit: number,
+  roles: string[]
 ) => {
   return contract.call({
     func: new ContractFunction(setSftLocalRolesFnName),
+    args: [
+      ...roles.map((role) =>
+        EnumValue.fromName(EnumType.fromJSON(sftSpecialRoles), role)
+      ),
+    ],
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
     caller,

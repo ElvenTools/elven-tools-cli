@@ -567,3 +567,25 @@ export const nftCollectionProperties = {
   name: 'NFTProperties',
   variants: commonTokenProperties,
 };
+
+export const sftSpecialRoles = {
+  name: 'SFTRoles',
+  variants: [
+    {
+      name: 'ESDTRoleNFTCreate',
+      discriminant: 0,
+    },
+    {
+      name: 'ESDTRoleNFTBurn',
+      discriminant: 1,
+    },
+    {
+      name: 'ESDTRoleNFTAddQuantity',
+      discriminant: 2,
+    },
+    {
+      name: 'ESDTTransferRole',
+      discriminant: 3,
+    },
+  ],
+};

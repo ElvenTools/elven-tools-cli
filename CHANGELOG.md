@@ -1,3 +1,7 @@
+### [1.27.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.27.0) (2024-01-05)
+ - add possibility to define special roles
+ - update dependencies
+
 ### [1.26.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.26.0) (2023-12-11)
 - add functionality for defining collection token properties for NFTs
 - change the issue function, add properties multi select

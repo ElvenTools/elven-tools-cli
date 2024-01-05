@@ -60,6 +60,7 @@ import {
   sftBurnGasLimit,
   amountOfTokensToBurnLabel,
   sftCollectionProperties,
+  sftSpecialRoles,
 } from './config';
 
 const nonceOnlyPromptQuestion: PromptObject[] = [
@@ -172,10 +173,44 @@ const issueCollectionToken = async () => {
   }
 };
 
-// For now only nft create role, it will be improvement after SC improvements
 const setLocalRoles = async () => {
   const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'multiselect',
+      name: 'roles',
+      message: 'Please choose special roles.\n',
+      choices: [
+        {
+          title: 'ESDTRoleNFTCreate',
+          value: 'ESDTRoleNFTCreate',
+          description: 'It is mandatory to proceed',
+          selected: true,
+        },
+        {
+          title: 'ESDTRoleNFTAddQuantity',
+          value: 'ESDTRoleNFTAddQuantity',
+          description: 'It is mandatory to proceed',
+          selected: true,
+        },
+        ...sftSpecialRoles.variants
+          .map((role) => ({
+            title: role.name,
+            value: role.name,
+          }))
+          .filter(
+            (role) =>
+              role.value !== 'ESDTRoleNFTCreate' &&
+              role.value !== 'ESDTRoleNFTAddQuantity'
+          ),
+      ],
+    },
+  ];
+
   try {
+    const { roles } = await prompts(promptQuestions);
+
     await areYouSureAnswer();
 
     const { smartContract, userAccount, signer, provider } =
@@ -184,7 +219,8 @@ const setLocalRoles = async () => {
     const tx = getSftAssignRolesTransaction(
       signer.getAddress(),
       smartContract,
-      assignRolesSftMinterGasLimit
+      assignRolesSftMinterGasLimit,
+      roles
     );
 
     await commonTxOperations(tx, userAccount, signer, provider);
