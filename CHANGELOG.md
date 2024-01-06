@@ -1,5 +1,9 @@
+### [1.28.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.28.0) (2024-01-06)
+ - add possibility to define special roles for nft minter
+ - update dependencies
+
 ### [1.27.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.27.0) (2024-01-05)
- - add possibility to define special roles
+ - add possibility to define special roles for sft minter
  - update dependencies
 
 ### [1.26.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.26.0) (2023-12-11)
