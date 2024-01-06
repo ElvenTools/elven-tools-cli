@@ -3,11 +3,11 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "version": "1.27.0",
+  "version": "1.28.0",
   "elvenTools": {
-    "nftSmartContractVersionTagName": "v1.14.0",
+    "nftSmartContractVersionTagName": "v1.15.0",
     "sftSmartContractVersionTagName": "v0.6.0",
-    "minterDappVersionTagName": "v7.4.0"
+    "minterDappVersionTagName": "v7.4.1"
   },
   "description": "Interacting with custom NFT/SFT-related smart contracts on the MultiversX blockchain",
   "bin": {
@@ -52,7 +52,7 @@
     "@multiversx/sdk-network-providers": "2.2.0",
     "@multiversx/sdk-wallet": "4.2.0",
     "adm-zip": "0.5.10",
-    "axios": "1.6.4",
+    "axios": "1.6.5",
     "bignumber.js": "9.1.2",
     "cosmiconfig": "9.0.0",
     "cross-fetch": "4.0.0",
@@ -67,8 +67,8 @@
     "@types/cross-spawn": "6.0.6",
     "@types/node": "20.10.6",
     "@types/prompts": "2.4.9",
-    "@typescript-eslint/eslint-plugin": "6.17.0",
-    "@typescript-eslint/parser": "6.17.0",
+    "@typescript-eslint/eslint-plugin": "6.18.0",
+    "@typescript-eslint/parser": "6.18.0",
     "esbuild": "0.19.11",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",

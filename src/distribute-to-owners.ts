@@ -145,7 +145,7 @@ export const distributeToOwners = async () => {
 
       let numDecimals: number | undefined;
       let nonce: number | undefined;
-      let collectionTicker: string | undefined;
+      let collectionId: string | undefined;
 
       if (tokenType === TokenType.ESDT) {
         const esdtOnNetwork = await axios.get<{ decimals: number }>(
@@ -172,7 +172,7 @@ export const distributeToOwners = async () => {
         const metaEsdtOnNetwork = await axios.get<{
           decimals: number;
           nonce: number;
-          ticker: string;
+          collection: string;
         }>(`${apiProvider[chain]}/nfts/${encodeURIComponent(token.trim())}`, {
           headers: {
             'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ export const distributeToOwners = async () => {
 
         numDecimals = metaEsdtOnNetwork?.data?.decimals;
         nonce = metaEsdtOnNetwork?.data?.nonce;
-        collectionTicker = metaEsdtOnNetwork?.data?.ticker;
+        collectionId = metaEsdtOnNetwork?.data?.collection;
 
         if (tokenType === TokenType.MetaESDT && !numDecimals) {
           console.log(
@@ -191,7 +191,7 @@ export const distributeToOwners = async () => {
           exit(9);
         }
 
-        if (!nonce || !collectionTicker) {
+        if (!nonce || !collectionId) {
           console.log(
             "Can't get the token information (decimals, nonce, collection ticker). Try again."
           );
@@ -239,7 +239,7 @@ export const distributeToOwners = async () => {
         if (
           tokenType === TokenType.MetaESDT &&
           numDecimals &&
-          collectionTicker &&
+          collectionId &&
           nonce
         ) {
           const statusPromise = distributeMetaEsdtSingleAddress(
@@ -249,21 +249,21 @@ export const distributeToOwners = async () => {
             signer,
             provider,
             numDecimals,
-            collectionTicker,
+            collectionId,
             nonce
           );
 
           promises.push(statusPromise);
         }
 
-        if (tokenType === TokenType.SFT && collectionTicker && nonce) {
+        if (tokenType === TokenType.SFT && collectionId && nonce) {
           const statusPromise = distributeSftSingleAddress(
             multipliedAmount,
             ownerObj.owner,
             userAccount,
             signer,
             provider,
-            collectionTicker,
+            collectionId,
             nonce
           );
 

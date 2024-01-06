@@ -87,6 +87,7 @@ import {
   tokensPerOneGiveawayTx,
   nftTokenNameNumberLabel,
   nftCollectionProperties,
+  nftSpecialRoles,
 } from './config';
 import { exit } from 'process';
 
@@ -214,7 +215,32 @@ const issueCollectionToken = async () => {
 // For now only nft create role, it will be improvement after SC improvements
 const setLocalRoles = async () => {
   const smartContractAddress = getNftSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'multiselect',
+      name: 'roles',
+      message: 'Please choose special roles.\n',
+      choices: [
+        {
+          title: 'ESDTRoleNFTCreate',
+          value: 'ESDTRoleNFTCreate',
+          description: 'It is mandatory to proceed',
+          selected: true,
+        },
+        ...nftSpecialRoles.variants
+          .map((role) => ({
+            title: role.name,
+            value: role.name,
+          }))
+          .filter((role) => role.value !== 'ESDTRoleNFTCreate'),
+      ],
+    },
+  ];
+
   try {
+    const { roles } = await prompts(promptQuestions);
+
     await areYouSureAnswer();
 
     const { smartContract, userAccount, signer, provider } =
@@ -223,7 +249,8 @@ const setLocalRoles = async () => {
     const assignRolesTx = getNftAssignRolesTransaction(
       signer.getAddress(),
       smartContract,
-      assignRolesNftMinterGasLimit
+      assignRolesNftMinterGasLimit,
+      roles
     );
 
     await commonTxOperations(assignRolesTx, userAccount, signer, provider);

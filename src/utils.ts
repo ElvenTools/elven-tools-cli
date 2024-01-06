@@ -97,6 +97,7 @@ import {
   sftCollectionProperties,
   nftCollectionProperties,
   sftSpecialRoles,
+  nftSpecialRoles,
 } from './config';
 import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
@@ -419,10 +420,16 @@ export const getSftSCAddressFromOutputOrConfig = () => {
 export const getNftAssignRolesTransaction = (
   caller: UserAddress,
   contract: SmartContract,
-  gasLimit: number
+  gasLimit: number,
+  roles: string[]
 ) => {
   return contract.call({
     func: new ContractFunction(setNftLocalRolesFnName),
+    args: [
+      ...roles.map((role) =>
+        EnumValue.fromName(EnumType.fromJSON(nftSpecialRoles), role)
+      ),
+    ],
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
     caller,
@@ -1027,11 +1034,11 @@ export const distributeMetaEsdtSingleAddress = async (
   signer: UserSigner,
   provider: ApiNetworkProvider | ProxyNetworkProvider,
   numDecimals: number,
-  collectionTicker: string,
+  collectionId: string,
   nonce: number
 ) => {
   const transfer = TokenTransfer.metaEsdtFromAmount(
-    collectionTicker,
+    collectionId,
     nonce,
     amount,
     numDecimals
@@ -1086,11 +1093,11 @@ export const distributeSftSingleAddress = async (
   account: Account,
   signer: UserSigner,
   provider: ApiNetworkProvider | ProxyNetworkProvider,
-  collectionTicker: string,
+  collectionId: string,
   nonce: number
 ) => {
   const transfer = TokenTransfer.semiFungible(
-    collectionTicker,
+    collectionId,
     nonce,
     Number(amount)
   );

@@ -589,3 +589,29 @@ export const sftSpecialRoles = {
     },
   ],
 };
+
+export const nftSpecialRoles = {
+  name: 'NFTRoles',
+  variants: [
+    {
+      name: 'ESDTRoleNFTCreate',
+      discriminant: 0,
+    },
+    {
+      name: 'ESDTRoleNFTBurn',
+      discriminant: 1,
+    },
+    {
+      name: 'ESDTRoleNFTUpdateAttributes',
+      discriminant: 2,
+    },
+    {
+      name: 'ESDTRoleNFTAddURI',
+      discriminant: 3,
+    },
+    {
+      name: 'ESDTTransferRole',
+      discriminant: 4,
+    },
+  ],
+};
