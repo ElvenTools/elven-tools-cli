@@ -7,7 +7,7 @@ import {
   getNftSCAddressFromOutputOrConfig,
   getNftAssignRolesTransaction,
   getMintTransaction,
-  getGiveawayTransaction,
+  getNftGiveawayTransaction,
   getSetDropTransaction,
   getUnsetDropTransaction,
   getPauseMintingTransaction,
@@ -358,7 +358,7 @@ const giveaway = async () => {
       exit(9);
     }
 
-    const giveawayTx = getGiveawayTransaction(
+    const giveawayTx = getNftGiveawayTransaction(
       signer.getAddress(),
       smartContract,
       giveawayTxBaseGasLimit,

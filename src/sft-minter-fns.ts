@@ -25,6 +25,8 @@ import {
   getSftSetNewAmountLimitPerAddressTransaction,
   getSftMintTransaction,
   getSftBurnTransaction,
+  getFileContents,
+  getSftGiveawayTransaction,
 } from './utils';
 import prompts, { PromptObject } from 'prompts';
 import {
@@ -61,6 +63,9 @@ import {
   amountOfTokensToBurnLabel,
   sftCollectionProperties,
   sftSpecialRoles,
+  giveawayFileRelativePath,
+  sftGiveawayReceiversLabel,
+  sftGiveawayTxBaseGasLimit,
 } from './config';
 
 const nonceOnlyPromptQuestion: PromptObject[] = [
@@ -668,6 +673,66 @@ const getAmountPerAddressTotal = async () => {
   }
 };
 
+const giveaway = async () => {
+  const smartContractAddress = getSftSCAddressFromOutputOrConfig();
+
+  const promptQuestions: PromptObject[] = [
+    {
+      type: 'list',
+      name: 'giveawayReceiversList',
+      message: sftGiveawayReceiversLabel,
+      validate: (value) =>
+        value && value.length > 0 ? true : `Reguires at least one receiver!`,
+    },
+  ];
+
+  try {
+    const { smartContract, userAccount, signer, provider } =
+      await setupSftSc(smartContractAddress);
+
+    const giveawayFile = getFileContents(giveawayFileRelativePath, {
+      noExitOnError: true,
+    });
+
+    let receivers = [];
+
+    if (giveawayFile) {
+      console.log(' ');
+      console.log(`Populating receivers from the file: giveaway.json.`);
+      console.log(' ');
+      await areYouSureAnswer();
+      receivers = giveawayFile;
+    } else {
+      console.log(' ');
+      console.log('There is no giveaway.json file with receivers.');
+      console.log('You will be providing receivers by hand...');
+      console.log(' ');
+      await areYouSureAnswer();
+      const { giveawayReceiversList } = await prompts(promptQuestions);
+      const standarized = giveawayReceiversList.map((receiver: string) => {
+        const split = receiver.split('|');
+        return {
+          address: split[0],
+          nonce: split[1],
+          amount: split[2],
+        };
+      });
+      receivers = standarized;
+    }
+
+    const giveawayTx = getSftGiveawayTransaction(
+      signer.getAddress(),
+      smartContract,
+      sftGiveawayTxBaseGasLimit,
+      receivers
+    );
+
+    await commonTxOperations(giveawayTx, userAccount, signer, provider);
+  } catch (e) {
+    console.log((e as Error)?.message);
+  }
+};
+
 export const sftMinter = async (subcommand?: string) => {
   const COMMANDS = {
     issueCollectionToken: 'issue-collection-token',
@@ -681,6 +746,7 @@ export const sftMinter = async (subcommand?: string) => {
     pauseSelling: 'pause-selling',
     mint: 'mint',
     burn: 'burn',
+    giveaway: 'giveaway',
     setNewAmountLimitPerAddress: 'set-new-amount-limit-per-address',
     getCollectionTokenName: 'get-collection-token-name',
     getCollectionTokenId: 'get-collection-token-id',
@@ -776,6 +842,9 @@ export const sftMinter = async (subcommand?: string) => {
       break;
     case COMMANDS.burn:
       burn();
+      break;
+    case COMMANDS.giveaway:
+      giveaway();
       break;
   }
 };

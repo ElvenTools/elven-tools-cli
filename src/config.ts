@@ -362,6 +362,10 @@ export const getSftBurnFunctionName =
 export const sftBurnGasLimit =
   customConfig?.config?.sftMinterSc?.burnGasLimit || 3000000;
 
+// Gas limit required for giveaway transaction
+export const sftGiveawayTxBaseGasLimit =
+  customConfig?.config?.sftMinterSc?.giveawayBaseGasLimit || 3500000;
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // Collection NFT owners
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
@@ -459,6 +463,7 @@ export const sftTokenNonceLabel =
   'Provide token nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n';
 export const amountToBuyLabel = 'Provide the amount of SFT to buy:\n';
 export const giveawayAddressLabel = `Provide the list of addresses.\nSeparate them with comma (","):\n`;
+export const sftGiveawayReceiversLabel = `Provide the list of receivers.\nExample: erd1...|01|10,erd1...|02|100 etc. (address|nonce|amount):\n`;
 export const giveawayTokensAmount = `Provide how many tokens per one address you want to give away. Max ${tokensPerOneGiveawayTx} in total because of the max gas limit per transaction:\n`;
 export const dropTokensAmountLabel =
   'Provide the amount of the tokens for the drop:\n';

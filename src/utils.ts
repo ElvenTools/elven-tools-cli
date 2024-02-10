@@ -27,6 +27,7 @@ import {
   ITransactionOnNetwork,
   EnumType,
   EnumValue,
+  Tuple,
 } from '@multiversx/sdk-core';
 import axios, { AxiosResponse } from 'axios';
 import { parseUserKey, UserSigner } from '@multiversx/sdk-wallet';
@@ -487,7 +488,7 @@ export const getMintTransaction = (
   }
 };
 
-export const getGiveawayTransaction = (
+export const getNftGiveawayTransaction = (
   caller: UserAddress,
   contract: SmartContract,
   baseGasLimit: number,
@@ -1348,6 +1349,28 @@ export const getSftMaxAmountPerAddress = (nonce: string) => {
     resultType: 'number',
     args: [new U64Value(nonceBigNumber)],
     isNft: false,
+  });
+};
+
+export const getSftGiveawayTransaction = (
+  caller: UserAddress,
+  contract: SmartContract,
+  baseGasLimit: number,
+  receivers: { address: string; nonce: string; amount: BigNumber }[]
+) => {
+  const mintsCount = receivers.length;
+  return contract.call({
+    func: new ContractFunction(giveawayFunctionName),
+    gasLimit: baseGasLimit + 600_000 * (mintsCount - 1),
+    chainID: shortChainId[chain],
+    args: receivers.map((receiver) =>
+      Tuple.fromItems([
+        new AddressValue(Address.fromBech32(receiver.address)),
+        new U64Value(new BigNumber(receiver.nonce, 16)),
+        new BigUIntValue(new BigNumber(receiver.amount).valueOf()),
+      ])
+    ),
+    caller,
   });
 };
 
