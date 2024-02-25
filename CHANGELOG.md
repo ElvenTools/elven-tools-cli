@@ -1,3 +1,8 @@
+### [1.30.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.30.0) (2024-02-10)
+- add transaction watcher configuration for timeout and patience time 
+- add SFT smart contract codeMetadata configuration when deploying 
+- update dependencies and bump the dapp version
+
 ### [1.29.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.29.0) (2024-02-10)
 - handle a giveaway endpoint for SFT minter SC
 - update dependencies

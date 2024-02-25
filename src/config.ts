@@ -14,6 +14,13 @@ const customConfig = explorerSync.search(cwd());
 // Chain to be used (local, devnet, testnet, mainnet)
 export const chain = customConfig?.config?.chain || 'devnet';
 
+// The transaction watcher timeout (the time required when poling the transaction finalization results)
+export const txWatcherTimeout = customConfig?.config?.txWatcherTimeout || 90000;
+
+// The patience: an extra time (in milliseconds) to wait, after the transaction has reached its desired status.
+// Currently there's a delay between the moment a transaction is marked as "completed" and the moment its outcome (contract results, events and logs) is available.
+export const txWatcherPatience = customConfig?.config?.txWatcherPatience || 0;
+
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
 // NFT minter smart contract
 // ⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡⚡
@@ -468,12 +475,12 @@ export const giveawayTokensAmount = `Provide how many tokens per one address you
 export const dropTokensAmountLabel =
   'Provide the amount of the tokens for the drop:\n';
 export const commonConfirmLabel = 'Are you sure that you want to proceed?\n';
-export const nftSCupgradableLabel =
+export const scUpgradableLabel =
   'Decide if the contract can be upgraded in the future.\n';
-export const nftSCreadableLabel =
+export const scReadableLabel =
   "Decide if the contract's storage can be read by other contracts. Not recommended in this case.\n";
-export const nftSCpayableLabel = 'Decide if the contract can receive funds.\n';
-export const nftSCpayableByScLabel =
+export const scPayableLabel = 'Decide if the contract can receive funds.\n';
+export const scPayableByScLabel =
   'Decide if the contract can receive funds from other smart contract. Recommended because of the royalties.\n';
 export const dropTokensLimitPerAddressPerDropLabel =
   'Provide the tokens limit per single address per whole drop (the best is to keep it as low as possible) [optional]:\n';

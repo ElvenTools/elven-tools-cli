@@ -18,11 +18,13 @@ import {
   deploySftMinterGasLimit,
   multiversxExplorer,
   chain,
-  nftSCupgradableLabel,
-  nftSCreadableLabel,
-  nftSCpayableLabel,
-  nftSCpayableByScLabel,
+  scUpgradableLabel,
+  scReadableLabel,
+  scPayableLabel,
+  scPayableByScLabel,
   deployMetadataInAssetsLabel,
+  txWatcherPatience,
+  txWatcherTimeout,
 } from './config';
 import {
   getDeployNftTransaction,
@@ -52,7 +54,7 @@ const deployNftMinter = async () => {
     {
       type: 'select',
       name: 'nftSCupgradable',
-      message: nftSCupgradableLabel,
+      message: scUpgradableLabel,
       choices: [
         { title: 'Yes', value: true },
         { title: 'No', value: false },
@@ -61,7 +63,7 @@ const deployNftMinter = async () => {
     {
       type: 'select',
       name: 'nftSCreadable',
-      message: nftSCreadableLabel,
+      message: scReadableLabel,
       choices: [
         { title: 'No', value: false },
         { title: 'Yes', value: true },
@@ -70,7 +72,7 @@ const deployNftMinter = async () => {
     {
       type: 'select',
       name: 'nftSCpayable',
-      message: nftSCpayableLabel,
+      message: scPayableLabel,
       choices: [
         { title: 'No', value: false },
         { title: 'Yes', value: true },
@@ -79,7 +81,7 @@ const deployNftMinter = async () => {
     {
       type: 'select',
       name: 'nftSCpayableBySc',
-      message: nftSCpayableByScLabel,
+      message: scPayableByScLabel,
       choices: [
         { title: 'Yes', value: true },
         { title: 'No', value: false },
@@ -247,7 +249,10 @@ const deployNftMinter = async () => {
 
     await provider.sendTransaction(deployTransaction);
 
-    const watcher = new TransactionWatcher(provider);
+    const watcher = new TransactionWatcher(provider, {
+      patienceMilliseconds: txWatcherPatience,
+      timeoutMilliseconds: txWatcherTimeout,
+    });
     const transactionOnNetwork =
       await watcher.awaitCompleted(deployTransaction);
 
@@ -286,11 +291,53 @@ export const deploySftMinter = async () => {
     );
   }
 
+  const promptsQuestions: PromptObject[] = [
+    {
+      type: 'select',
+      name: 'sftSCupgradable',
+      message: scUpgradableLabel,
+      choices: [
+        { title: 'Yes', value: true },
+        { title: 'No', value: false },
+      ],
+    },
+    {
+      type: 'select',
+      name: 'sftSCreadable',
+      message: scReadableLabel,
+      choices: [
+        { title: 'No', value: false },
+        { title: 'Yes', value: true },
+      ],
+    },
+    {
+      type: 'select',
+      name: 'sftSCpayable',
+      message: scPayableLabel,
+      choices: [
+        { title: 'No', value: false },
+        { title: 'Yes', value: true },
+      ],
+    },
+    {
+      type: 'select',
+      name: 'sftSCpayableBySc',
+      message: scPayableByScLabel,
+      choices: [
+        { title: 'Yes', value: true },
+        { title: 'No', value: false },
+      ],
+    },
+  ];
+
   const spinner = ora('Processing the transaction...');
 
   try {
     const { scWasmCode, smartContract, userAccount, signer, provider } =
       await setupSftSc();
+
+    const { sftSCupgradable, sftSCreadable, sftSCpayable, sftSCpayableBySc } =
+      await prompts(promptsQuestions);
 
     await areYouSureAnswer();
 
@@ -298,7 +345,11 @@ export const deploySftMinter = async () => {
       signer.getAddress(),
       scWasmCode,
       smartContract,
-      deploySftMinterGasLimit
+      deploySftMinterGasLimit,
+      sftSCupgradable,
+      sftSCreadable,
+      sftSCpayable,
+      sftSCpayableBySc
     );
 
     deployTransaction.setNonce(userAccount.nonce);
@@ -319,7 +370,10 @@ export const deploySftMinter = async () => {
 
     await provider.sendTransaction(deployTransaction);
 
-    const watcher = new TransactionWatcher(provider);
+    const watcher = new TransactionWatcher(provider, {
+      patienceMilliseconds: txWatcherPatience,
+      timeoutMilliseconds: txWatcherTimeout,
+    });
     const transactionOnNetwork =
       await watcher.awaitCompleted(deployTransaction);
 

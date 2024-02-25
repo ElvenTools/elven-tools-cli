@@ -99,6 +99,8 @@ import {
   nftCollectionProperties,
   sftSpecialRoles,
   nftSpecialRoles,
+  txWatcherPatience,
+  txWatcherTimeout,
 } from './config';
 import { UserAddress } from '@multiversx/sdk-wallet/out/userAddress';
 
@@ -252,11 +254,15 @@ export const getDeploySftTransaction = (
   deployer: UserAddress,
   code: Code,
   contract: SmartContract,
-  gasLimit: number
+  gasLimit: number,
+  upgradable = true,
+  readable = false,
+  payable = false,
+  payableBySc = true
 ) => {
   return contract.deploy({
     code,
-    codeMetadata: new CodeMetadata(true, false, false, true),
+    codeMetadata: new CodeMetadata(upgradable, readable, payable, payableBySc),
     gasLimit: gasLimit,
     initArguments: [],
     chainID: shortChainId[chain],
@@ -605,32 +611,41 @@ export const commonTxOperations = async (
   signer: UserSigner,
   provider: ApiNetworkProvider | ProxyNetworkProvider
 ) => {
-  tx.setNonce(account.nonce);
-  account.incrementNonce();
-
-  const serialized = tx.serializeForSigning();
-  const signature = await signer.sign(serialized);
-  tx.applySignature(signature);
-
   const spinner = ora('Processing the transaction...');
-  spinner.start();
 
-  await provider.sendTransaction(tx);
+  try {
+    tx.setNonce(account.nonce);
+    account.incrementNonce();
 
-  const watcher = new TransactionWatcher(provider);
-  const transactionOnNetwork = await watcher.awaitCompleted(tx);
+    const serialized = tx.serializeForSigning();
+    const signature = await signer.sign(serialized);
+    tx.applySignature(signature);
 
-  const txHash = transactionOnNetwork.hash;
-  const txStatus = transactionOnNetwork.status;
+    spinner.start();
 
-  spinner.stop();
+    await provider.sendTransaction(tx);
 
-  console.log(`\nTransaction status: ${txStatus}`);
-  console.log(
-    `Transaction link: ${multiversxExplorer[chain]}/transactions/${txHash}\n`
-  );
+    const watcher = new TransactionWatcher(provider, {
+      patienceMilliseconds: txWatcherPatience,
+      timeoutMilliseconds: txWatcherTimeout,
+    });
+    const transactionOnNetwork = await watcher.awaitCompleted(tx);
 
-  return transactionOnNetwork;
+    const txHash = transactionOnNetwork.hash;
+    const txStatus = transactionOnNetwork.status;
+
+    spinner.stop();
+
+    console.log(`\nTransaction status: ${txStatus}`);
+    console.log(
+      `Transaction link: ${multiversxExplorer[chain]}/transactions/${txHash}\n`
+    );
+
+    return transactionOnNetwork;
+  } catch (error) {
+    spinner.stop();
+    throw error;
+  }
 };
 
 export const getSetNewPriceTransaction = (
@@ -954,7 +969,10 @@ export const distributeEgldSingleAddress = async (
   try {
     await provider.sendTransaction(tx);
 
-    const watcher = new TransactionWatcher(provider);
+    const watcher = new TransactionWatcher(provider, {
+      patienceMilliseconds: txWatcherPatience,
+      timeoutMilliseconds: txWatcherTimeout,
+    });
     const transactionOnNetwork = await watcher.awaitCompleted(tx);
 
     const txHash = transactionOnNetwork.hash;
@@ -1007,7 +1025,10 @@ export const distributeEsdtSingleAddress = async (
   try {
     await provider.sendTransaction(tx);
 
-    const watcher = new TransactionWatcher(provider);
+    const watcher = new TransactionWatcher(provider, {
+      patienceMilliseconds: txWatcherPatience,
+      timeoutMilliseconds: txWatcherTimeout,
+    });
     const transactionOnNetwork = await watcher.awaitCompleted(tx);
 
     const txHash = transactionOnNetwork.hash;
@@ -1067,7 +1088,10 @@ export const distributeMetaEsdtSingleAddress = async (
   try {
     await provider.sendTransaction(tx);
 
-    const watcher = new TransactionWatcher(provider);
+    const watcher = new TransactionWatcher(provider, {
+      patienceMilliseconds: txWatcherPatience,
+      timeoutMilliseconds: txWatcherTimeout,
+    });
     const transactionOnNetwork = await watcher.awaitCompleted(tx);
 
     const txHash = transactionOnNetwork.hash;
@@ -1125,7 +1149,10 @@ export const distributeSftSingleAddress = async (
   try {
     await provider.sendTransaction(tx);
 
-    const watcher = new TransactionWatcher(provider);
+    const watcher = new TransactionWatcher(provider, {
+      patienceMilliseconds: txWatcherPatience,
+      timeoutMilliseconds: txWatcherTimeout,
+    });
     const transactionOnNetwork = await watcher.awaitCompleted(tx);
 
     const txHash = transactionOnNetwork.hash;
