@@ -173,6 +173,7 @@ const issueCollectionToken = async () => {
       )}\n`
     );
   } catch (e) {
+    console.log(e);
     spinner.stop();
     console.log((e as Error)?.message);
   }
@@ -264,18 +265,18 @@ const create = async () => {
       validate: (value) => (!value ? 'Required!' : true),
     },
     {
-      type: 'number',
+      type: 'text',
       name: 'initialAmountOfTokens',
       message: initialSFTSupplyLabel,
-      min: 1,
-      validate: (value) => (!value || value < 1 ? 'Required and min 1!' : true),
+      validate: (value) =>
+        !Number(value) || Number(value) <= 0 ? 'Required and min 1!' : true,
     },
     {
-      type: 'number',
+      type: 'text',
       name: 'maxTokensPerAddress',
       message: maxTokensPerAddress,
-      min: 1,
-      validate: (value) => (!value || value < 1 ? 'Required and min 1!' : true),
+      validate: (value) =>
+        !Number(value) || Number(value) <= 0 ? 'Required and min 1!' : true,
     },
     {
       type: 'number',

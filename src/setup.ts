@@ -20,6 +20,7 @@ import {
 } from './utils';
 
 export const publicEndpointSetup = async () => {
+  // PEM wallet key file
   const walletPemKey = getFileContents(pemKeyFileName, { isJSON: false });
   // Provider type based on initial configuration
   const provider = getNetworkProvider();
@@ -38,7 +39,6 @@ export const publicEndpointSetup = async () => {
 };
 
 export const setupNftSc = async (smartContractAddress?: string) => {
-  // PEM wallet key file
   const abiFile = await getAbi(
     deployNftMinterSCabiRelativeFilePath,
     deployNftMinterSCabiFileUrl

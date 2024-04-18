@@ -28,6 +28,7 @@ import {
   EnumType,
   EnumValue,
   Tuple,
+  VariadicValue,
 } from '@multiversx/sdk-core';
 import axios, { AxiosResponse } from 'axios';
 import { parseUserKey, UserSigner } from '@multiversx/sdk-wallet';
@@ -349,6 +350,10 @@ export const getNftIssueTransaction = (
   nftTokenName: string,
   tokenProperties: string[]
 ) => {
+  const nftCollectionPropertiesEnumType = EnumType.fromJSON(
+    nftCollectionProperties
+  );
+
   return contract.call({
     func: new ContractFunction(issueNftTokenFnName),
     args: [
@@ -356,11 +361,8 @@ export const getNftIssueTransaction = (
       BytesValue.fromUTF8(tokenTicker.trim()),
       new BooleanValue(noNftTokenNameNumber),
       BytesValue.fromUTF8(nftTokenName.trim()),
-      ...tokenProperties.map((tokenProperty) =>
-        EnumValue.fromName(
-          EnumType.fromJSON(nftCollectionProperties),
-          tokenProperty
-        )
+      tokenProperties.map((tokenProperty) =>
+        EnumValue.fromName(nftCollectionPropertiesEnumType, tokenProperty)
       ),
     ],
     value: TokenTransfer.egldFromAmount(value),
@@ -379,16 +381,17 @@ export const getSftIssueTransaction = (
   tokenTicker: string,
   tokenProperties: string[]
 ) => {
+  const sftCollectionPropertiesEnumType = EnumType.fromJSON(
+    sftCollectionProperties
+  );
+
   return contract.call({
     func: new ContractFunction(issueSftTokenFnName),
     args: [
       BytesValue.fromUTF8(tokenName.trim()),
       BytesValue.fromUTF8(tokenTicker.trim()),
-      ...tokenProperties.map((tokenProperty) =>
-        EnumValue.fromName(
-          EnumType.fromJSON(sftCollectionProperties),
-          tokenProperty
-        )
+      tokenProperties.map((tokenProperty) =>
+        EnumValue.fromName(sftCollectionPropertiesEnumType, tokenProperty)
       ),
     ],
     value: TokenTransfer.egldFromAmount(value),
@@ -430,12 +433,12 @@ export const getNftAssignRolesTransaction = (
   gasLimit: number,
   roles: string[]
 ) => {
+  const nftSpecialRolesEnumType = EnumType.fromJSON(nftSpecialRoles);
+
   return contract.call({
     func: new ContractFunction(setNftLocalRolesFnName),
     args: [
-      ...roles.map((role) =>
-        EnumValue.fromName(EnumType.fromJSON(nftSpecialRoles), role)
-      ),
+      roles.map((role) => EnumValue.fromName(nftSpecialRolesEnumType, role)),
     ],
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
@@ -449,12 +452,12 @@ export const getSftAssignRolesTransaction = (
   gasLimit: number,
   roles: string[]
 ) => {
+  const sftSpecialRolesEnumType = EnumType.fromJSON(sftSpecialRoles);
+
   return contract.call({
     func: new ContractFunction(setSftLocalRolesFnName),
     args: [
-      ...roles.map((role) =>
-        EnumValue.fromName(EnumType.fromJSON(sftSpecialRoles), role)
-      ),
+      roles.map((role) => EnumValue.fromName(sftSpecialRolesEnumType, role)),
     ],
     gasLimit: gasLimit,
     chainID: shortChainId[chain],
@@ -1200,7 +1203,9 @@ export const getSftCreateTransaction = (
       new BigUIntValue(new BigNumber(maxTokensPerAddress).valueOf()),
       new BigUIntValue(new BigNumber(Number(royalties) * 100 || 0).valueOf()),
       BytesValue.fromUTF8(tags.trim()),
-      ...uris.map((uri) => BytesValue.fromUTF8(uri.trim())),
+      VariadicValue.fromItems(
+        ...uris.map((uri) => BytesValue.fromUTF8(uri.trim()))
+      ),
     ],
     value: 0,
     gasLimit,
@@ -1390,13 +1395,17 @@ export const getSftGiveawayTransaction = (
     func: new ContractFunction(giveawayFunctionName),
     gasLimit: baseGasLimit + 600_000 * (mintsCount - 1),
     chainID: shortChainId[chain],
-    args: receivers.map((receiver) =>
-      Tuple.fromItems([
-        new AddressValue(Address.fromBech32(receiver.address)),
-        new U64Value(new BigNumber(receiver.nonce, 16)),
-        new BigUIntValue(new BigNumber(receiver.amount).valueOf()),
-      ])
-    ),
+    args: [
+      VariadicValue.fromItems(
+        ...receivers.map((receiver) =>
+          Tuple.fromItems([
+            new AddressValue(Address.fromBech32(receiver.address)),
+            new U64Value(new BigNumber(receiver.nonce, 16)),
+            new BigUIntValue(new BigNumber(receiver.amount).valueOf()),
+          ])
+        )
+      ),
+    ],
     caller,
   });
 };

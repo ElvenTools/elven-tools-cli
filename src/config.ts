@@ -456,16 +456,16 @@ export const deployNftMinterImgExtLabel = 'Provide the file extension:\n';
 export const sftTokenDisplayName =
   'Provide token display name (Alphanumeric characters only):\n';
 export const metadataIpfsCIDLabel =
-  'Provide the the metadata file CID from IPFS:\n';
+  'Provide the metadata file CID from IPFS:\n';
 export const metadataIpfsFileNameLabel =
-  'Provide the the metadata file name uploaded using IPFS (ex: metadata.json):\n';
+  'Provide the metadata file name uploaded using IPFS (ex: metadata.json):\n';
 export const initialSFTSupplyLabel =
   'Provide the initial SFT supply (amount of tokens):\n';
 export const amountOfTokensLabel = `Provide how many tokens should be minted.\nTake into account possible limitations set on the Smart Contract.\nYou need to provide the value which fits in limits as a whole. Max ${tokensPerOneTx} because of the max gas limit per transaction:\n`;
 export const listOfSftUrisLabel =
   'Provide assets URIS. Whole URIs from IPFS. To your images, music, video files.\nSeparate them with comma (","):\n';
 export const maxTokensPerAddress =
-  'Provide the max tokens to buy per address:\n';
+  'Provide the max amount to buy per address:\n';
 export const sftTokenNonceLabel =
   'Provide token nonce (for example in TTSFT-d1d695-01 the 01 has to be provided):\n';
 export const amountToBuyLabel = 'Provide the amount of SFT to buy:\n';

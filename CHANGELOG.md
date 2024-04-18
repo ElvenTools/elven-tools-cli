@@ -1,3 +1,8 @@
+### [1.31.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.31.0) (2024-04-18)
+- migrate to sdk-core v13 (without replacing legacy (not deprecated yet) functions)
+- update dependencies
+- adjust variadic arguments handling in functions (for reference check [#435](https://github.com/multiversx/mx-sdk-js-core/issues/435))
+
 ### [1.30.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.30.0) (2024-02-25)
 - add transaction watcher configuration for timeout and patience time 
 - add SFT smart contract codeMetadata configuration when deploying 
