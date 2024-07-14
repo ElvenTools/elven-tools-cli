@@ -1,3 +1,7 @@
+### [1.31.1](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.31.1) (2024-07-14)
+- update dependencies
+- bump dapp version
+
 ### [1.31.0](https://github.com/ElvenTools/elven-tools-cli/releases/tag/v1.31.0) (2024-04-18)
 - migrate to sdk-core v13 (without replacing legacy (not deprecated yet) functions)
 - update dependencies
